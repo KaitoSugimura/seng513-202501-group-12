@@ -1,35 +1,41 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import "./App.css";
+import "./Reset.css";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Home from "./pages/Home/Home";
+import NoPage from "./pages/NoPage/NoPage";
+import Layout from "./Navigation/Layout";
+import Library from "./pages/Library/Library";
+import Search from "./pages/Search/Search";
+import Create from "./pages/Create/Create";
+import Account from "./pages/Account/Account";
+import Contest from "./pages/Contest/Contest";
+import Quiz from "./pages/Quiz/Quiz";
+import { useEffect } from "react";
 
 function App() {
-  const [count, setCount] = useState(0)
+  useEffect(() => {
+    document.documentElement.style.setProperty("color-scheme", "dark");
+  }, []);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <BrowserRouter>
+      <Routes>
+        <Route path="/Quiz" element={<Quiz />}>
+          <Route path=":quizId" element={<Quiz />} />
+        </Route>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Home />} />
+          <Route path="home" element={<Home />} />
+          <Route path="library" element={<Library />} />
+          <Route path="search" element={<Search />} />
+          <Route path="create" element={<Create />} />
+          <Route path="account" element={<Account />} />
+          <Route path="contest" element={<Contest />} />
+          <Route path="*" element={<NoPage />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
