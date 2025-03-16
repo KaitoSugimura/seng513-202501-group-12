@@ -1,16 +1,17 @@
+import { useEffect } from "react";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
-import "./Reset.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from "./pages/Home/Home";
-import NoPage from "./pages/NoPage/NoPage";
+import { AuthProvider } from "./context/AuthContext";
 import Layout from "./Navigation/Layout";
-import Library from "./pages/Library/Library";
-import Search from "./pages/Search/Search";
-import Create from "./pages/Create/Create";
 import Account from "./pages/Account/Account";
 import Contest from "./pages/Contest/Contest";
+import Create from "./pages/Create/Create";
+import Home from "./pages/Home/Home";
+import Library from "./pages/Library/Library";
+import NoPage from "./pages/NoPage/NoPage";
 import Quiz from "./pages/Quiz/Quiz";
-import { useEffect } from "react";
+import Search from "./pages/Search/Search";
+import "./Reset.css";
 
 function App() {
   useEffect(() => {
@@ -18,23 +19,25 @@ function App() {
   }, []);
 
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/Quiz" element={<Quiz />}>
-          <Route path=":quizId" element={<Quiz />} />
-        </Route>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Home />} />
-          <Route path="home" element={<Home />} />
-          <Route path="library" element={<Library />} />
-          <Route path="search" element={<Search />} />
-          <Route path="create" element={<Create />} />
-          <Route path="account" element={<Account />} />
-          <Route path="contest" element={<Contest />} />
-          <Route path="*" element={<NoPage />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/Quiz" element={<Quiz />}>
+            <Route path=":quizId" element={<Quiz />} />
+          </Route>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Home />} />
+            <Route path="home" element={<Home />} />
+            <Route path="library" element={<Library />} />
+            <Route path="search" element={<Search />} />
+            <Route path="create" element={<Create />} />
+            <Route path="account" element={<Account />} />
+            <Route path="contest" element={<Contest />} />
+            <Route path="*" element={<NoPage />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 

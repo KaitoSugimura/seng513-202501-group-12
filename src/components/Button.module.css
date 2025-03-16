@@ -1,0 +1,14 @@
+.button {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 0.5rem 0.75rem;
+  font-size: 1rem;
+  border-radius: 0.5rem;
+  transition: 0.2s;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.button:hover {
+  transform: unset;
+  background: rgba(255, 255, 255, 0.3);
+}

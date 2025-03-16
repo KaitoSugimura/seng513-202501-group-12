@@ -1,10 +1,12 @@
 import React, { useEffect } from "react";
-import styles from "./Layout.module.css";
-import { Outlet, Link, NavLink } from "react-router-dom";
+import { NavLink, Outlet } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import usersData from "../database/stubUsers";
+import styles from "./Layout.module.css";
 
 export default function Layout() {
   const [breakPoint, setBreakPoint] = React.useState(9999);
+  const { user } = useAuth();
 
   useEffect(() => {
     const updateBreakPoint = () => {
@@ -117,14 +119,14 @@ export default function Layout() {
         <div className={styles.sideNav}>
           <div key={usersData[0].id} className={styles.userContainer}>
             <img
-              src={usersData[0].image}
-              alt={`Profile for ${usersData[0].name}`}
+              src={user?.photoURL ? user.photoURL : "/guest.png"}
+              alt={`Profile for ${user?.displayName}`}
               className={styles.userContainerImage}
             />
             <div className={styles.userContainerRight}>
               {/* <p>Rank: {usersData[0].ranking}</p> */}
-              <h3>{usersData[0].name}</h3>
-              <p>{usersData[0].email}</p>
+              <h3>{user ? user.displayName : "Guest"}</h3>
+              <p>{user ? user.email : ""}</p>
             </div>
           </div>
           <div>
