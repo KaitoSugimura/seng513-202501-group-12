@@ -65,7 +65,8 @@
 }
 
 .logoImage {
-  width: 100px;
+  max-width: 190px;
+  margin-inline: auto;
 }
 
 .mainCont {

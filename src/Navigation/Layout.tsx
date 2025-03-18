@@ -34,7 +34,7 @@ export default function Layout() {
       <div className={styles.mainNav}>
         {breakPoint > 700 && (
           <img
-            src={breakPoint <= 1600 ? "/LogoSmall.jpg" : "/Logo.png"}
+            src={breakPoint <= 1600 ? "/logoSmall.svg" : "/logo.svg"}
             alt="logo"
             className={styles.logoImage}
           />
