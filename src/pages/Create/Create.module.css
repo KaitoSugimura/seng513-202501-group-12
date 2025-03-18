@@ -1,0 +1,28 @@
+.quizDetails{
+    padding: 2%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    align-content: center;
+    gap: 3%;
+}
+
+.quizDetails input{
+    background-color: rgb(46, 56, 86);
+    border: none;
+    border-radius: 5px;
+    width:50%;
+    height: 3%;
+    padding: 20px;
+}
+
+.quizDetails select{
+    color: white;
+    background-color: rgb(46, 56, 86);
+    border: none;
+    border-radius: 5px;
+    width: 25%; 
+    padding: 10px; 
+    font-size: 1rem; 
+}
