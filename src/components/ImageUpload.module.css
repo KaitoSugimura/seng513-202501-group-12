@@ -7,7 +7,7 @@
   
   .uploadBox {
     position: relative;
-    width: 50%;
+    width: 100%;
     aspect-ratio: 16/9;
     border: 2px dashed #aaa;
     border-radius: 10px;

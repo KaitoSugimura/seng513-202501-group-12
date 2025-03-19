@@ -36,3 +36,21 @@
 .topContainer button{
     border-radius: 5px;
 }
+
+.imageContainer{
+    width:50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.questionButtonContainer{
+    display: flex;
+    gap: 8px;
+    flex-direction: column;
+}
+
+.questionButtons{
+    height: 50px;
+}
