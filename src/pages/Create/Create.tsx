@@ -17,10 +17,6 @@ export default function Create() {
   const [inputImage, setInputImage] = useState<File | null>(null);
   const [currentIndex, setCurrentIndex] = useState(-1);
 
-  useEffect(() => {
-    console.log(questions);
-  }, [questions]);
-
   const saveQuestions = () => {
     if (currentIndex === -1) {
       console.log("saving preview image");
@@ -43,9 +39,27 @@ export default function Create() {
   const addQuestion = () => {
     saveQuestions();
     if (currentIndex == -1) {
+      console.log("saving preview image");
+      previewImage.current = inputImage;
       setCurrentIndex((prevCurrentIndex) => prevCurrentIndex + 1);
     } else {
-      setCurrentIndex((prevCurrentIndex) => questions.length);
+      if (currentIndex === -1) {
+        console.log("saving preview image");
+        previewImage.current = inputImage;
+        return;
+      }
+      let questionToAdd: Question = {
+        imageFile: inputImage,
+      };
+      console.log(
+        "saving the question" + questionToAdd + " at index " + currentIndex
+      );
+      setQuestions((prevQuestions) => {
+        let newQuestions = [...prevQuestions];
+        newQuestions[currentIndex] = questionToAdd;
+        setCurrentIndex(newQuestions.length);
+        return newQuestions;
+      });
     }
     setInputImage(null);
   };
