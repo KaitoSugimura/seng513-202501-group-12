@@ -87,6 +87,22 @@ export default function Create() {
     });
   };
 
+  const onDelete = () => {
+    setQuestions((prevQuestions) => {
+      const newQuestions = prevQuestions.filter(
+        (_, index) => index !== currentIndex
+      );
+      const newIndex = currentIndex - 1;
+      setCurrentIndex(() => newIndex);
+      if (newIndex == -1) {
+        setInputImage(previewImage.current);
+      } else {
+        setInputImage(newQuestions[newIndex].imageFile);
+      }
+      return newQuestions;
+    });
+  };
+
   return (
     <div className={styles.quizDetails}>
       <div className={styles.topContainer}>
@@ -126,7 +142,7 @@ export default function Create() {
       <div className={styles.imageContainer}>
         <div className={styles.questionButtonContainer}>
           {currentIndex > -1 && (
-            <button className={styles.questionButtons}>
+            <button className={styles.questionButtons} onClick={onDelete}>
               <Trash2 />
             </button>
           )}
