@@ -26,3 +26,13 @@
     padding: 10px; 
     font-size: 1rem; 
 }
+
+.topContainer{
+    display: flex;
+    width: 50%;
+    justify-content: space-between;
+}
+
+.topContainer button{
+    border-radius: 5px;
+}

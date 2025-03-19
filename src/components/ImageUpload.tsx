@@ -1,16 +1,27 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styles from "./ImageUpload.module.css";
 import { Plus, Trash2 } from "lucide-react";
 
-export default function ImageUpload() {
-  const [file, setFile] = useState<File | null>(null);
+interface ImageUploadProps {
+  file: File | null;
+  setFile: React.Dispatch<React.SetStateAction<File | null>>;
+}
+
+export default function ImageUpload({ file, setFile }: ImageUploadProps) {
   const [preview, setPreview] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (file) {
+      setPreview(URL.createObjectURL(file));
+    } else {
+      setPreview(null);
+    }
+  }, [file]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0];
     if (selectedFile) {
       setFile(selectedFile);
-      setPreview(URL.createObjectURL(selectedFile));
     }
   };
 
@@ -23,18 +34,16 @@ export default function ImageUpload() {
     const droppedFile = event.dataTransfer.files[0];
     if (droppedFile) {
       setFile(droppedFile);
-      setPreview(URL.createObjectURL(droppedFile));
     }
   };
 
   const handleRemoveImage = () => {
     setFile(null);
-    setPreview(null);
   };
 
   return (
     <div className={styles.container}>
-      {!preview ? (
+      {!file ? (
         <div
           className={styles.uploadBox}
           onDragOver={handleDragOver}
@@ -50,16 +59,18 @@ export default function ImageUpload() {
           />
           <p>Upload or drag and drop media</p>
           <button className={styles.uploadButton}>
-            <Plus></Plus>
+            <Plus />
           </button>
         </div>
-      ) : (
+      ) : preview ? (
         <div className={styles.uploadBox}>
           <img src={preview} alt="Preview" className={styles.previewImage} />
           <span onClick={handleRemoveImage} className={styles.removeButton}>
             <Trash2 />
           </span>
         </div>
+      ) : (
+        <p>Loading preview...</p>
       )}
     </div>
   );

@@ -3,12 +3,28 @@ import styles from "./Create.module.css";
 import ImageUpload from "../../components/ImageUpload";
 
 export default function Create() {
+  const [quizName, setQuizName] = useState("");
+  const [quizTheme, setQuizTheme] = useState("");
   const [quizType, setQuizType] = useState("");
+  const [previewImage, setPreviewImage] = useState<File | null>(null);
   return (
     <div className={styles.quizDetails}>
-      <h1>Create New Quiz!</h1>
-      <input type="text" placeholder={"Quiz name"} />
-      <input type="text" placeholder={"Quiz Theme"} />
+      <div className={styles.topContainer}>
+        <h1>Create New Quiz!</h1>
+        <button>Create Quiz!</button>
+      </div>
+      <input
+        type="text"
+        placeholder={"Quiz name"}
+        value={quizName}
+        onChange={(e) => setQuizName(e.target.value)}
+      />
+      <input
+        type="text"
+        placeholder={"Quiz Theme"}
+        value={quizTheme}
+        onChange={(e) => setQuizTheme(e.target.value)}
+      />
       <select
         id="quizType"
         value={quizType}
@@ -18,8 +34,7 @@ export default function Create() {
         <option value="blur">image blur</option>
         <option value="zoom">image zoom</option>
       </select>
-      <ImageUpload></ImageUpload>
-      <button>Create Quiz!</button>
+      <ImageUpload file={previewImage} setFile={setPreviewImage}></ImageUpload>
     </div>
   );
 }
