@@ -5,6 +5,8 @@ import ImageUpload from "../../components/ImageUpload";
 
 export type Question = {
   imageFile: File | null;
+  answers: string[];
+  correctAnswer: number;
 };
 
 export default function Create() {
@@ -15,6 +17,8 @@ export default function Create() {
   const [questions, setQuestions] = useState<Question[]>([]);
 
   const [inputImage, setInputImage] = useState<File | null>(null);
+  const [answers, setAnswers] = useState<string[]>(new Array(4).fill(""));
+  const [correctAnswer, setCorrectAnswer] = useState<number>(0);
   const [currentIndex, setCurrentIndex] = useState(-1);
 
   const saveQuestions = () => {
@@ -25,6 +29,8 @@ export default function Create() {
     }
     let questionToAdd: Question = {
       imageFile: inputImage,
+      answers: answers,
+      correctAnswer: correctAnswer,
     };
     console.log(
       "saving the question" + questionToAdd + " at index " + currentIndex
@@ -41,10 +47,12 @@ export default function Create() {
     if (currentIndex == -1) {
       console.log("saving preview image");
       previewImage.current = inputImage;
-      setCurrentIndex((prevCurrentIndex) => questions.length);
+      setCurrentIndex(questions.length);
     } else {
       let questionToAdd: Question = {
         imageFile: inputImage,
+        answers: answers,
+        correctAnswer: correctAnswer,
       };
       console.log(
         "saving the question" + questionToAdd + " at index " + currentIndex
@@ -135,6 +143,14 @@ export default function Create() {
       }
 
       return newQuestions;
+    });
+  };
+
+  const setAnswer = (index: number, answer: string) => {
+    setAnswers((prevAnswers) => {
+      let newAnswers = [...prevAnswers];
+      newAnswers[index] = answer;
+      return newAnswers;
     });
   };
 
@@ -235,6 +251,19 @@ export default function Create() {
             )}
           </div>
         </div>
+        {currentIndex >= 0 && (
+          <div className={styles.answersContainer}>
+            {answers.map((answer, index) => (
+              <input
+                key={index}
+                type="text"
+                placeholder={"answer"}
+                value={answer}
+                onChange={(e) => setAnswer(index, e.target.value)}
+              ></input>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
