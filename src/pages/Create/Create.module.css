@@ -30,14 +30,28 @@
     display: block;
 }
 
-.overlayText {
+.overlay {
 position: absolute;
-top: 20%; 
-left: 5%; 
+top: 30%; 
+left: 7%; 
 transform: translate(-50%, -50%); 
 color: white; 
 padding: 10px;
-font-size: 24px; 
+font-size: 24px;
+display: flex; 
+align-items: center;
+flex-direction: column;
+justify-content: center;
+gap: 10px;
+font-size: small;
+}
+
+.overlay button{
+    background-color: transparent;
+}
+
+.overlay button:hover{
+    transform: scale(1.1);
 }
 
 .quizDetails{

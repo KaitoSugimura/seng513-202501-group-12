@@ -104,6 +104,7 @@ export default function Create() {
   };
 
   const navigateToQuestion = (index: number) => {
+    console.log("trying to navigate!");
     saveQuestions();
     setInputImage(questions[index].imageFile);
     setCurrentIndex(index);
@@ -115,11 +116,40 @@ export default function Create() {
     setCurrentIndex(-1);
   };
 
+  const deleteIndex = (index: number) => {
+    setQuestions((prevQuestions) => {
+      console.log("Filtering index " + index);
+      const newQuestions = prevQuestions.filter(
+        (_, indexToCheck) => indexToCheck !== index
+      );
+      let newIndex = currentIndex;
+      if (index === currentIndex) {
+        newIndex = currentIndex - 1;
+      } else if (index === questions.length - 1) {
+        newIndex = questions.length - 1;
+      } else if (index < currentIndex) {
+        newIndex = currentIndex - 1;
+      }
+
+      setCurrentIndex(newIndex);
+
+      if (newIndex == -1) {
+        setInputImage(previewImage.current);
+      } else {
+        setInputImage(newQuestions[newIndex].imageFile);
+      }
+
+      return newQuestions;
+    });
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.questionList}>
         <ol className={styles.listEntryImage} onClick={navigateToPreview}>
-          <h2 className={styles.overlayText}></h2>
+          <div className={styles.overlay}>
+            <h2></h2>
+          </div>
           {previewImage.current && (
             <img src={URL.createObjectURL(previewImage.current)} alt="" />
           )}
@@ -128,9 +158,22 @@ export default function Create() {
           <ol
             className={styles.listEntryImage}
             key={index}
-            onClick={() => navigateToQuestion(index)}
+            onClick={(event) => {
+              event.stopPropagation();
+              navigateToQuestion(index);
+            }}
           >
-            <h2 className={styles.overlayText}>{index}</h2>
+            <div className={styles.overlay}>
+              <h2>{index}</h2>
+              <button
+                onClick={(event) => {
+                  event.stopPropagation();
+                  deleteIndex(index);
+                }}
+              >
+                <Trash2 />
+              </button>
+            </div>
             {question.imageFile && (
               <img src={URL.createObjectURL(question.imageFile)} alt="" />
             )}
