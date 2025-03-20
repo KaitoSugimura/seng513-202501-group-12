@@ -103,65 +103,99 @@ export default function Create() {
     });
   };
 
-  return (
-    <div className={styles.quizDetails}>
-      <div className={styles.topContainer}>
-        <h1>Create New Quiz!</h1>
-        <button>Create Quiz!</button>
-      </div>
-      <input
-        type="text"
-        placeholder={"Quiz name"}
-        value={quizName}
-        onChange={(e) => setQuizName(e.target.value)}
-      />
-      <select
-        id="quizTheme"
-        value={quizTheme}
-        onChange={(e) => setQuizType(e.target.value)}
-      >
-        <option value="">Quiz Theme</option>
-        <option value="blur">Need to add these still</option>
-        <option value="zoom">Animals</option>
-      </select>
-      <select
-        id="quizType"
-        value={quizType}
-        onChange={(e) => setQuizType(e.target.value)}
-      >
-        <option value="">Quiz type</option>
-        <option value="blur">image blur</option>
-        <option value="zoom">image zoom</option>
-      </select>
-      <h2>
-        {currentIndex > -1
-          ? `Question ${currentIndex} and ${questions.length}`
-          : "Preview Image"}
-      </h2>
+  const navigateToQuestion = (index: number) => {
+    saveQuestions();
+    setInputImage(questions[index].imageFile);
+    setCurrentIndex(index);
+  };
 
-      <div className={styles.imageContainer}>
-        <div className={styles.questionButtonContainer}>
-          {currentIndex > -1 && (
-            <button className={styles.questionButtons} onClick={onDelete}>
-              <Trash2 />
-            </button>
+  const navigateToPreview = () => {
+    saveQuestions();
+    setInputImage(previewImage.current);
+    setCurrentIndex(-1);
+  };
+
+  return (
+    <div className={styles.container}>
+      <div className={styles.questionList}>
+        <ol className={styles.listEntryImage} onClick={navigateToPreview}>
+          <h2 className={styles.overlayText}></h2>
+          {previewImage.current && (
+            <img src={URL.createObjectURL(previewImage.current)} alt="" />
           )}
-          {currentIndex > -1 && (
-            <button className={styles.questionButtons} onClick={onBack}>
-              <ArrowLeft />
-            </button>
-          )}
+        </ol>
+        {questions.map((question, index) => (
+          <ol
+            className={styles.listEntryImage}
+            key={index}
+            onClick={() => navigateToQuestion(index)}
+          >
+            <h2 className={styles.overlayText}>{index}</h2>
+            {question.imageFile && (
+              <img src={URL.createObjectURL(question.imageFile)} alt="" />
+            )}
+          </ol>
+        ))}
+      </div>
+      <div className={styles.quizDetails}>
+        <div className={styles.topContainer}>
+          <h1>Create New Quiz!</h1>
+          <button>Create Quiz!</button>
         </div>
-        <ImageUpload file={inputImage} setFile={setInputImage}></ImageUpload>
-        <div className={styles.questionButtonContainer}>
-          <button className={styles.questionButtons} onClick={addQuestion}>
-            <Plus />
-          </button>
-          {questions.length > 0 && currentIndex < questions.length - 1 && (
-            <button className={styles.questionButtons} onClick={onNext}>
-              <ArrowRight />
+        <input
+          type="text"
+          placeholder={"Quiz name"}
+          value={quizName}
+          onChange={(e) => setQuizName(e.target.value)}
+        />
+        <select
+          id="quizTheme"
+          value={quizTheme}
+          onChange={(e) => setQuizType(e.target.value)}
+        >
+          <option value="">Quiz Theme</option>
+          <option value="blur">Need to add these still</option>
+          <option value="zoom">Animals</option>
+        </select>
+        <select
+          id="quizType"
+          value={quizType}
+          onChange={(e) => setQuizType(e.target.value)}
+        >
+          <option value="">Quiz type</option>
+          <option value="blur">image blur</option>
+          <option value="zoom">image zoom</option>
+        </select>
+        <h2>
+          {currentIndex > -1
+            ? `Question ${currentIndex} and ${questions.length}`
+            : "Preview Image"}
+        </h2>
+
+        <div className={styles.imageContainer}>
+          <div className={styles.questionButtonContainer}>
+            {currentIndex > -1 && (
+              <button className={styles.questionButtons} onClick={onDelete}>
+                <Trash2 />
+              </button>
+            )}
+            {currentIndex > -1 && (
+              <button className={styles.questionButtons} onClick={onBack}>
+                <ArrowLeft />
+              </button>
+            )}
+          </div>
+          <ImageUpload file={inputImage} setFile={setInputImage}></ImageUpload>
+          <div className={styles.questionButtonContainer}>
+            <button className={styles.questionButtons} onClick={addQuestion}>
+              <Plus />
             </button>
-          )}
+            {questions.length > 0 && currentIndex < questions.length - 1 && (
+              <button className={styles.questionButtons} onClick={onNext}>
+                <ArrowRight />
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>
