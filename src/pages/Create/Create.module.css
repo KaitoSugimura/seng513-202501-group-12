@@ -122,3 +122,42 @@ font-size: small;
     min-height: 200px; 
     margin: auto; 
 }
+
+.inputWrapper {
+    position: relative; 
+    display: flex;
+    align-items: center; 
+    width: 100%;
+}
+
+.inputWrapper input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    padding-right: 40px; 
+}
+
+.check {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    right: 10px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+
+}
+
+.correctCheck{
+    background-color: #4cbb17; 
+
+}
+
+.incorrectCheck{
+    background-color: rgba(128, 128, 128, 0.2);
+}
+
+.incorrectCheck:hover{
+    background-color: rgba(128, 128, 128, 0.8);
+}

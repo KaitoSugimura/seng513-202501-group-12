@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import styles from "./Create.module.css";
-import { Plus, Trash2, ArrowRight, ArrowLeft } from "lucide-react";
+import { Plus, Trash2, ArrowRight, ArrowLeft, Check } from "lucide-react";
+import clsx from "clsx";
 import ImageUpload from "../../components/ImageUpload";
 
 export type Question = {
@@ -118,6 +119,7 @@ export default function Create() {
     const questionToSet = questions[index];
     setInputImage(questionToSet.imageFile);
     setAnswers(questionToSet.answers);
+    setCorrectAnswer(questionToSet.correctAnswer);
     setCurrentIndex(index);
   };
 
@@ -218,7 +220,7 @@ export default function Create() {
         <select
           id="quizTheme"
           value={quizTheme}
-          onChange={(e) => setQuizType(e.target.value)}
+          onChange={(e) => setQuizTheme(e.target.value)}
         >
           <option value="">Quiz Theme</option>
           <option value="blur">Need to add these still</option>
@@ -267,13 +269,25 @@ export default function Create() {
         {currentIndex >= 0 && (
           <div className={styles.answersContainer}>
             {answers.map((answer, index) => (
-              <input
-                key={index}
-                type="text"
-                placeholder={"answer"}
-                value={answer}
-                onChange={(e) => setAnswer(index, e.target.value)}
-              ></input>
+              <div key={index} className={styles.inputWrapper}>
+                <input
+                  type="text"
+                  placeholder="answer"
+                  value={answer}
+                  onChange={(e) => setAnswer(index, e.target.value)}
+                />
+                <div
+                  className={clsx(
+                    styles.check,
+                    index === correctAnswer
+                      ? styles.correctCheck
+                      : styles.incorrectCheck
+                  )}
+                  onClick={() => setCorrectAnswer(index)}
+                >
+                  <Check />
+                </div>
+              </div>
             ))}
           </div>
         )}
