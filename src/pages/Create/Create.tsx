@@ -41,13 +41,8 @@ export default function Create() {
     if (currentIndex == -1) {
       console.log("saving preview image");
       previewImage.current = inputImage;
-      setCurrentIndex((prevCurrentIndex) => prevCurrentIndex + 1);
+      setCurrentIndex((prevCurrentIndex) => questions.length);
     } else {
-      if (currentIndex === -1) {
-        console.log("saving preview image");
-        previewImage.current = inputImage;
-        return;
-      }
       let questionToAdd: Question = {
         imageFile: inputImage,
       };
