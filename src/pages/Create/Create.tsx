@@ -64,7 +64,13 @@ export default function Create() {
         return newQuestions;
       });
     }
+    resetInputData();
+  };
+
+  const resetInputData = () => {
     setInputImage(null);
+    setAnswers(new Array(4).fill(""));
+    setCorrectAnswer(0);
   };
 
   const onBack = () => {
@@ -75,7 +81,7 @@ export default function Create() {
       setInputImage(previewImage.current);
     } else {
       console.log("trying to acccess index " + newIndex);
-      setInputImage(questions[newIndex].imageFile);
+      navigateToQuestion(newIndex);
     }
     setCurrentIndex(newIndex);
   };
@@ -85,7 +91,7 @@ export default function Create() {
     saveQuestions();
     setCurrentIndex((prevIndex) => {
       const newIndex = prevIndex + 1;
-      setInputImage(questions[newIndex]?.imageFile || null);
+      navigateToQuestion(newIndex);
       return newIndex;
     });
   };
@@ -100,7 +106,7 @@ export default function Create() {
       if (newIndex == -1) {
         setInputImage(previewImage.current);
       } else {
-        setInputImage(newQuestions[newIndex].imageFile);
+        navigateToQuestion(newIndex);
       }
       return newQuestions;
     });
@@ -109,7 +115,9 @@ export default function Create() {
   const navigateToQuestion = (index: number) => {
     console.log("trying to navigate!");
     saveQuestions();
-    setInputImage(questions[index].imageFile);
+    const questionToSet = questions[index];
+    setInputImage(questionToSet.imageFile);
+    setAnswers(questionToSet.answers);
     setCurrentIndex(index);
   };
 
@@ -139,7 +147,7 @@ export default function Create() {
       if (newIndex == -1) {
         setInputImage(previewImage.current);
       } else {
-        setInputImage(newQuestions[newIndex].imageFile);
+        navigateToQuestion(newIndex);
       }
 
       return newQuestions;
@@ -185,9 +193,14 @@ export default function Create() {
                 <Trash2 />
               </button>
             </div>
-            {question.imageFile && (
-              <img src={URL.createObjectURL(question.imageFile)} alt="" />
-            )}
+            <img
+              src={
+                question.imageFile
+                  ? URL.createObjectURL(question.imageFile)
+                  : "/NoImage.png"
+              }
+              alt=""
+            />
           </ol>
         ))}
       </div>

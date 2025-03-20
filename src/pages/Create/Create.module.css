@@ -116,9 +116,9 @@ font-size: small;
     display: grid;
     grid-template-columns: repeat(2, 1fr); 
     gap: 10px;
-    place-items: center; /* Centers grid items */
-    justify-content: center; /* Centers the whole grid horizontally */
-    align-content: center; /* Centers grid vertically */
-    min-height: 200px; /* Ensure some height to make centering work */
-    margin: auto; /* Centers the container itself */
+    place-items: center; 
+    justify-content: center; 
+    align-content: center; 
+    min-height: 200px; 
+    margin: auto; 
 }
