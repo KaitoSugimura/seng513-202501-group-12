@@ -122,7 +122,6 @@ export default function Create() {
 
   const navigateToQuestion = (index: number) => {
     console.log("trying to navigate!");
-    saveQuestions();
     const questionToSet = questions[index];
     setInputImage(questionToSet.imageFile);
     setAnswers(questionToSet.answers);
