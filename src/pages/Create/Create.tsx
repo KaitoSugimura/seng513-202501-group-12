@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import styles from "./Create.module.css";
 import { Plus, Trash2, ArrowRight, ArrowLeft, Check } from "lucide-react";
 import clsx from "clsx";
+import { useNavigate } from "react-router-dom";
 import ImageUpload from "../../components/ImageUpload";
 
 export type Question = {
@@ -11,6 +12,8 @@ export type Question = {
 };
 
 export default function Create() {
+  const navigate = useNavigate();
+
   const [quizName, setQuizName] = useState("");
   const [quizTheme, setQuizTheme] = useState("");
   const [quizType, setQuizType] = useState("");
@@ -21,6 +24,10 @@ export default function Create() {
   const [answers, setAnswers] = useState<string[]>(new Array(4).fill(""));
   const [correctAnswer, setCorrectAnswer] = useState<number>(0);
   const [currentIndex, setCurrentIndex] = useState(-1);
+
+  useEffect(() => {
+    saveQuestions();
+  }, [inputImage, answers, correctAnswer]);
 
   const saveQuestions = () => {
     if (currentIndex === -1) {
@@ -164,6 +171,11 @@ export default function Create() {
     });
   };
 
+  const createQuiz = () => {
+    navigate("/Home");
+    //TODO push the created quiz to the DB and add errors if questions do not have all data
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.questionList}>
@@ -209,7 +221,7 @@ export default function Create() {
       <div className={styles.quizDetails}>
         <div className={styles.topContainer}>
           <h1>Create New Quiz!</h1>
-          <button>Create Quiz!</button>
+          <button onClick={createQuiz}>Create Quiz!</button>
         </div>
         <input
           type="text"
