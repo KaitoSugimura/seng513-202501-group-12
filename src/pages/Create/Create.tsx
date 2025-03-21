@@ -29,6 +29,18 @@ export default function Create() {
     saveQuestions();
   }, [inputImage, answers, correctAnswer]);
 
+  useEffect(() => {
+    if (currentIndex === -1 || questions[currentIndex] === undefined) {
+      return;
+    }
+    console.log("trying to navigate!");
+    const questionToSet = questions[currentIndex];
+    setInputImage(questionToSet.imageFile);
+    setAnswers(questionToSet.answers);
+    setCorrectAnswer(questionToSet.correctAnswer);
+    setCurrentIndex(currentIndex);
+  }, [currentIndex]);
+
   const saveQuestions = () => {
     if (currentIndex === -1) {
       console.log("saving preview image");
@@ -89,7 +101,6 @@ export default function Create() {
       setInputImage(previewImage.current);
     } else {
       console.log("trying to acccess index " + newIndex);
-      navigateToQuestion(newIndex);
     }
     setCurrentIndex(newIndex);
   };
@@ -99,7 +110,6 @@ export default function Create() {
     saveQuestions();
     setCurrentIndex((prevIndex) => {
       const newIndex = prevIndex + 1;
-      navigateToQuestion(newIndex);
       return newIndex;
     });
   };
@@ -114,19 +124,9 @@ export default function Create() {
       if (newIndex == -1) {
         setInputImage(previewImage.current);
       } else {
-        navigateToQuestion(newIndex);
       }
       return newQuestions;
     });
-  };
-
-  const navigateToQuestion = (index: number) => {
-    console.log("trying to navigate!");
-    const questionToSet = questions[index];
-    setInputImage(questionToSet.imageFile);
-    setAnswers(questionToSet.answers);
-    setCorrectAnswer(questionToSet.correctAnswer);
-    setCurrentIndex(index);
   };
 
   const navigateToPreview = () => {
@@ -144,8 +144,6 @@ export default function Create() {
       let newIndex = currentIndex;
       if (index === currentIndex) {
         newIndex = currentIndex - 1;
-      } else if (index === questions.length - 1) {
-        newIndex = questions.length - 1;
       } else if (index < currentIndex) {
         newIndex = currentIndex - 1;
       }
@@ -155,7 +153,6 @@ export default function Create() {
       if (newIndex == -1) {
         setInputImage(previewImage.current);
       } else {
-        navigateToQuestion(newIndex);
       }
 
       return newQuestions;
@@ -192,7 +189,7 @@ export default function Create() {
             key={index}
             onClick={(event) => {
               event.stopPropagation();
-              navigateToQuestion(index);
+              setCurrentIndex(index);
             }}
           >
             <div className={styles.overlay}>
