@@ -113,6 +113,13 @@ export default function Layout() {
         </div>
       </div>
       <div className={styles.mainCont}>
+        {breakPoint <= 700 && (
+          <img
+            src={"/logo.svg"}
+            alt="logo"
+            className={styles.mobileLogoImage}
+          />
+        )}
         <Outlet />
       </div>
       {breakPoint > 1450 && (

@@ -69,6 +69,12 @@
   margin-inline: auto;
 }
 
+.mobileLogoImage{
+  max-width: 130px;
+  margin-top: 10px;
+  margin-inline: auto;
+}
+
 .mainCont {
   min-height: 100vh;
   border-left: 1px solid var(--background-main-complementary);
