@@ -193,7 +193,7 @@ export default function Create() {
             }}
           >
             <div className={styles.overlay}>
-              <h2>{index}</h2>
+              <h2>{index + 1}</h2>
               <button
                 onClick={(event) => {
                   event.stopPropagation();
@@ -245,7 +245,7 @@ export default function Create() {
         </select>
         <h2>
           {currentIndex > -1
-            ? `Question ${currentIndex} and ${questions.length}`
+            ? `Question ${currentIndex + 1} of ${questions.length}`
             : "Preview Image"}
         </h2>
 
