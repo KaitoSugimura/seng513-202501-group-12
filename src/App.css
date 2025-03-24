@@ -1,7 +1,8 @@
 html {
-  --background-main: #030309;
-  --background-main-secondary: #10102d;
-  --background-main-complementary: #3b3b50;
+  --background-main: #020205;
+  --background-main-secondary: #0e0e23;
+  --background-main-complementary: #464750;
+  --accent: #aeb8ff;
   --primary-text: #fff;
   --secondary-text: #ddd;
   --faded-text: #999;
@@ -26,6 +27,16 @@ body {
   font-family: "Inter", "Roboto", sans-serif;
 }
 
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  font-family: "Inter", "Roboto", sans-serif;
+}
+
 button {
   background-color: var(--background-light);
   color: var(--primary-text);
@@ -44,8 +55,9 @@ button:active {
   filter: brightness(0.85);
 }
 
-ul, ol {
-  list-style: none; 
-  padding: 0; 
-  margin: 0; 
+ul,
+ol {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }

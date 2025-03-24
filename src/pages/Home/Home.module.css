@@ -3,6 +3,16 @@
   padding: 40px 40px 20px 40px;
 }
 
+.topContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header {
+  font-size: 28px;
+}
+
 .quizGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -12,19 +22,17 @@
 }
 
 .quizContainer {
+  position: relative;
   border: 1px solid #ffffff00;
   border-radius: 8px;
   padding: 10px;
   padding-bottom: 20px;
 
-  transition: 0.2s all;
   cursor: pointer;
 }
 
 .quizContainer:hover {
-  box-shadow: 0 7px 50px 10px #00000048;
-  transform: scale(1.015);
-  border: 1px solid var(--background-main-complementary);
+  background: linear-gradient(#aeb7ff17, #b3baee3f);
 }
 
 .quizImageContainer {
@@ -40,25 +48,34 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 8px;
+  border-radius: 4px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .quizSubtitle {
+  position: absolute;
+  top: 4px;
+  left: 16px;
+  z-index: 10;
   font-size: 14px;
   font-weight: 400;
   margin-top: 12px;
-  color: var(--secondary-text);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 4px;
+
+  background-color: rgba(0, 0, 0, 0.5);
 }
 
 .quizTitle {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 600;
   line-height: 1.25;
+  margin-top: 12px;
 }
 
 .quizCreatorText {
   font-size: 14px;
   font-weight: 500;
-  margin-top: 12px;
+  margin-top: 4px;
 }
