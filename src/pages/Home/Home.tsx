@@ -1,8 +1,8 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import SearchBar from "../../components/SearchBar";
 import quizData from "../../database/stubQuiz";
 import styles from "./Home.module.css";
-import SearchBar from "../../components/SearchBar";
-import { useState } from "react";
 
 export default function Home() {
   const navigate = useNavigate();

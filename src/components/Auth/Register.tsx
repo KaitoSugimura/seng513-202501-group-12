@@ -1,14 +1,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  createUserWithEmailAndPassword,
-  updateProfile,
-  User,
-} from "firebase/auth";
+import { ID } from "appwrite";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useAuth } from "../../context/AuthContext";
-import { auth } from "../../util/firebase";
+import { account, databases, dbId, User } from "../../util/appwrite";
 import Button from "../Button";
 import styles from "./AuthCard.module.css";
 
@@ -21,8 +17,8 @@ const registerSchema = z.object({
 type AuthFormData = z.infer<typeof registerSchema>;
 
 const Register = () => {
-  const { setUser } = useAuth();
   const [error, setError] = useState("");
+  const { setUser } = useAuth();
 
   const {
     register,
@@ -36,17 +32,20 @@ const Register = () => {
     setError("");
 
     try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
+      const user = await account.create(ID.unique(), email, password);
+      await account.createEmailPasswordSession(email, password);
+
+      const userData: User = await databases.createDocument(
+        dbId,
+        "users",
+        user.$id,
+        {
+          username,
+          points: 0,
+        }
       );
 
-      await updateProfile(userCredential.user, {
-        displayName: username,
-      });
-
-      setUser({ ...userCredential.user } as User);
+      setUser(userData);
     } catch (error: any) {
       setError(error.message);
     }
