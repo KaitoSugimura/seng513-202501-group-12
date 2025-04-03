@@ -1,3 +1,4 @@
+import { ID } from "appwrite";
 import {
   createContext,
   Dispatch,
@@ -13,6 +14,11 @@ interface AuthContextType {
   user: User | null;
   setUser: Dispatch<SetStateAction<User | null>>;
   loadingAuth: boolean;
+  register: (
+    email: string,
+    username: string,
+    password: string
+  ) => Promise<void>;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
 }
@@ -43,6 +49,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     fetchUser();
   }, []);
 
+  const register = async (
+    email: string,
+    username: string,
+    password: string
+  ) => {
+    const user = await account.create(ID.unique(), email, password);
+    await account.createEmailPasswordSession(email, password);
+
+    const userData: User = await databases.createDocument(
+      dbId,
+      "users",
+      user.$id,
+      {
+        username,
+        points: 0,
+      }
+    );
+
+    setUser(userData);
+  };
+
   const login = async (email: string, password: string) => {
     const session = await account.createEmailPasswordSession(email, password);
     const userData: User = await databases.getDocument(
@@ -60,7 +87,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, setUser, loadingAuth, login, logout }}>
+    <AuthContext.Provider
+      value={{ user, setUser, loadingAuth, register, login, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );

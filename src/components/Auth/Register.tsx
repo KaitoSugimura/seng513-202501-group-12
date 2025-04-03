@@ -1,10 +1,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ID } from "appwrite";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useAuth } from "../../context/AuthContext";
-import { account, databases, dbId, User } from "../../util/appwrite";
 import Button from "../Button";
 import styles from "./AuthCard.module.css";
 
@@ -18,7 +16,7 @@ type AuthFormData = z.infer<typeof registerSchema>;
 
 const Register = () => {
   const [error, setError] = useState("");
-  const { setUser } = useAuth();
+  const { register: registerAuth } = useAuth();
 
   const {
     register,
@@ -32,20 +30,7 @@ const Register = () => {
     setError("");
 
     try {
-      const user = await account.create(ID.unique(), email, password);
-      await account.createEmailPasswordSession(email, password);
-
-      const userData: User = await databases.createDocument(
-        dbId,
-        "users",
-        user.$id,
-        {
-          username,
-          points: 0,
-        }
-      );
-
-      setUser(userData);
+      await registerAuth(email, username, password);
     } catch (error: any) {
       setError(error.message);
     }
