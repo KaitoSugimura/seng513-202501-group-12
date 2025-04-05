@@ -3,13 +3,13 @@ class User {
     public id: number,
     public username: string,
     public email: string,
-    public image: string,
-    public ranking: number
+    public ranking: number,
+    public image: string
   ) {
     this.id = id;
     this.username = username;
     this.email = email;
-    this.image = image;
+    this.image = image || "/guest.png";
     this.ranking = ranking;
   }
 }

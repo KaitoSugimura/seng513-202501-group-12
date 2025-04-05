@@ -2,7 +2,12 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import SearchBar from "../../components/SearchBar";
 import quizData from "../../database/stubQuiz";
+import genreData from "../../database/stubGenre";
 import styles from "./Home.module.css";
+import SearchBar from "../../components/SearchBar";
+import { useState } from "react";
+import QuizCard from "../../components/QuizCard";
+import GenreCard from "../../components/GenreCard";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -29,26 +34,12 @@ export default function Home() {
       </div>
       <div className={styles.quizGrid}>
         {filteredData.map((quiz) => (
-          <div
-            key={quiz.id}
-            className={styles.quizContainer}
-            onClick={() => {
-              navigate(`/Quiz/${quiz.id}`);
-            }}
-          >
-            <div className={styles.quizImageContainer}>
-              <img
-                src={quiz.image}
-                alt={`Image for ${quiz.name}`}
-                className={styles.quizImage}
-              />
-            </div>
-            <h4 className={styles.quizSubtitle}>{quiz.genre}</h4>
-            <h3 className={styles.quizTitle}>{quiz.name}</h3>
-            <p className={styles.quizCreatorText}>
-              Quiz by {quiz.creator.username}
-            </p>
-          </div>
+          <QuizCard key={`${quiz.id}`} quiz={quiz} />
+        ))}
+      </div>
+      <div className={styles.genreSection}>
+        {genreData.map((genre) => (
+          <GenreCard key={`${genre.id}`} genre={genre} />
         ))}
       </div>
     </div>
