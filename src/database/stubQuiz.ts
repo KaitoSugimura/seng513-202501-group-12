@@ -1,4 +1,6 @@
-const quizData = [
+import Quiz from "../Objects/Quiz";
+
+const quizData: Quiz[] = [
   {
     id: 1,
     name: "Capitals of Europe",
@@ -7,20 +9,20 @@ const quizData = [
       {
         id: 1,
         question: "What is the capital of France?",
-        options: ["Paris", "London", "Berlin", "Madrid"],
-        answer: "Paris",
+        answers: ["Paris", "London", "Berlin", "Madrid"],
+        correctAnswer: "Paris",
       },
       {
         id: 2,
         question: "What is the capital of Germany?",
-        options: ["Paris", "London", "Berlin", "Madrid"],
-        answer: "Berlin",
+        answers: ["Paris", "London", "Berlin", "Madrid"],
+        correctAnswer: "Berlin",
       },
       {
         id: 3,
         question: "What is the capital of Spain?",
-        options: ["Paris", "London", "Berlin", "Madrid"],
-        answer: "Madrid",
+        answers: ["Paris", "London", "Berlin", "Madrid"],
+        correctAnswer: "Madrid",
       },
     ],
     image:
@@ -29,6 +31,8 @@ const quizData = [
       id: 1,
       username: "Fubuki",
       email: "Fubuki@gmail.com",
+      ranking: 1,
+      image: "/guest.png",
     },
   },
   {
@@ -39,20 +43,20 @@ const quizData = [
       {
         id: 1,
         question: "What is the capital of Japan?",
-        options: ["Tokyo", "Beijing", "Seoul", "Bangkok"],
-        answer: "Tokyo",
+        answers: ["Tokyo", "Beijing", "Seoul", "Bangkok"],
+        correctAnswer: "Tokyo",
       },
       {
         id: 2,
         question: "What is the capital of China?",
-        options: ["Tokyo", "Beijing", "Seoul", "Bangkok"],
-        answer: "Beijing",
+        answers: ["Tokyo", "Beijing", "Seoul", "Bangkok"],
+        correctAnswer: "Beijing",
       },
       {
         id: 3,
         question: "What is the capital of South Korea?",
-        options: ["Tokyo", "Beijing", "Seoul", "Bangkok"],
-        answer: "Seoul",
+        answers: ["Tokyo", "Beijing", "Seoul", "Bangkok"],
+        correctAnswer: "Seoul",
       },
     ],
     image:
@@ -61,6 +65,8 @@ const quizData = [
       id: 1,
       username: "Fubuki",
       email: "Fubuki@gmail.com",
+      ranking: 1,
+      image: "/guest.png",
     },
   },
   {
@@ -71,20 +77,20 @@ const quizData = [
       {
         id: 1,
         question: "What is the capital of Nigeria?",
-        options: ["Lagos", "Cairo", "Nairobi", "Abuja"],
-        answer: "Abuja",
+        answers: ["Lagos", "Cairo", "Nairobi", "Abuja"],
+        correctAnswer: "Abuja",
       },
       {
         id: 2,
         question: "What is the capital of Egypt?",
-        options: ["Lagos", "Cairo", "Nairobi", "Abuja"],
-        answer: "Cairo",
+        answers: ["Lagos", "Cairo", "Nairobi", "Abuja"],
+        correctAnswer: "Cairo",
       },
       {
         id: 3,
         question: "What is the capital of Kenya?",
-        options: ["Lagos", "Cairo", "Nairobi", "Abuja"],
-        answer: "Nairobi",
+        answers: ["Lagos", "Cairo", "Nairobi", "Abuja"],
+        correctAnswer: "Nairobi",
       },
     ],
     image:
@@ -93,6 +99,8 @@ const quizData = [
       id: 1,
       username: "Fubuki",
       email: "Fubuki@gmail.com",
+      ranking: 1,
+      image: "/guest.png",
     },
   },
   {
@@ -103,20 +111,20 @@ const quizData = [
       {
         id: 1,
         question: "What is the capital of Canada?",
-        options: ["Toronto", "Ottawa", "Vancouver", "Montreal"],
-        answer: "Ottawa",
+        answers: ["Toronto", "Ottawa", "Vancouver", "Montreal"],
+        correctAnswer: "Ottawa",
       },
       {
         id: 2,
         question: "What is the capital of Mexico?",
-        options: ["Toronto", "Ottawa", "Vancouver", "Mexico City"],
-        answer: "Mexico City",
+        answers: ["Toronto", "Ottawa", "Vancouver", "Mexico City"],
+        correctAnswer: "Mexico City",
       },
       {
         id: 3,
         question: "What is the capital of the United States?",
-        options: ["Toronto", "Ottawa", "Washington D.C.", "Montreal"],
-        answer: "Washington D.C.",
+        answers: ["Toronto", "Ottawa", "Washington D.C.", "Montreal"],
+        correctAnswer: "Washington D.C.",
       },
     ],
     image:
@@ -125,6 +133,8 @@ const quizData = [
       id: 1,
       username: "Trump wishes",
       email: "Trump@gmail.com",
+      ranking: 1,
+      image: "/guest.png",
     },
   },
   {
@@ -135,20 +145,20 @@ const quizData = [
       {
         id: 1,
         question: "What is the capital of Brazil?",
-        options: ["Buenos Aires", "Santiago", "Lima", "Brasília"],
-        answer: "Brasília",
+        answers: ["Buenos Aires", "Santiago", "Lima", "Brasília"],
+        correctAnswer: "Brasília",
       },
       {
         id: 2,
         question: "What is the capital of Argentina?",
-        options: ["Buenos Aires", "Santiago", "Lima", "Brasília"],
-        answer: "Buenos Aires",
+        answers: ["Buenos Aires", "Santiago", "Lima", "Brasília"],
+        correctAnswer: "Buenos Aires",
       },
       {
         id: 3,
         question: "What is the capital of Chile?",
-        options: ["Buenos Aires", "Santiago", "Lima", "Brasília"],
-        answer: "Santiago",
+        answers: ["Buenos Aires", "Santiago", "Lima", "Brasília"],
+        correctAnswer: "Santiago",
       },
     ],
     image:
@@ -157,6 +167,8 @@ const quizData = [
       id: 1,
       username: "Fubuki",
       email: "Fubuki@gmail.com",
+      ranking: 1,
+      image: "/guest.png",
     },
   },
   {
@@ -170,6 +182,8 @@ const quizData = [
       id: 1,
       username: "Fubuki",
       email: "Fubuki@gmail.com",
+      ranking: 1,
+      image: "/guest.png",
     },
   },
   {
@@ -183,6 +197,8 @@ const quizData = [
       id: 1,
       username: "Fubuki",
       email: "no body",
+      ranking: 1,
+      image: "/guest.png",
     },
   },
   {
@@ -196,6 +212,8 @@ const quizData = [
       id: 1,
       username: "Fubuki",
       email: "no body",
+      ranking: 1,
+      image: "/guest.png",
     },
   },
   {
@@ -209,6 +227,8 @@ const quizData = [
       id: 1,
       username: "Austin",
       email: "no body",
+      ranking: 1,
+      image: "/guest.png",
     },
   },
   {
@@ -222,6 +242,8 @@ const quizData = [
       id: 1,
       username: "Austin's mom",
       email: "no body",
+      ranking: 1,
+      image: "/guest.png",
     },
   },
   {
@@ -235,6 +257,8 @@ const quizData = [
       id: 1,
       username: "Austin's mom",
       email: "no body",
+      ranking: 1,
+      image: "/guest.png",
     },
   },
   {
@@ -248,6 +272,8 @@ const quizData = [
       id: 1,
       username: "Austin's mom",
       email: "no body",
+      ranking: 1,
+      image: "/guest.png",
     },
   },
 ];
