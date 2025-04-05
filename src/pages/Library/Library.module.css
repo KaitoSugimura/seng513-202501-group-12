@@ -1,0 +1,17 @@
+.libraryRoot {
+  width: 100%;
+  padding: 40px 40px 20px 40px;
+}
+
+.subtitle {
+  color: rgb(165, 165, 165);
+  margin-bottom: 20px;
+}
+
+.quizGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  width: 100%;
+  gap: 15px;
+  margin-top: 20px;
+}

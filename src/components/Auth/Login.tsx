@@ -1,9 +1,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { signInWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { auth } from "../../util/firebase";
+import { useAuth } from "../../context/AuthContext";
 import Button from "../Button";
 import styles from "./AuthCard.module.css";
 
@@ -16,6 +15,7 @@ type AuthFormData = z.infer<typeof loginSchema>;
 
 const Login = () => {
   const [error, setError] = useState("");
+  const { login } = useAuth();
 
   const {
     register,
@@ -29,7 +29,7 @@ const Login = () => {
     setError("");
 
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      await login(email, password);
     } catch (error: any) {
       setError(error.message);
     }

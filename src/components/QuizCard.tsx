@@ -1,30 +1,24 @@
-import React from "react";
+import { Quiz } from "../util/appwrite";
 import styles from "./QuizCard.module.css";
-import { useNavigate } from "react-router-dom";
-import Quiz from "../Objects/Quiz";
+import { Link } from "react-router-dom";
 
-export default function QuizCard({ key, quiz }: { key: string; quiz: Quiz }) {
-  const navigate = useNavigate();
-
+export default function QuizCard({ quiz }: { quiz: Quiz }) {
   return (
-    <div
-      key={key}
+    <Link
+      key={quiz.id}
       className={styles.quizContainer}
-      onClick={() => {
-        navigate(`/Quiz/${quiz.id}`);
-      }}
+      to={`/quiz/${quiz.$id}`}
     >
       <div className={styles.quizImageContainer}>
         <img
-          src={quiz.image}
-          alt={`Image for ${quiz.name}`}
+          src={quiz.previewUrl}
+          alt={`Image for ${quiz.title}`}
           className={styles.quizImage}
         />
       </div>
-      {/* <img src={quiz.creator.image} alt="" className={styles.creatorImage} /> */}
-      <h4 className={styles.quizGenre}>{quiz.genre}</h4>
-      <h3 className={styles.quizTitle}>{quiz.name}</h3>
-      <p className={styles.quizCreatorText}>By {quiz.creator.username}</p>
-    </div>
+      <h4 className={styles.quizGenre}>{quiz.theme}</h4>
+      <h3 className={styles.quizTitle}>{quiz.title}</h3>
+      <p className={styles.quizCreatorText}>By {quiz.creatorUsername}</p>
+    </Link>
   );
 }

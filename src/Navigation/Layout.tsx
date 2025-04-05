@@ -21,7 +21,6 @@ export default function Layout() {
     if (top < 0) return _setCurrentHover(undefined);
     currentHoverIndex++;
     _setCurrentHover((prev) => {
-      console.log(prev);
       if (prev) {
         console.log(currentHoverIndex);
         const i = currentHoverIndex;
@@ -200,8 +199,8 @@ export default function Layout() {
             />
             <div className={styles.userContainerRight}>
               {/* <p>Rank: {usersData[0].ranking}</p> */}
-              <h3>{user ? user.displayName : "Guest"}</h3>
-              <p>{user ? user.email : ""}</p>
+              <h3>{user ? user.username : "Guest"}</h3>
+              <p>{user ? user.points : ""}</p>
             </div>
           </div>
           <div>

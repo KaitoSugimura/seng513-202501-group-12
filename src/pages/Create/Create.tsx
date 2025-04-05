@@ -1,9 +1,18 @@
-import { useState, useRef, useEffect } from "react";
-import styles from "./Create.module.css";
-import { Plus, Trash2, ArrowRight, ArrowLeft, Check } from "lucide-react";
+import { ID } from "appwrite";
 import clsx from "clsx";
+import { ArrowLeft, ArrowRight, Check, Plus, Trash2 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ImageUpload from "../../components/ImageUpload";
+import { useAuth } from "../../context/AuthContext";
+import {
+  categories,
+  databases,
+  dbId,
+  getImgUrl as getFileUrl,
+  storage,
+} from "../../util/appwrite";
+import styles from "./Create.module.css";
 
 export type Question = {
   imageFile: File | null;
@@ -12,6 +21,7 @@ export type Question = {
 };
 
 export default function Create() {
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   const [quizName, setQuizName] = useState("");
@@ -47,7 +57,7 @@ export default function Create() {
       previewImage.current = inputImage;
       return;
     }
-    let questionToAdd: Question = {
+    const questionToAdd: Question = {
       imageFile: inputImage,
       answers: answers,
       correctAnswer: correctAnswer,
@@ -56,7 +66,7 @@ export default function Create() {
       "saving the question" + questionToAdd + " at index " + currentIndex
     );
     setQuestions((prevQuestions) => {
-      let newQuestions = [...prevQuestions];
+      const newQuestions = [...prevQuestions];
       newQuestions[currentIndex] = questionToAdd;
       return newQuestions;
     });
@@ -69,7 +79,7 @@ export default function Create() {
       previewImage.current = inputImage;
       setCurrentIndex(questions.length);
     } else {
-      let questionToAdd: Question = {
+      const questionToAdd: Question = {
         imageFile: inputImage,
         answers: answers,
         correctAnswer: correctAnswer,
@@ -78,7 +88,7 @@ export default function Create() {
         "saving the question" + questionToAdd + " at index " + currentIndex
       );
       setQuestions((prevQuestions) => {
-        let newQuestions = [...prevQuestions];
+        const newQuestions = [...prevQuestions];
         newQuestions[currentIndex] = questionToAdd;
         setCurrentIndex(newQuestions.length);
         return newQuestions;
@@ -161,15 +171,60 @@ export default function Create() {
 
   const setAnswer = (index: number, answer: string) => {
     setAnswers((prevAnswers) => {
-      let newAnswers = [...prevAnswers];
+      const newAnswers = [...prevAnswers];
       newAnswers[index] = answer;
       return newAnswers;
     });
   };
 
-  const createQuiz = () => {
-    navigate("/Home");
-    //TODO push the created quiz to the DB and add errors if questions do not have all data
+  const createQuiz = async () => {
+    if (!previewImage.current) {
+      throw new Error("Preview image is not set");
+    }
+
+    if (questions.some((question) => question.imageFile === null)) {
+      throw new Error("Some questions do not have an image");
+    }
+
+    // Upload preview image
+    const previewImageFile = await storage.createFile(
+      "images",
+      ID.unique(),
+      previewImage.current
+    );
+
+    console.log(user);
+
+    // Create quiz
+    const quiz = await databases.createDocument(dbId, "quizzes", ID.unique(), {
+      title: quizName,
+      theme: quizTheme,
+      type: quizType,
+      previewUrl: getFileUrl(previewImageFile.$id),
+      creatorId: user?.$id,
+      creatorUsername: user?.username,
+    });
+    console.log("yo");
+
+    // Create questions
+    await Promise.all(
+      questions.map(async (question) => {
+        const uploadedFile = await storage.createFile(
+          "images",
+          ID.unique(),
+          question.imageFile!
+        );
+
+        await databases.createDocument(dbId, "questions", ID.unique(), {
+          imageUrl: getFileUrl(uploadedFile.$id),
+          options: question.answers,
+          answerIndex: question.correctAnswer,
+          quizId: quiz.$id,
+        });
+      })
+    );
+
+    navigate("/library");
   };
 
   return (
@@ -230,9 +285,11 @@ export default function Create() {
           value={quizTheme}
           onChange={(e) => setQuizTheme(e.target.value)}
         >
-          <option value="">Quiz Theme</option>
-          <option value="blur">Need to add these still</option>
-          <option value="zoom">Animals</option>
+          {categories.map((category) => (
+            <option key={category} value={category}>
+              {category}
+            </option>
+          ))}
         </select>
         <select
           id="quizType"
