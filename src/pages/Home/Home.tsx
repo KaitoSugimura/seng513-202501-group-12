@@ -1,16 +1,12 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import SearchBar from "../../components/SearchBar";
 import quizData from "../../database/stubQuiz";
 import genreData from "../../database/stubGenre";
 import styles from "./Home.module.css";
-import SearchBar from "../../components/SearchBar";
-import { useState } from "react";
 import QuizCard from "../../components/QuizCard";
 import GenreCard from "../../components/GenreCard";
 
 export default function Home() {
-  const navigate = useNavigate();
   const [searchValue, setSearchValue] = useState("");
   const [filteredData, setFilteredData] = useState(quizData);
 
@@ -34,7 +30,7 @@ export default function Home() {
       </div>
       <div className={styles.quizGrid}>
         {filteredData.map((quiz) => (
-          <QuizCard key={`${quiz.id}`} quiz={quiz} />
+          <QuizCard key={`${quiz.$id}`} quiz={quiz} />
         ))}
       </div>
       <div className={styles.genreSection}>
