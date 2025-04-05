@@ -9,7 +9,7 @@ import Create from "./pages/Create/Create";
 import Home from "./pages/Home/Home";
 import Library from "./pages/Library/Library";
 import NoPage from "./pages/NoPage/NoPage";
-import Quiz from "./pages/Quiz/Quiz";
+import QuizPage from "./pages/QuizPage/QuizPage";
 import Search from "./pages/Search/Search";
 import "./Reset.css";
 
@@ -22,9 +22,6 @@ function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/Quiz" element={<Quiz />}>
-            <Route path=":quizId" element={<Quiz />} />
-          </Route>
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />
             <Route path="home" element={<Home />} />
@@ -33,6 +30,9 @@ function App() {
             <Route path="create" element={<Create />} />
             <Route path="account" element={<Account />} />
             <Route path="contest" element={<Contest />} />
+            <Route path="/Quiz" element={<QuizPage />}>
+              <Route path=":quizId" element={<QuizPage />} />
+            </Route>
             <Route path="*" element={<NoPage />} />
           </Route>
         </Routes>
