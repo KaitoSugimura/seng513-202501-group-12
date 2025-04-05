@@ -1,7 +1,5 @@
 import { Quiz } from "../util/appwrite";
 
-const stubPermissions = ["role:member", "role:guest", "role:admin"] as const;
-
 const quizData: Quiz[] = [
   {
     $id: "1sadf2fdgsfdgfsdg3",
