@@ -5,9 +5,10 @@ import { Plus, Trash2 } from "lucide-react";
 interface ImageUploadProps {
   file: File | null;
   setFile: React.Dispatch<React.SetStateAction<File | null>>;
+  text: string;
 }
 
-export default function ImageUpload({ file, setFile }: ImageUploadProps) {
+export default function ImageUpload({ file, setFile, text }: ImageUploadProps) {
   const [preview, setPreview] = useState<string | null>(null);
 
   useEffect(() => {
@@ -57,7 +58,7 @@ export default function ImageUpload({ file, setFile }: ImageUploadProps) {
             accept="image/*"
             style={{ display: "none" }}
           />
-          <p>Upload or drag and drop media</p>
+          <p>{text}</p>
           <button className={styles.uploadButton}>
             <Plus />
           </button>

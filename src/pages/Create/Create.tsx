@@ -242,17 +242,29 @@ export default function Create() {
   return (
     <div className={styles.container}>
       <div className={styles.questionList}>
-        <ol className={styles.listEntryImage} onClick={navigateToPreview}>
-          <div className={styles.overlay}>
-            <h2></h2>
-          </div>
-          {previewImage.current && (
-            <img src={URL.createObjectURL(previewImage.current)} alt="" />
+        <ol
+          className={clsx(
+            styles.listEntryImage,
+            currentIndex === -1 && styles.selectedListEntry
           )}
+          onClick={navigateToPreview}
+        >
+          <div className={styles.overlay}></div>
+          <img
+            src={
+              previewImage.current
+                ? URL.createObjectURL(previewImage.current)
+                : "/NoImage.png"
+            }
+            alt=""
+          />
         </ol>
         {questions.map((question, index) => (
           <ol
-            className={styles.listEntryImage}
+            className={clsx(
+              styles.listEntryImage,
+              currentIndex === index && styles.selectedListEntry
+            )}
             key={index}
             onClick={(event) => {
               event.stopPropagation();
@@ -332,11 +344,6 @@ export default function Create() {
           <option value="blur">image blur</option>
           <option value="zoom">image zoom</option>
         </select>
-        <h2>
-          {currentIndex > -1
-            ? `Question ${currentIndex + 1} of ${questions.length}`
-            : "Preview Image"}
-        </h2>
 
         <div className={styles.imageContainer}>
           <div className={styles.questionButtonContainer}>
@@ -351,7 +358,15 @@ export default function Create() {
               </button>
             )}
           </div>
-          <ImageUpload file={inputImage} setFile={setInputImage}></ImageUpload>
+          <ImageUpload
+            file={inputImage}
+            setFile={setInputImage}
+            text={
+              currentIndex === -1
+                ? "Upload or drag and drop thumbnail"
+                : "Upload or drag and drop question image"
+            }
+          ></ImageUpload>
           <div className={styles.questionButtonContainer}>
             <button className={styles.questionButtons} onClick={addQuestion}>
               <Plus />

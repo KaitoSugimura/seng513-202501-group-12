@@ -22,6 +22,10 @@
   display: inline-block;
 }
 
+.selectedListEntry{
+  border: solid 1px lightblue;
+}
+
 .listEntryImage:hover {
   transform: scale(1.1);
 }
