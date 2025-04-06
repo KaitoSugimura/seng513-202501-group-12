@@ -5,7 +5,7 @@
 }
 
 .questionList {
-  width: 20%;
+  width: 25%;
   height: 100%;
   padding: 1%;
   overflow: auto;
@@ -20,6 +20,10 @@
   overflow: hidden;
   position: relative;
   display: inline-block;
+}
+
+.selectedListEntry{
+  border: solid 1px lightblue;
 }
 
 .listEntryImage:hover {
@@ -67,11 +71,14 @@
 
 .quizDetails input {
   background-color: rgb(46, 56, 86);
-  border: none;
   border-radius: 5px;
   width: 50%;
   height: 3%;
   padding: 20px;
+}
+
+.quizDetailsInput{
+  border: none;
 }
 
 .quizDetails select {
@@ -158,4 +165,29 @@
 
 .incorrectCheck:hover {
   background-color: rgba(128, 128, 128, 0.8);
+}
+
+.inputContainer{
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+}
+
+.inputContainer input{
+  width: 100%;
+}
+
+.errorLabel{
+  display: flex;
+  color: darkred;
+  justify-content: center;
+  width: 100%;
+  background-color: #eba7a9;
+  border-bottom-right-radius: 5px;
+  border-bottom-left-radius: 5px;
+}
+
+.errorInput{
+  border: solid 1px red;
 }

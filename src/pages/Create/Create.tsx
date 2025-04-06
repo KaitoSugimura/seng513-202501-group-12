@@ -1,6 +1,13 @@
 import { ID } from "appwrite";
 import clsx from "clsx";
-import { ArrowLeft, ArrowRight, Check, Plus, Trash2 } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Check,
+  Plus,
+  Trash2,
+  TriangleAlert,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ImageUpload from "../../components/ImageUpload";
@@ -18,6 +25,8 @@ export type Question = {
   imageFile: File | null;
   answers: string[];
   correctAnswer: number;
+  error: boolean;
+  errorText: string;
 };
 
 export default function Create() {
@@ -25,6 +34,7 @@ export default function Create() {
   const navigate = useNavigate();
 
   const [quizName, setQuizName] = useState("");
+  const [nameError, setNameError] = useState(false);
   const [quizTheme, setQuizTheme] = useState("");
   const [quizType, setQuizType] = useState("");
   const previewImage = useRef<File | null>(null);
@@ -61,6 +71,8 @@ export default function Create() {
       imageFile: inputImage,
       answers: answers,
       correctAnswer: correctAnswer,
+      error: false,
+      errorText: "",
     };
     console.log(
       "saving the question" + questionToAdd + " at index " + currentIndex
@@ -83,6 +95,8 @@ export default function Create() {
         imageFile: inputImage,
         answers: answers,
         correctAnswer: correctAnswer,
+        error: false,
+        errorText: "",
       };
       console.log(
         "saving the question" + questionToAdd + " at index " + currentIndex
@@ -177,7 +191,50 @@ export default function Create() {
     });
   };
 
+  const questionsHaveError = (): boolean => {
+    let hasError = false;
+
+    const updatedQuestions = questions.map((question) => {
+      let error = false;
+      let errorText = "";
+
+      const missingImage = question.imageFile === null;
+      const hasEmptyAnswer = question.answers.some(
+        (answer) => answer.trim() === ""
+      );
+
+      if (missingImage && hasEmptyAnswer) {
+        error = true;
+        errorText = "Missing question info";
+      } else if (missingImage) {
+        error = true;
+        errorText = "Please set image";
+      } else if (hasEmptyAnswer) {
+        error = true;
+        errorText = "Please set all answers";
+      }
+
+      if (error) hasError = true;
+
+      return {
+        ...question,
+        error,
+        errorText,
+      };
+    });
+
+    setQuestions(updatedQuestions);
+    return hasError;
+  };
+
   const createQuiz = async () => {
+    if (quizName === "") {
+      setNameError(true);
+      return;
+    }
+    if (questionsHaveError()) {
+      return;
+    }
     if (!previewImage.current) {
       throw new Error("Preview image is not set");
     }
@@ -230,17 +287,30 @@ export default function Create() {
   return (
     <div className={styles.container}>
       <div className={styles.questionList}>
-        <ol className={styles.listEntryImage} onClick={navigateToPreview}>
-          <div className={styles.overlay}>
-            <h2></h2>
-          </div>
-          {previewImage.current && (
-            <img src={URL.createObjectURL(previewImage.current)} alt="" />
+        <ol
+          className={clsx(
+            styles.listEntryImage,
+            currentIndex === -1 && styles.selectedListEntry
           )}
+          onClick={navigateToPreview}
+        >
+          <div className={styles.overlay}></div>
+          <img
+            src={
+              previewImage.current
+                ? URL.createObjectURL(previewImage.current)
+                : "/NoImage.png"
+            }
+            alt=""
+          />
         </ol>
         {questions.map((question, index) => (
           <ol
-            className={styles.listEntryImage}
+            className={clsx(
+              styles.listEntryImage,
+              currentIndex === index && styles.selectedListEntry,
+              questions[index].error && styles.errorInput
+            )}
             key={index}
             onClick={(event) => {
               event.stopPropagation();
@@ -274,12 +344,32 @@ export default function Create() {
           <h1>Create New Quiz!</h1>
           <button onClick={createQuiz}>Create Quiz!</button>
         </div>
-        <input
-          type="text"
-          placeholder={"Quiz name"}
-          value={quizName}
-          onChange={(e) => setQuizName(e.target.value)}
-        />
+        <div className={styles.inputContainer}>
+          <input
+            type="text"
+            placeholder={"Quiz name"}
+            value={quizName}
+            onChange={(e) => {
+              setQuizName(e.target.value);
+              setNameError(false);
+            }}
+            className={clsx(
+              !nameError ? styles.quizDetailsInput : styles.errorInput
+            )}
+          />
+          <label
+            className={clsx(
+              !nameError ? styles.quizDetailsInput : styles.errorLabel
+            )}
+          >
+            {nameError && (
+              <>
+                <TriangleAlert />
+                &nbsp;Please Enter a Name
+              </>
+            )}
+          </label>
+        </div>
         <select
           id="quizTheme"
           value={quizTheme}
@@ -300,11 +390,6 @@ export default function Create() {
           <option value="blur">image blur</option>
           <option value="zoom">image zoom</option>
         </select>
-        <h2>
-          {currentIndex > -1
-            ? `Question ${currentIndex + 1} of ${questions.length}`
-            : "Preview Image"}
-        </h2>
 
         <div className={styles.imageContainer}>
           <div className={styles.questionButtonContainer}>
@@ -319,7 +404,15 @@ export default function Create() {
               </button>
             )}
           </div>
-          <ImageUpload file={inputImage} setFile={setInputImage}></ImageUpload>
+          <ImageUpload
+            file={inputImage}
+            setFile={setInputImage}
+            text={
+              currentIndex === -1
+                ? "Upload or drag and drop thumbnail"
+                : "Upload or drag and drop question image"
+            }
+          ></ImageUpload>
           <div className={styles.questionButtonContainer}>
             <button className={styles.questionButtons} onClick={addQuestion}>
               <Plus />
