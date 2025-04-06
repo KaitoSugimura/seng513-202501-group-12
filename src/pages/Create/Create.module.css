@@ -24,10 +24,11 @@
 
 .selectedListEntry{
   border: solid 1px lightblue;
+  transform: scale(1.15);
 }
 
 .listEntryImage:hover {
-  transform: scale(1.1);
+  transform: scale(1.15);
 }
 
 .listEntryImage img {

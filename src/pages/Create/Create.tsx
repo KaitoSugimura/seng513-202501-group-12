@@ -25,8 +25,8 @@ export type Question = {
   imageFile: File | null;
   answers: string[];
   correctAnswer: number;
-  error: boolean;
-  errorText: string;
+  imageError: boolean;
+  answerErrors: boolean[];
 };
 
 export default function Create() {
@@ -71,8 +71,8 @@ export default function Create() {
       imageFile: inputImage,
       answers: answers,
       correctAnswer: correctAnswer,
-      error: false,
-      errorText: "",
+      imageError: false,
+      answerErrors: new Array(answers.length).fill(false),
     };
     console.log(
       "saving the question" + questionToAdd + " at index " + currentIndex
@@ -95,8 +95,8 @@ export default function Create() {
         imageFile: inputImage,
         answers: answers,
         correctAnswer: correctAnswer,
-        error: false,
-        errorText: "",
+        imageError: false,
+        answerErrors: new Array(answers.length).fill(false),
       };
       console.log(
         "saving the question" + questionToAdd + " at index " + currentIndex
@@ -195,31 +195,28 @@ export default function Create() {
     let hasError = false;
 
     const updatedQuestions = questions.map((question) => {
-      let error = false;
-      let errorText = "";
+      let imageError = false;
+      let answerErrors = new Array<boolean>(answers.length).fill(false);
 
       const missingImage = question.imageFile === null;
-      const hasEmptyAnswer = question.answers.some(
-        (answer) => answer.trim() === ""
-      );
 
-      if (missingImage && hasEmptyAnswer) {
-        error = true;
-        errorText = "Missing question info";
-      } else if (missingImage) {
-        error = true;
-        errorText = "Please set image";
-      } else if (hasEmptyAnswer) {
-        error = true;
-        errorText = "Please set all answers";
+      if (missingImage) {
+        imageError = true;
       }
 
-      if (error) hasError = true;
+      for (let i = 0; i < question.answers.length; i++) {
+        if (question.answers[i] === "") {
+          answerErrors[i] = true;
+        }
+      }
+      if (answerErrors.some(Boolean)) {
+        hasError = true;
+      }
 
       return {
         ...question,
-        error,
-        errorText,
+        imageError,
+        answerErrors,
       };
     });
 
@@ -228,11 +225,15 @@ export default function Create() {
   };
 
   const createQuiz = async () => {
+    let error = false;
     if (quizName === "") {
       setNameError(true);
-      return;
+      error = true;
     }
     if (questionsHaveError()) {
+      error = true;
+    }
+    if (error) {
       return;
     }
     if (!previewImage.current) {
@@ -309,7 +310,9 @@ export default function Create() {
             className={clsx(
               styles.listEntryImage,
               currentIndex === index && styles.selectedListEntry,
-              questions[index].error && styles.errorInput
+              (questions[index].imageError ||
+                questions[index].answerErrors.some(Boolean)) &&
+                styles.errorInput
             )}
             key={index}
             onClick={(event) => {
@@ -386,9 +389,8 @@ export default function Create() {
           value={quizType}
           onChange={(e) => setQuizType(e.target.value)}
         >
-          <option value="">Quiz type</option>
-          <option value="blur">image blur</option>
-          <option value="zoom">image zoom</option>
+          <option value="blur">Image Blur</option>
+          <option value="zoom">Image Zoom</option>
         </select>
 
         <div className={styles.imageContainer}>
@@ -433,6 +435,10 @@ export default function Create() {
                   placeholder="answer"
                   value={answer}
                   onChange={(e) => setAnswer(index, e.target.value)}
+                  className={clsx(
+                    questions[currentIndex].answerErrors[index] &&
+                      styles.errorInput
+                  )}
                 />
                 <div
                   className={clsx(
