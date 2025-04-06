@@ -68,3 +68,28 @@
   margin-right: 8px;
   object-fit: cover;
 }
+
+.favoriteButton {
+  position: absolute;
+  top: 5px;
+  right: 8px;
+  background: none;
+  background-color: #2b2e42b4;
+  border: none;
+  cursor: pointer;
+  z-index: 10;
+  padding: 4px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.favoriteButton:hover {
+  transform: scale(1.2);
+}
+
+.favoriteButton #favoriteIcon {
+  width: 24px;
+  height: 24px;
+}
