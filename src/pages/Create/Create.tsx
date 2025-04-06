@@ -67,12 +67,13 @@ export default function Create() {
       previewImage.current = inputImage;
       return;
     }
+    questionsHaveError();
     const questionToAdd: Question = {
       imageFile: inputImage,
       answers: answers,
       correctAnswer: correctAnswer,
-      imageError: false,
-      answerErrors: new Array(answers.length).fill(false),
+      imageError: questions[currentIndex].imageError,
+      answerErrors: questions[currentIndex].answerErrors,
     };
     console.log(
       "saving the question" + questionToAdd + " at index " + currentIndex
@@ -91,6 +92,7 @@ export default function Create() {
       previewImage.current = inputImage;
       setCurrentIndex(questions.length);
     } else {
+      questionsHaveError();
       const questionToAdd: Question = {
         imageFile: inputImage,
         answers: answers,
