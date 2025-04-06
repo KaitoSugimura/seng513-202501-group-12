@@ -2,13 +2,21 @@ import AuthCard from "../../components/Auth/AuthCard";
 import Button from "../../components/Button";
 import { useAuth } from "../../context/AuthContext";
 import styles from "./Account.module.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import quizData from "../../database/stubQuiz";
 import QuizCard from "../../components/QuizCard";
 
 export default function Account() {
   const { user, loadingAuth, logout } = useAuth();
   const [filteredData, setFilteredData] = useState(quizData);
+
+  useEffect(() => {
+    if (user) {
+      setFilteredData(
+        quizData.filter((quiz) => quiz.creatorId === (user.id))
+      );
+    }
+  }, [user]);
 
   if (loadingAuth) {
     return (
@@ -36,15 +44,19 @@ export default function Account() {
             </div>
           </div>
           
-          {/* Created quizzes section */}
           <h2>Created Quizzes</h2>
           <div className={styles.quizGrid}>
-            {filteredData.map((quiz) => (
-              <QuizCard key={`${quiz.$id}`} quiz={quiz} />
-            ))}
+            {filteredData.length === 0 ? (
+              <div className={styles.noQuizzes}>
+                Try making your first quiz!
+              </div>
+            ) : (
+              filteredData.map((quiz) => (
+                <QuizCard key={`${quiz.$id}`} quiz={quiz} />
+              ))
+            )}
           </div>
           
-          {/* Welcome message and logout button */}
           <div className={styles.userControls}>
             <Button className={styles.logoutButton} onClick={logout}>
               Sign Out
