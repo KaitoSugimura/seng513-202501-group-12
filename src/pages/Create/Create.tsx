@@ -1,6 +1,13 @@
 import { ID } from "appwrite";
 import clsx from "clsx";
-import { ArrowLeft, ArrowRight, Check, Plus, Trash2 } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Check,
+  Plus,
+  Trash2,
+  TriangleAlert,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ImageUpload from "../../components/ImageUpload";
@@ -25,6 +32,7 @@ export default function Create() {
   const navigate = useNavigate();
 
   const [quizName, setQuizName] = useState("");
+  const [nameError, setNameError] = useState(false);
   const [quizTheme, setQuizTheme] = useState("");
   const [quizType, setQuizType] = useState("");
   const previewImage = useRef<File | null>(null);
@@ -178,6 +186,10 @@ export default function Create() {
   };
 
   const createQuiz = async () => {
+    if (quizName === "") {
+      setNameError(true);
+      return;
+    }
     if (!previewImage.current) {
       throw new Error("Preview image is not set");
     }
@@ -274,12 +286,32 @@ export default function Create() {
           <h1>Create New Quiz!</h1>
           <button onClick={createQuiz}>Create Quiz!</button>
         </div>
-        <input
-          type="text"
-          placeholder={"Quiz name"}
-          value={quizName}
-          onChange={(e) => setQuizName(e.target.value)}
-        />
+        <div className={styles.inputContainer}>
+          <input
+            type="text"
+            placeholder={"Quiz name"}
+            value={quizName}
+            onChange={(e) => {
+              setQuizName(e.target.value);
+              setNameError(false);
+            }}
+            className={clsx(
+              !nameError ? styles.quizDetailsInput : styles.errorInput
+            )}
+          />
+          <label
+            className={clsx(
+              !nameError ? styles.quizDetailsInput : styles.errorLabel
+            )}
+          >
+            {nameError && (
+              <>
+                <TriangleAlert />
+                &nbsp;Please Enter a Name
+              </>
+            )}
+          </label>
+        </div>
         <select
           id="quizTheme"
           value={quizTheme}
