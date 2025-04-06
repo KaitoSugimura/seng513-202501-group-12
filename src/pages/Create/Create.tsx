@@ -228,11 +228,15 @@ export default function Create() {
   };
 
   const createQuiz = async () => {
+    let error = false;
     if (quizName === "") {
       setNameError(true);
-      return;
+      error = true;
     }
     if (questionsHaveError()) {
+      error = true;
+    }
+    if (error) {
       return;
     }
     if (!previewImage.current) {
@@ -386,9 +390,8 @@ export default function Create() {
           value={quizType}
           onChange={(e) => setQuizType(e.target.value)}
         >
-          <option value="">Quiz type</option>
-          <option value="blur">image blur</option>
-          <option value="zoom">image zoom</option>
+          <option value="blur">Image Blur</option>
+          <option value="zoom">Image Zoom</option>
         </select>
 
         <div className={styles.imageContainer}>
