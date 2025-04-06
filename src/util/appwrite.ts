@@ -44,6 +44,7 @@ export type QuizType = "blur" | "zoom";
 export interface User extends Models.Document {
   username: string;
   points: number;
+  favoritedQuizzes: Quiz[];
 }
 
 export interface Quiz extends Models.Document {

@@ -2,18 +2,19 @@ import { Quiz } from "../util/appwrite";
 import styles from "./QuizCard.module.css";
 import { Link } from "react-router-dom";
 import { Star } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 
 export default function QuizCard({ quiz }: { quiz: Quiz }) {
-  const { user } = useAuth();
-  const [isFavorited, setIsFavorited] = useState(false);
+  const { user, toggleFavoriteQuiz } = useAuth();
+  const [isQuizFavorited, setIsQuizFavorited] = useState(false);
 
-  const toggleFavorite = (e: React.MouseEvent) => {
-    e.preventDefault();
-    setIsFavorited(!isFavorited);
-    //Make this actually update list of users favorited quizzes
-  };
+  useEffect(() => {
+    if (!user) {
+      return;
+    }
+    setIsQuizFavorited(user.favoritedQuizzes.some((q) => q.$id === quiz.$id));
+  }, [user]);
 
   return (
     <Link
@@ -28,10 +29,16 @@ export default function QuizCard({ quiz }: { quiz: Quiz }) {
           className={styles.quizImage}
         />
         {user && (
-          <button className={styles.favoriteButton} onClick={toggleFavorite}>
+          <button
+            className={styles.favoriteButton}
+            onClick={(e) => {
+              e.preventDefault();
+              toggleFavoriteQuiz(quiz);
+            }}
+          >
             <Star
               id="favoriteIcon"
-              fill={isFavorited ? "gold" : "white"}
+              fill={isQuizFavorited ? "gold" : "white"}
               stroke="black"
             />
           </button>

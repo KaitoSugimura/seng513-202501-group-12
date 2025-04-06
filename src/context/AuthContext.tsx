@@ -8,7 +8,7 @@ import {
   useEffect,
   useState,
 } from "react";
-import { account, databases, dbId, User } from "../util/appwrite";
+import { account, databases, dbId, User, Quiz } from "../util/appwrite";
 
 interface AuthContextType {
   user: User | null;
@@ -21,6 +21,7 @@ interface AuthContextType {
   ) => Promise<void>;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  toggleFavoriteQuiz: (quiz: Quiz) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -86,9 +87,53 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser(null);
   };
 
+  let updateQueue = Promise.resolve();
+  const toggleFavoriteQuiz = (quiz: Quiz) => {
+    updateQueue = updateQueue.then(async () => {
+      try {
+        if (!user) {
+          return;
+        }
+        // get the latest data from the db, in case toggleFavoriteQuiz is called too fast before
+        // the user usestate hook is updated
+        const latestUser = await databases.getDocument(dbId, "users", user.$id);
+        const isQuizFavorited = latestUser.favoritedQuizzes.some(
+          (q: { $id: string }) => q.$id === quiz.$id
+        );
+
+        const updatedFavorites = isQuizFavorited
+          ? latestUser.favoritedQuizzes.filter(
+              (q: { $id: string }) => q.$id !== quiz.$id
+            )
+          : [...latestUser.favoritedQuizzes, quiz];
+
+        const updatedUserData: User = await databases.updateDocument(
+          dbId,
+          "users",
+          user.$id,
+          {
+            favoritedQuizzes: updatedFavorites,
+          }
+        );
+        setUser(updatedUserData);
+      } catch (err) {
+        console.error("Failed to update favorite quiz: ", err);
+      }
+    });
+    return updateQueue;
+  };
+
   return (
     <AuthContext.Provider
-      value={{ user, setUser, loadingAuth, register, login, logout }}
+      value={{
+        user,
+        setUser,
+        loadingAuth,
+        register,
+        login,
+        logout,
+        toggleFavoriteQuiz,
+      }}
     >
       {children}
     </AuthContext.Provider>
