@@ -458,17 +458,24 @@ export default function Create() {
                 </div>
                 <label
                   className={clsx(
-                    !questions[currentIndex].answerErrors[index]
-                      ? styles.quizDetailsInput
-                      : styles.errorLabel
+                    styles.quizDetailsInput,
+                    questions[currentIndex].answerErrors[index] &&
+                      styles.errorLabel
                   )}
                 >
-                  {questions[currentIndex].answerErrors[index] && (
-                    <>
-                      <TriangleAlert />
-                      &nbsp;Please Enter an Answer
-                    </>
-                  )}
+                  <span
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.3rem",
+                      visibility: questions[currentIndex].answerErrors[index]
+                        ? "visible"
+                        : "hidden",
+                    }}
+                  >
+                    <TriangleAlert />
+                    Enter an Answer
+                  </span>
                 </label>
               </div>
             ))}
