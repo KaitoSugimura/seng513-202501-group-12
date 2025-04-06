@@ -25,6 +25,8 @@ export type Question = {
   imageFile: File | null;
   answers: string[];
   correctAnswer: number;
+  error: boolean;
+  errorText: string;
 };
 
 export default function Create() {
@@ -69,6 +71,8 @@ export default function Create() {
       imageFile: inputImage,
       answers: answers,
       correctAnswer: correctAnswer,
+      error: false,
+      errorText: "",
     };
     console.log(
       "saving the question" + questionToAdd + " at index " + currentIndex
@@ -91,6 +95,8 @@ export default function Create() {
         imageFile: inputImage,
         answers: answers,
         correctAnswer: correctAnswer,
+        error: false,
+        errorText: "",
       };
       console.log(
         "saving the question" + questionToAdd + " at index " + currentIndex
@@ -185,9 +191,48 @@ export default function Create() {
     });
   };
 
+  const questionsHaveError = (): boolean => {
+    let hasError = false;
+
+    const updatedQuestions = questions.map((question) => {
+      let error = false;
+      let errorText = "";
+
+      const missingImage = question.imageFile === null;
+      const hasEmptyAnswer = question.answers.some(
+        (answer) => answer.trim() === ""
+      );
+
+      if (missingImage && hasEmptyAnswer) {
+        error = true;
+        errorText = "Missing question info";
+      } else if (missingImage) {
+        error = true;
+        errorText = "Please set image";
+      } else if (hasEmptyAnswer) {
+        error = true;
+        errorText = "Please set all answers";
+      }
+
+      if (error) hasError = true;
+
+      return {
+        ...question,
+        error,
+        errorText,
+      };
+    });
+
+    setQuestions(updatedQuestions);
+    return hasError;
+  };
+
   const createQuiz = async () => {
     if (quizName === "") {
       setNameError(true);
+      return;
+    }
+    if (questionsHaveError()) {
       return;
     }
     if (!previewImage.current) {
@@ -263,7 +308,8 @@ export default function Create() {
           <ol
             className={clsx(
               styles.listEntryImage,
-              currentIndex === index && styles.selectedListEntry
+              currentIndex === index && styles.selectedListEntry,
+              questions[index].error && styles.errorInput
             )}
             key={index}
             onClick={(event) => {
