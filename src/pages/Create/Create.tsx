@@ -1,6 +1,13 @@
 import { ID } from "appwrite";
 import clsx from "clsx";
-import { ArrowLeft, ArrowRight, Check, Plus, Trash2 } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Check,
+  Plus,
+  Trash2,
+  TriangleAlert,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ImageUpload from "../../components/ImageUpload";
@@ -18,6 +25,8 @@ export type Question = {
   imageFile: File | null;
   answers: string[];
   correctAnswer: number;
+  imageError: boolean;
+  answerErrors: boolean[];
 };
 
 export default function Create() {
@@ -25,6 +34,7 @@ export default function Create() {
   const navigate = useNavigate();
 
   const [quizName, setQuizName] = useState("");
+  const [nameError, setNameError] = useState(false);
   const [quizTheme, setQuizTheme] = useState("");
   const [quizType, setQuizType] = useState("");
   const previewImage = useRef<File | null>(null);
@@ -57,10 +67,13 @@ export default function Create() {
       previewImage.current = inputImage;
       return;
     }
+    questionsHaveError();
     const questionToAdd: Question = {
       imageFile: inputImage,
       answers: answers,
       correctAnswer: correctAnswer,
+      imageError: questions[currentIndex].imageError,
+      answerErrors: questions[currentIndex].answerErrors,
     };
     console.log(
       "saving the question" + questionToAdd + " at index " + currentIndex
@@ -79,10 +92,13 @@ export default function Create() {
       previewImage.current = inputImage;
       setCurrentIndex(questions.length);
     } else {
+      questionsHaveError();
       const questionToAdd: Question = {
         imageFile: inputImage,
         answers: answers,
         correctAnswer: correctAnswer,
+        imageError: false,
+        answerErrors: new Array(answers.length).fill(false),
       };
       console.log(
         "saving the question" + questionToAdd + " at index " + currentIndex
@@ -177,7 +193,51 @@ export default function Create() {
     });
   };
 
+  const questionsHaveError = (): boolean => {
+    let hasError = false;
+
+    const updatedQuestions = questions.map((question) => {
+      let imageError = false;
+      let answerErrors = new Array<boolean>(answers.length).fill(false);
+
+      const missingImage = question.imageFile === null;
+
+      if (missingImage) {
+        imageError = true;
+      }
+
+      for (let i = 0; i < question.answers.length; i++) {
+        if (question.answers[i] === "") {
+          answerErrors[i] = true;
+        }
+      }
+      if (answerErrors.some(Boolean)) {
+        hasError = true;
+      }
+
+      return {
+        ...question,
+        imageError,
+        answerErrors,
+      };
+    });
+
+    setQuestions(updatedQuestions);
+    return hasError;
+  };
+
   const createQuiz = async () => {
+    let error = false;
+    if (quizName === "") {
+      setNameError(true);
+      error = true;
+    }
+    if (questionsHaveError()) {
+      error = true;
+    }
+    if (error) {
+      return;
+    }
     if (!previewImage.current) {
       throw new Error("Preview image is not set");
     }
@@ -230,17 +290,32 @@ export default function Create() {
   return (
     <div className={styles.container}>
       <div className={styles.questionList}>
-        <ol className={styles.listEntryImage} onClick={navigateToPreview}>
-          <div className={styles.overlay}>
-            <h2></h2>
-          </div>
-          {previewImage.current && (
-            <img src={URL.createObjectURL(previewImage.current)} alt="" />
+        <ol
+          className={clsx(
+            styles.listEntryImage,
+            currentIndex === -1 && styles.selectedListEntry
           )}
+          onClick={navigateToPreview}
+        >
+          <div className={styles.overlay}></div>
+          <img
+            src={
+              previewImage.current
+                ? URL.createObjectURL(previewImage.current)
+                : "/NoImage.png"
+            }
+            alt=""
+          />
         </ol>
         {questions.map((question, index) => (
           <ol
-            className={styles.listEntryImage}
+            className={clsx(
+              styles.listEntryImage,
+              currentIndex === index && styles.selectedListEntry,
+              (questions[index].imageError ||
+                questions[index].answerErrors.some(Boolean)) &&
+                styles.errorInput
+            )}
             key={index}
             onClick={(event) => {
               event.stopPropagation();
@@ -274,12 +349,32 @@ export default function Create() {
           <h1>Create New Quiz!</h1>
           <button onClick={createQuiz}>Create Quiz!</button>
         </div>
-        <input
-          type="text"
-          placeholder={"Quiz name"}
-          value={quizName}
-          onChange={(e) => setQuizName(e.target.value)}
-        />
+        <div className={styles.inputContainer}>
+          <input
+            type="text"
+            placeholder={"Quiz name"}
+            value={quizName}
+            onChange={(e) => {
+              setQuizName(e.target.value);
+              setNameError(false);
+            }}
+            className={clsx(
+              !nameError ? styles.quizDetailsInput : styles.errorInput
+            )}
+          />
+          <label
+            className={clsx(
+              !nameError ? styles.quizDetailsInput : styles.errorLabel
+            )}
+          >
+            {nameError && (
+              <>
+                <TriangleAlert />
+                &nbsp;Please Enter a Name
+              </>
+            )}
+          </label>
+        </div>
         <select
           id="quizTheme"
           value={quizTheme}
@@ -296,15 +391,9 @@ export default function Create() {
           value={quizType}
           onChange={(e) => setQuizType(e.target.value)}
         >
-          <option value="">Quiz type</option>
-          <option value="blur">image blur</option>
-          <option value="zoom">image zoom</option>
+          <option value="blur">Image Blur</option>
+          <option value="zoom">Image Zoom</option>
         </select>
-        <h2>
-          {currentIndex > -1
-            ? `Question ${currentIndex + 1} of ${questions.length}`
-            : "Preview Image"}
-        </h2>
 
         <div className={styles.imageContainer}>
           <div className={styles.questionButtonContainer}>
@@ -319,7 +408,16 @@ export default function Create() {
               </button>
             )}
           </div>
-          <ImageUpload file={inputImage} setFile={setInputImage}></ImageUpload>
+          <ImageUpload
+            file={inputImage}
+            setFile={setInputImage}
+            text={
+              currentIndex === -1
+                ? "Upload or drag and drop thumbnail"
+                : "Upload or drag and drop question image"
+            }
+          ></ImageUpload>
+
           <div className={styles.questionButtonContainer}>
             <button className={styles.questionButtons} onClick={addQuestion}>
               <Plus />
@@ -334,24 +432,51 @@ export default function Create() {
         {currentIndex >= 0 && (
           <div className={styles.answersContainer}>
             {answers.map((answer, index) => (
-              <div key={index} className={styles.inputWrapper}>
-                <input
-                  type="text"
-                  placeholder="answer"
-                  value={answer}
-                  onChange={(e) => setAnswer(index, e.target.value)}
-                />
-                <div
-                  className={clsx(
-                    styles.check,
-                    index === correctAnswer
-                      ? styles.correctCheck
-                      : styles.incorrectCheck
-                  )}
-                  onClick={() => setCorrectAnswer(index)}
-                >
-                  <Check />
+              <div>
+                <div key={index} className={styles.inputWrapper}>
+                  <input
+                    type="text"
+                    placeholder="answer"
+                    value={answer}
+                    onChange={(e) => setAnswer(index, e.target.value)}
+                    className={clsx(
+                      questions[currentIndex].answerErrors[index] &&
+                        styles.errorInput
+                    )}
+                  />
+                  <div
+                    className={clsx(
+                      styles.check,
+                      index === correctAnswer
+                        ? styles.correctCheck
+                        : styles.incorrectCheck
+                    )}
+                    onClick={() => setCorrectAnswer(index)}
+                  >
+                    <Check />
+                  </div>
                 </div>
+                <label
+                  className={clsx(
+                    styles.quizDetailsInput,
+                    questions[currentIndex].answerErrors[index] &&
+                      styles.errorLabel
+                  )}
+                >
+                  <span
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.3rem",
+                      visibility: questions[currentIndex].answerErrors[index]
+                        ? "visible"
+                        : "hidden",
+                    }}
+                  >
+                    <TriangleAlert />
+                    Enter an Answer
+                  </span>
+                </label>
               </div>
             ))}
           </div>

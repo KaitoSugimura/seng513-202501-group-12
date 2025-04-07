@@ -1,43 +1,20 @@
-import { useState } from "react";
-import SearchBar from "../../components/SearchBar";
-import quizData from "../../database/stubQuiz";
-import genreData from "../../database/stubGenre";
 import styles from "./Home.module.css";
-import QuizCard from "../../components/QuizCard";
-import GenreCard from "../../components/GenreCard";
+import CategoryListViewer from "../../components/CategoryListViewer";
+import QuizListViewer from "../../components/QuizListViewer";
+import { Query } from "appwrite";
 
 export default function Home() {
-  const [searchValue, setSearchValue] = useState("");
-  const [filteredData, setFilteredData] = useState(quizData);
-
   return (
     <div className={styles.homeRoot}>
-      <div className={styles.topContainer}>
-        <h1 className={styles.header}>Featured Quizzes</h1>
-        <SearchBar
-          value={searchValue}
-          onChange={(event) => {
-            setSearchValue(event.target.value);
-            setFilteredData(
-              quizData.filter((quiz) =>
-                quiz.name
-                  .toLowerCase()
-                  .includes(event.target.value.toLowerCase())
-              )
-            );
-          }}
-        />
-      </div>
-      <div className={styles.quizGrid}>
-        {filteredData.map((quiz) => (
-          <QuizCard key={`${quiz.$id}`} quiz={quiz} />
-        ))}
-      </div>
-      <div className={styles.genreSection}>
-        {genreData.map((genre) => (
-          <GenreCard key={`${genre.id}`} genre={genre} />
-        ))}
-      </div>
+      <QuizListViewer title="Top Quizzes" />
+      <QuizListViewer title="Newest" />
+      <QuizListViewer
+        title="Recommended for you"
+        query={[Query.contains("title", ["Ri"])]}
+      />
+      <CategoryListViewer />
+      <QuizListViewer title="Trending" />
+      <QuizListViewer title="Most Played" />
     </div>
   );
 }

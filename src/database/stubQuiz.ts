@@ -104,7 +104,7 @@ const quizData: Quiz[] = [
     previewUrl:
       "https://cdn.britannica.com/63/5363-050-90082F00/Africa-political-boundaries-continent.jpg",
     creatorId: "123",
-    creatorUsername: "Fubuki",
+    creatorUsername: "Nick40831",
   },
   {
     $id: "123dsfgsdfg",
@@ -139,7 +139,7 @@ const quizData: Quiz[] = [
     previewUrl:
       "https://c.files.bbci.co.uk/4616/live/d710a6a0-d4b0-11ef-9fd6-0be88a764111.jpg",
     creatorId: "123",
-    creatorUsername: "Fubuki",
+    creatorUsername: "Nick40831",
   },
   {
     $id: "1bdfsbfdsb23",
@@ -174,7 +174,7 @@ const quizData: Quiz[] = [
     previewUrl:
       "https://cdn.britannica.com/86/3886-050-2785B482/South-America-political-continent.jpg",
     creatorId: "123",
-    creatorUsername: "Fubuki",
+    creatorUsername: "Nick40831",
   },
   {
     $id: "1dfbsfdb23",
@@ -190,7 +190,7 @@ const quizData: Quiz[] = [
     previewUrl:
       "https://miro.medium.com/v2/resize:fit:1400/1*7HTzbeMGCDnDvdV-IrSYZA.jpeg",
     creatorId: "123",
-    creatorUsername: "Fubuki",
+    creatorUsername: "Nick40831",
   },
   {
     $id: "12dfsbsfdb",

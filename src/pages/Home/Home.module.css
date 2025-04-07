@@ -12,12 +12,3 @@
 .header {
   font-size: 28px;
 }
-
-.quizGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  width: 100%;
-  gap: 8px;
-  row-gap: 16px;
-  margin-top: 20px;
-}

@@ -61,3 +61,28 @@ ol {
   padding: 0;
   margin: 0;
 }
+
+.Loading {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.3) 0%,
+    rgba(255, 255, 255, 0.3) 30%,
+    rgba(255, 255, 255, 0.5) 50%,
+    rgba(255, 255, 255, 0.3) 70%,
+    rgba(255, 255, 255, 0.3) 100%
+  );
+
+  background-size: 400%;
+  background-position: 100%;
+  background-repeat: no-repeat;
+  animation: loading 2s ease infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 100%;
+  }
+  100% {
+    background-position: 0%;
+  }
+}
