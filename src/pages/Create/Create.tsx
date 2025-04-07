@@ -20,6 +20,8 @@ import {
   storage,
 } from "../../util/appwrite";
 import styles from "./Create.module.css";
+import InputField from "../../components/InputField";
+import SelectField from "../../components/SelectField";
 
 export type Question = {
   imageFile: File | null;
@@ -35,8 +37,8 @@ export default function Create() {
 
   const [quizName, setQuizName] = useState("");
   const [nameError, setNameError] = useState(false);
-  const [quizTheme, setQuizTheme] = useState("");
-  const [quizType, setQuizType] = useState("");
+  const [quizTheme, setQuizTheme] = useState("Any");
+  const [quizType, setQuizType] = useState("blur");
   const previewImage = useRef<File | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
 
@@ -349,51 +351,35 @@ export default function Create() {
           <h1>Create New Quiz!</h1>
           <button onClick={createQuiz}>Create Quiz!</button>
         </div>
-        <div className={styles.inputContainer}>
-          <input
-            type="text"
-            placeholder={"Quiz name"}
-            value={quizName}
-            onChange={(e) => {
-              setQuizName(e.target.value);
-              setNameError(false);
-            }}
-            className={clsx(
-              !nameError ? styles.quizDetailsInput : styles.errorInput
-            )}
-          />
-          <label
-            className={clsx(
-              !nameError ? styles.quizDetailsInput : styles.errorLabel
-            )}
-          >
-            {nameError && (
-              <>
-                <TriangleAlert />
-                &nbsp;Please Enter a Name
-              </>
-            )}
-          </label>
-        </div>
-        <select
+
+        <InputField
+          type="text"
+          label="Quiz Name"
+          placeholder={"Quiz name"}
+          value={quizName}
+          onChange={(e) => {
+            setQuizName(e.target.value);
+            setNameError(false);
+          }}
+          error={nameError ? "Please Enter a Name" : ""}
+          className={styles.inputField}
+        />
+        <SelectField
           id="quizTheme"
+          label="Quiz Theme"
           value={quizTheme}
           onChange={(e) => setQuizTheme(e.target.value)}
-        >
-          {categories.map((category) => (
-            <option key={category} value={category}>
-              {category}
-            </option>
-          ))}
-        </select>
-        <select
+          categories={categories}
+          className={styles.selectField}
+        />
+        <SelectField
           id="quizType"
+          label="Quiz Type"
           value={quizType}
           onChange={(e) => setQuizType(e.target.value)}
-        >
-          <option value="blur">Image Blur</option>
-          <option value="zoom">Image Zoom</option>
-        </select>
+          categories={["blur", "zoom"]}
+          className={styles.selectField}
+        />
 
         <div className={styles.imageContainer}>
           <div className={styles.questionButtonContainer}>
