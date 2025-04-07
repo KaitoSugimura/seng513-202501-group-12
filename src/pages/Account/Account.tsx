@@ -13,9 +13,8 @@ export default function Account() {
   useEffect(() => {
     if (user) {
       setFilteredData(
-        quizData.filter((quiz) => {console.log(quiz.creatorUsername); return quiz.creatorUsername.includes(user.username)})
+        quizData.filter((quiz) => quiz.creatorUsername.includes(user.username))
       );
-      console.log(user.username)
     }
   }, [user]);
 
@@ -47,20 +46,20 @@ export default function Account() {
             </div>
           </div>
           
-          <div className={styles.quizContainer}>
-            <h2>Created Quizzes</h2>
-            <div className={styles.quizGrid}>
-              {filteredData.length === 0 ? (
-                <div className={styles.noQuizzes}>
-                  Try making your first quiz!
-                </div>
-              ) : (
-                filteredData.map((quiz) => (
-                  <QuizCard key={`${quiz.$id}`} quiz={quiz} />
-                ))
-              )}
-            </div>
+
+          <h2>Created Quizzes</h2>
+          <div className={styles.quizGrid}>
+            {filteredData.length === 0 ? (
+              <div className={styles.noQuizzes}>
+                Try making your first quiz!
+              </div>
+            ) : (
+              filteredData.map((quiz) => (
+                <QuizCard key={`${quiz.$id}`} quiz={quiz} />
+              ))
+            )}
           </div>
+
           
           <div className={styles.userControls}>
             <Button className={styles.logoutButton} onClick={logout}>

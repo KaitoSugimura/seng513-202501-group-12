@@ -47,7 +47,7 @@ export default function QuizCard({ quiz }: { quiz: Quiz }) {
       <h4 className={styles.quizGenre}>{quiz.theme}</h4>
       <h3 className={styles.quizTitle}>{quiz.title}</h3>
       <p className={styles.quizCreatorText}>By {quiz.creatorUsername}</p>
-      {user?.id === quiz.creatorId && (
+      {user?.username === quiz.creatorUsername && (
           <button className={styles.deleteButton}>
             <Trash2
               id="deleteIcon"
