@@ -215,7 +215,14 @@ export default function Layout() {
                   />
                   <div className={styles.userContainerRight}>
                     <p>Rank: {user.ranking}</p>
-                    <h3>{user.name}</h3>
+                    <NavLink
+                      to="/account"
+                      state={`${user?.name}`}
+                      onMouseEnter={() => setCurrentHover(3)}
+                      className={styles.linkStyle}
+                    >
+                      <h3>{user?.name}</h3>
+                    </NavLink>
                   </div>
                 </div>
               ))}

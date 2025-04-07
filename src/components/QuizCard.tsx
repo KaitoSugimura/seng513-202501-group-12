@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { Star, Trash2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
+import { NavLink, Outlet } from "react-router-dom";
 
 export default function QuizCard({ quiz }: { quiz: Quiz }) {
   const { user, toggleFavoriteQuiz } = useAuth();
@@ -60,7 +61,17 @@ export default function QuizCard({ quiz }: { quiz: Quiz }) {
         </div>
         <h4 className={styles.quizGenre}>{quiz.theme}</h4>
         <h3 className={styles.quizTitle}>{quiz.title}</h3>
-        <p className={styles.quizCreatorText}>By {quiz.creatorUsername}</p>
+        <p className={styles.quizCreatorText}>
+          <span>By: </span>
+          <NavLink
+            to="/account"
+            state={`${quiz.creatorUsername}`}
+            className={styles.linkStyle}
+          >
+            <span>{quiz.creatorUsername}</span>
+          </NavLink>
+        </p>
+
         {user?.username === quiz.creatorUsername && (
             <button className={styles.deleteButton} onClick={(e) => {e.preventDefault(); setShowPopup(true);}}>
             <Trash2 id="deleteIcon" fill="red" stroke="black" />

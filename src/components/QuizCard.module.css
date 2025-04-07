@@ -210,3 +210,12 @@
 .confirmButton:hover {
   background-color: #dc2626;
 }
+
+.linkStyle {
+  color: inherit;
+  text-decoration: none;
+}
+
+.linkStyle:hover {
+  text-decoration: underline;
+}

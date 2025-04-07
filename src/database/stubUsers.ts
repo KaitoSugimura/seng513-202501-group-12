@@ -9,7 +9,7 @@ const usersData = [
   },
   {
     id: "2",
-    name: "Blue",
+    name: "example",
     email: "Blue@gmail.com",
     image:
       "https://cdn.iconscout.com/icon/free/png-256/free-blue-among-us-icon-download-in-svg-png-gif-file-formats--character-game-characters-pack-sports-games-icons-2691064.png",
@@ -17,7 +17,7 @@ const usersData = [
   },
   {
     id: "3",
-    name: "Green",
+    name: "testuser",
     email: "Green@gmail.com",
     image:
       "https://preview.free3d.com/img/2022/12/3190258058840245429/h7p03rn5.jpg",
@@ -25,7 +25,7 @@ const usersData = [
   },
   {
     id: "4",
-    name: "Black",
+    name: "test5",
     email: "Black@gmail.com",
     image:
       "https://cdn.iconscout.com/icon/free/png-256/free-black-among-us-icon-download-in-svg-png-gif-file-formats--character-characters-pack-sports-games-icons-2691058.png?f=webp",
