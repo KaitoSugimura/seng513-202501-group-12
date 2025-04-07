@@ -61,7 +61,7 @@ export default function QuizCard({ quiz }: { quiz: Quiz }) {
         </div>
         <h4 className={styles.quizGenre}>{quiz.theme}</h4>
         <h3 className={styles.quizTitle}>{quiz.title}</h3>
-        <p className={styles.quizCreatorText}>
+        <div className={styles.quizCreatorText}>
           <span>By: </span>
           <NavLink
             to="/account"
@@ -70,7 +70,7 @@ export default function QuizCard({ quiz }: { quiz: Quiz }) {
           >
             <span>{quiz.creatorUsername}</span>
           </NavLink>
-        </p>
+        </div>
 
         {user?.username === quiz.creatorUsername && (
             <button className={styles.deleteButton} onClick={(e) => {e.preventDefault(); setShowPopup(true);}}>
