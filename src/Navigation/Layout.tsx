@@ -199,7 +199,14 @@ export default function Layout() {
             />
             <div className={styles.userContainerRight}>
               {/* <p>Rank: {usersData[0].ranking}</p> */}
-              <h3>{user ? user.username : "Guest"}</h3>
+              <NavLink
+                to="/account"
+                state={`${user?.username}`}
+                onMouseEnter={() => setCurrentHover(3)}
+                className={styles.linkStyle}
+              >
+                <h3>{user ? user.username : "Guest"}</h3>
+              </NavLink>
               <p>{user ? "Level " + Math.floor(user.points / 100) : ""}</p>
             </div>
           </div>

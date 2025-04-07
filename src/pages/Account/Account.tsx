@@ -5,7 +5,7 @@ import styles from "./Account.module.css";
 import QuizListViewer from "../../components/QuizListViewer";
 import { Query } from "appwrite";
 import { useLocation } from 'react-router-dom';
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { databases, dbId, User } from "../../util/appwrite";
 
 export default function Account() {
@@ -14,30 +14,35 @@ export default function Account() {
   const { user, loadingAuth, logout } = useAuth();
   const [viewUser, setViewUser] = useState<User | null>(null);
   const displayUser = viewUser || user;
+  const [loadingUser, setLoadingUser] = useState(0);
 
   useEffect(() => {
     const getViewUserProfile = async () => {
+      setLoadingUser(1);
       try {
         const response = await databases.listDocuments(dbId, "users", [Query.equal("username", [viewUsername])]);
         if (response.documents.length = 1) {
           setViewUser(response.documents[0] as User);
         }
+        else {
+          setViewUser(null);
+        }
       }
       catch (err) {
         console.error("Failed to fetch user information:", err);
+      }
+      finally {
+        setLoadingUser(0);
       }
     };
 
     if (viewUsername) {
       getViewUserProfile();
     }
+    console.log(displayUser)
   }, [viewUsername]);
 
-  const quizQuery = useMemo(() => {
-    return [Query.contains("creatorUsername", [displayUser?.username || ""])];
-  }, [displayUser?.username]);
-
-  if (loadingAuth) {
+  if (loadingAuth || loadingUser) {
     return (
       <div className={styles.accountRoot}>
         <h1 className={styles.title}>Account</h1>
@@ -64,8 +69,10 @@ export default function Account() {
           
           <div className={styles.quizContainer}>
             <QuizListViewer
+              key={loadingUser}
               title="Created Quizzes"
-              query={quizQuery}
+              query={[Query.contains("creatorUsername", [displayUser.username])]}
+              limitLessView={true}
             />
           </div>
 
