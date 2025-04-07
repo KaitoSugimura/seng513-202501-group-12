@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import SectionLabel from "./SectionLabel";
 import { databases, dbId, Quiz } from "../util/appwrite";
 import SkeletonQuizCard from "./SkeletonQuizCard";
@@ -17,6 +17,7 @@ export default function QuizListViewer({
   const [listIndex, setListIndex] = useState(0);
   const [itemsToShow, setItemsToShow] = useState(0);
   const [filteredData, setFilteredData] = useState<Quiz[] | null>(null);
+  const gridRootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchQuiz = async () => {
@@ -32,11 +33,12 @@ export default function QuizListViewer({
 
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth > 1200) {
+      if (!gridRootRef.current) return;
+      if (gridRootRef.current.clientWidth > 1100) {
         setItemsToShow(4);
-      } else if (window.innerWidth > 820) {
+      } else if (gridRootRef.current.clientWidth > 750) {
         setItemsToShow(3);
-      } else if (window.innerWidth > 580) {
+      } else if (gridRootRef.current.clientWidth > 480) {
         setItemsToShow(2);
       } else {
         setItemsToShow(1);
@@ -53,7 +55,7 @@ export default function QuizListViewer({
     : filteredData?.slice(listIndex * 5, listIndex * 5 + itemsToShow);
 
   return (
-    <div>
+    <div ref={gridRootRef}>
       <SectionLabel
         title={title}
         onClickNext={
