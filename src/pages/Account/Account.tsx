@@ -17,7 +17,6 @@ export default function Account() {
   const [isFriend, setIsFriend] = useState(false);
   const [loadingUser, setLoadingUser] = useState(0);
   
-
   useEffect(() => {
     const getViewUserProfile = async () => {
       setLoadingUser(1);
@@ -41,7 +40,6 @@ export default function Account() {
     if (viewUsername) {
       getViewUserProfile();
     }
-    console.log(displayUser)
   }, [viewUsername]);
 
   useEffect(() => {

@@ -249,7 +249,7 @@ export default function Layout() {
                       <div className={styles.userContainerRight}>
                         <NavLink
                           to="/account"
-                          state={`${friend.name}`}
+                          state={`${friend.username}`}
                           className={styles.linkStyle}
                         >
                           <h3>{friend.username}</h3>
