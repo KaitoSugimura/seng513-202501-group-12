@@ -1,0 +1,8 @@
+.categoryCardContainer {
+  height: 200px;
+
+  background-color: rgb(52, 61, 68);
+  border-radius: 8px;
+
+  cursor: pointer;
+}

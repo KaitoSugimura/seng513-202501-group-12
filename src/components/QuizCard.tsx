@@ -8,6 +8,7 @@ import { useAuth } from "../context/AuthContext";
 export default function QuizCard({ quiz }: { quiz: Quiz }) {
   const { user, toggleFavoriteQuiz } = useAuth();
   const [isQuizFavorited, setIsQuizFavorited] = useState(false);
+  const [imageIsLoading, setImageIsLoading] = useState(true);
 
   useEffect(() => {
     if (!user) {
@@ -26,7 +27,8 @@ export default function QuizCard({ quiz }: { quiz: Quiz }) {
         <img
           src={quiz.previewUrl}
           alt={`Image for ${quiz.title}`}
-          className={styles.quizImage}
+          className={`${styles.quizImage} ${imageIsLoading ? "Loading" : ""}`}
+          onLoad={() => setImageIsLoading(false)}
         />
         {user && (
           <button

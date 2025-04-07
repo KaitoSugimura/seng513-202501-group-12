@@ -12,6 +12,11 @@
   transition: background-color 0.2s ease;
 }
 
+.quizContainer:has(:global(.Loading)) {
+  cursor: default;
+  pointer-events: none;
+}
+
 .quizContainer:hover {
   background-color: var(--background-main-complementary);
 }
@@ -20,6 +25,9 @@
   position: relative;
   width: 100%;
   padding-top: 56.25%;
+
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 .quizImage {
@@ -29,7 +37,6 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
@@ -55,10 +62,20 @@
   margin-top: 12px;
 }
 
+.quizTitleStub {
+  width: 200px;
+  height: 20px;
+}
+
 .quizCreatorText {
   font-size: 14px;
   font-weight: 500;
   margin-top: 4px;
+}
+
+.quizCreatorTextStub {
+  width: 100px;
+  height: 16px;
 }
 
 .creatorImage {
