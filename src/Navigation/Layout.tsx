@@ -200,7 +200,7 @@ export default function Layout() {
             <div className={styles.userContainerRight}>
               {/* <p>Rank: {usersData[0].ranking}</p> */}
               <h3>{user ? user.username : "Guest"}</h3>
-              <p>{user ? "Points: "+ user.points : ""}</p>
+              <p>{user ? "Level " + Math.floor(user.points / 100) : ""}</p>
             </div>
           </div>
           <div>
