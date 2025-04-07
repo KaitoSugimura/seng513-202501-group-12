@@ -1,0 +1,25 @@
+.timerRoot {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.pieTime {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid white;
+}
+
+.roundText,
+.timeleftText {
+  width: 200px;
+  font-size: 18px;
+}
+
+.roundText {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+}
