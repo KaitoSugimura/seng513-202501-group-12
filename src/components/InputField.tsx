@@ -5,22 +5,29 @@ export default function InputField({
   value,
   placeholder,
   label,
+  type = "text",
+  error,
+  className,
 }: {
   onChange: (event: any) => void;
   value: string;
   placeholder: string;
   label?: string;
+  type?: string;
+  error?: string;
+  className?: string;
 }) {
   return (
-    <div className={styles.inputRoot}>
+    <div className={`${className} ${styles.inputRoot}`}>
       {label && <label className={styles.label}>{label}</label>}
       <input
-        type="text"
+        type={type}
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className={styles.input}
+        className={`${styles.input} ${error ? styles.error : ""}`}
       />
+      {error && <p className={styles.errorText}>{error}</p>}
     </div>
   );
 }

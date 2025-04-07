@@ -3,20 +3,27 @@ import styles from "./InputField.module.css";
 export default function SelectField({
   onChange,
   value,
-  placeholder,
   label,
   categories,
+  id,
+  className,
 }: {
   onChange: (event: any) => void;
   value: string;
-  placeholder: string;
   categories: readonly string[];
   label?: string;
+  id?: string;
+  className?: string;
 }) {
   return (
-    <div className={styles.inputRoot}>
+    <div className={`${className} ${styles.inputRoot}`}>
       {label && <label className={styles.label}>{label}</label>}
-      <select className={styles.select} value={value} onChange={onChange}>
+      <select
+        id={id}
+        className={styles.select}
+        value={value}
+        onChange={onChange}
+      >
         <option value="">Any</option>
         {categories.map((category) => (
           <option key={category} value={category}>
