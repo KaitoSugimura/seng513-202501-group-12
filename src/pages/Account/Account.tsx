@@ -13,8 +13,9 @@ export default function Account() {
   useEffect(() => {
     if (user) {
       setFilteredData(
-        quizData.filter((quiz) => quiz.creatorId === (user.id))
+        quizData.filter((quiz) => {console.log(quiz.creatorUsername); return quiz.creatorUsername.includes(user.username)})
       );
+      console.log(user.username)
     }
   }, [user]);
 
@@ -33,28 +34,32 @@ export default function Account() {
 
       {user && (
         <>
-          <h2>Welcome back, {user.username}!</h2>
-          
+          <h2 className={styles.headerSub}>Welcome back, {user.username}!</h2>
+
           {/* Points progress */}
-          <h2>Experience</h2>
-          <div className={styles.progressContainer}>
-            <p>49/100 Points to Level Up</p>
-            <div className={styles.progressBar}>
-              <div className={styles.progressFill} style={{ width: '49%' }}></div>
+          <div className={styles.experienceContainer}>
+            <h2>Experience</h2>
+            <div className={styles.progressContainer}>
+              <p> {user.points}/100 Points</p>
+              <div className={styles.progressBar}>
+                <div className={styles.progressFill} style={{ width: `${user.points}%` }}></div>
+              </div>
             </div>
           </div>
           
-          <h2>Created Quizzes</h2>
-          <div className={styles.quizGrid}>
-            {filteredData.length === 0 ? (
-              <div className={styles.noQuizzes}>
-                Try making your first quiz!
-              </div>
-            ) : (
-              filteredData.map((quiz) => (
-                <QuizCard key={`${quiz.$id}`} quiz={quiz} />
-              ))
-            )}
+          <div className={styles.quizContainer}>
+            <h2>Created Quizzes</h2>
+            <div className={styles.quizGrid}>
+              {filteredData.length === 0 ? (
+                <div className={styles.noQuizzes}>
+                  Try making your first quiz!
+                </div>
+              ) : (
+                filteredData.map((quiz) => (
+                  <QuizCard key={`${quiz.$id}`} quiz={quiz} />
+                ))
+              )}
+            </div>
           </div>
           
           <div className={styles.userControls}>
@@ -67,7 +72,6 @@ export default function Account() {
       {!user && (
         <>
           <p className={styles.subtitle}>Sign in to access all features.</p>
-
           <AuthCard />
         </>
       )}

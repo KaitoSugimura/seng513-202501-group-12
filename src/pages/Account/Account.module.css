@@ -7,6 +7,19 @@
   font-size: 28px;
 }
 
+.headerSub {
+  font-size: 20px;
+  font-weight: normal;
+}
+
+.experienceContainer {
+  margin-top: 20px
+}
+
+.progressContainer {
+  margin-top: 10px
+}
+
 .subtitle {
   color: rgb(165, 165, 165);
   margin-bottom: 20px;
@@ -58,7 +71,6 @@
 .noQuizzes {
   background-color: var(--background-main-complementary);
   width: 100%;
-  margin: 5px;
   padding: 10px;
   border-radius: 10px;
 }
