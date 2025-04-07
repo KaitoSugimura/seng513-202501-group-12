@@ -67,12 +67,13 @@ export default function Create() {
       previewImage.current = inputImage;
       return;
     }
+    questionsHaveError();
     const questionToAdd: Question = {
       imageFile: inputImage,
       answers: answers,
       correctAnswer: correctAnswer,
-      imageError: false,
-      answerErrors: new Array(answers.length).fill(false),
+      imageError: questions[currentIndex].imageError,
+      answerErrors: questions[currentIndex].answerErrors,
     };
     console.log(
       "saving the question" + questionToAdd + " at index " + currentIndex
@@ -91,6 +92,7 @@ export default function Create() {
       previewImage.current = inputImage;
       setCurrentIndex(questions.length);
     } else {
+      questionsHaveError();
       const questionToAdd: Question = {
         imageFile: inputImage,
         answers: answers,
@@ -415,6 +417,7 @@ export default function Create() {
                 : "Upload or drag and drop question image"
             }
           ></ImageUpload>
+
           <div className={styles.questionButtonContainer}>
             <button className={styles.questionButtons} onClick={addQuestion}>
               <Plus />
@@ -429,28 +432,51 @@ export default function Create() {
         {currentIndex >= 0 && (
           <div className={styles.answersContainer}>
             {answers.map((answer, index) => (
-              <div key={index} className={styles.inputWrapper}>
-                <input
-                  type="text"
-                  placeholder="answer"
-                  value={answer}
-                  onChange={(e) => setAnswer(index, e.target.value)}
-                  className={clsx(
-                    questions[currentIndex].answerErrors[index] &&
-                      styles.errorInput
-                  )}
-                />
-                <div
-                  className={clsx(
-                    styles.check,
-                    index === correctAnswer
-                      ? styles.correctCheck
-                      : styles.incorrectCheck
-                  )}
-                  onClick={() => setCorrectAnswer(index)}
-                >
-                  <Check />
+              <div>
+                <div key={index} className={styles.inputWrapper}>
+                  <input
+                    type="text"
+                    placeholder="answer"
+                    value={answer}
+                    onChange={(e) => setAnswer(index, e.target.value)}
+                    className={clsx(
+                      questions[currentIndex].answerErrors[index] &&
+                        styles.errorInput
+                    )}
+                  />
+                  <div
+                    className={clsx(
+                      styles.check,
+                      index === correctAnswer
+                        ? styles.correctCheck
+                        : styles.incorrectCheck
+                    )}
+                    onClick={() => setCorrectAnswer(index)}
+                  >
+                    <Check />
+                  </div>
                 </div>
+                <label
+                  className={clsx(
+                    styles.quizDetailsInput,
+                    questions[currentIndex].answerErrors[index] &&
+                      styles.errorLabel
+                  )}
+                >
+                  <span
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.3rem",
+                      visibility: questions[currentIndex].answerErrors[index]
+                        ? "visible"
+                        : "hidden",
+                    }}
+                  >
+                    <TriangleAlert />
+                    Enter an Answer
+                  </span>
+                </label>
               </div>
             ))}
           </div>

@@ -79,6 +79,7 @@
 }
 
 .quizDetailsInput{
+  min-height: 0.1rem;
   border: none;
 }
 
@@ -180,6 +181,7 @@ justify-content: center;
 }
 
 .errorLabel{
+  min-height: 0.1rem;
   display: flex;
   color: darkred;
   justify-content: center;
@@ -190,5 +192,5 @@ justify-content: center;
 }
 
 .errorInput{
-  border: solid 1px red;
+  border: solid 1px #F44336;
 }
