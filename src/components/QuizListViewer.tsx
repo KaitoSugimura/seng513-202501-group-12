@@ -78,6 +78,11 @@ export default function QuizListViewer({
                 setListIndex((prevIndex) => Math.max(prevIndex - 1, 0));
               }
         }
+        disabledPrev={listIndex === 0}
+        disabledNext={
+          filteredData === null ||
+          listIndex === Math.floor((filteredData.length - 1) / itemsToShow)
+        }
       />
       <div
         className={styles.quizGrid}

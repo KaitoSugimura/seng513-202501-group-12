@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import styles from "./Search.module.css";
-import SearchBar from "../../components/SearchBar";
 import QuizListViewer from "../../components/QuizListViewer";
 import { Query } from "appwrite";
 import { useSearchParams } from "react-router-dom";
 import { categories } from "../../util/appwrite";
+import InputField from "../../components/InputField";
+import SelectField from "../../components/SelectField";
 
 const checkCategory = (category: string | null) => {
   if (!category) return "";
@@ -40,34 +41,45 @@ export default function Search() {
   }
 
   return (
-    <div>
-      <select
-        className={styles.categorySelect}
-        value={searchCategoryValue}
-        onChange={(event) => {
-          setSearchCategoryValue(checkCategory(event.target.value));
-        }}
-      >
-        <option value="">Any</option>
-        {categories.map((category) => (
-          <option key={category} value={category}>
-            {category}
-          </option>
-        ))}
-      </select>
-      <SearchBar
-        value={searchValue}
-        onChange={(event) => {
-          setSearchValue(event.target.value);
-        }}
-      />
-      <button
-        onClick={() => {
-          handleSearch();
-        }}
-      >
-        Search
-      </button>
+    <div className={styles.searchPanelRoot}>
+      <div className={styles.searchPanel}>
+        <SelectField
+          value={searchCategoryValue}
+          onChange={(event) => {
+            setSearchCategoryValue(checkCategory(event.target.value));
+          }}
+          placeholder="Any"
+          label="Category"
+          categories={categories}
+        />
+        <InputField
+          value={searchValue}
+          onChange={(event) => {
+            setSearchValue(event.target.value);
+          }}
+          placeholder="Search by title"
+          label="Title"
+        />
+        <div className={styles.searchPanelButtons}>
+          <button
+            onClick={() => {
+              handleSearch();
+            }}
+            className={styles.searchButton}
+          >
+            Search
+          </button>
+          <button
+            onClick={() => {
+              setSearchCategoryValue("");
+              setSearchValue("");
+            }}
+            className={styles.resetButton}
+          >
+            Reset
+          </button>
+        </div>
+      </div>
       <QuizListViewer
         key={searchKey}
         title="Search Results"
