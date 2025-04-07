@@ -16,7 +16,7 @@ export default function QuizCard({ quiz }: { quiz: Quiz }) {
     if (!user) {
       return;
     }
-    setIsQuizFavorited(user.favoritedQuizzes.some((q) => q.$id === quiz.$id));
+    setIsQuizFavorited(user.favoritedQuizIds.includes(quiz.$id));
   }, [user]);
 
   const deleteQuiz = async () => {
@@ -73,7 +73,13 @@ export default function QuizCard({ quiz }: { quiz: Quiz }) {
         </div>
 
         {user?.username === quiz.creatorUsername && (
-            <button className={styles.deleteButton} onClick={(e) => {e.preventDefault(); setShowPopup(true);}}>
+          <button
+            className={styles.deleteButton}
+            onClick={(e) => {
+              e.preventDefault();
+              setShowPopup(true);
+            }}
+          >
             <Trash2 id="deleteIcon" fill="red" stroke="black" />
           </button>
         )}
@@ -83,10 +89,28 @@ export default function QuizCard({ quiz }: { quiz: Quiz }) {
         <div className={styles.popupOverlay}>
           <div className={styles.popupContent}>
             <h2 className={styles.popupTitle}>Delete Confirmation</h2>
-            <p className={styles.popupMessage}>Are you sure you want to delete this quiz?</p>
+            <p className={styles.popupMessage}>
+              Are you sure you want to delete this quiz?
+            </p>
             <div className={styles.popupActions}>
-              <button onClick={(e) => {e.preventDefault(); setShowPopup(false);}} className={styles.cancelButton}>Cancel</button>
-              <button onClick={(e) => {e.preventDefault(); deleteQuiz();}} className={styles.confirmButton}>Yes</button>
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  setShowPopup(false);
+                }}
+                className={styles.cancelButton}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  deleteQuiz();
+                }}
+                className={styles.confirmButton}
+              >
+                Yes
+              </button>
             </div>
           </div>
         </div>

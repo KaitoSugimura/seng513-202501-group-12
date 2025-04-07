@@ -97,22 +97,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         // get the latest data from the db, in case toggleFavoriteQuiz is called too fast before
         // the user usestate hook is updated
         const latestUser = await databases.getDocument(dbId, "users", user.$id);
-        const isQuizFavorited = latestUser.favoritedQuizzes.some(
-          (q: { $id: string }) => q.$id === quiz.$id
-        );
+        const isQuizFavorited = latestUser.favoritedQuizIds.includes(quiz.$id);
 
-        const updatedFavorites = isQuizFavorited
-          ? latestUser.favoritedQuizzes.filter(
-              (q: { $id: string }) => q.$id !== quiz.$id
-            )
-          : [...latestUser.favoritedQuizzes, quiz];
+        const updatedFavoritedQuizIdsList = isQuizFavorited
+          ? latestUser.favoritedQuizIds.filter((id: string) => id !== quiz.$id)
+          : [...latestUser.favoritedQuizIds, quiz.$id];
 
         const updatedUserData: User = await databases.updateDocument(
           dbId,
           "users",
           user.$id,
           {
-            favoritedQuizzes: updatedFavorites,
+            favoritedQuizIds: updatedFavoritedQuizIdsList,
           }
         );
         setUser(updatedUserData);
