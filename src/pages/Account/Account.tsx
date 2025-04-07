@@ -2,21 +2,11 @@ import AuthCard from "../../components/Auth/AuthCard";
 import Button from "../../components/Button";
 import { useAuth } from "../../context/AuthContext";
 import styles from "./Account.module.css";
-import { useState, useEffect } from "react";
-import quizData from "../../database/stubQuiz";
-import QuizCard from "../../components/QuizCard";
+import QuizListViewer from "../../components/QuizListViewer";
+import { Query } from "appwrite";
 
 export default function Account() {
   const { user, loadingAuth, logout } = useAuth();
-  const [filteredData, setFilteredData] = useState(quizData);
-
-  useEffect(() => {
-    if (user) {
-      setFilteredData(
-        quizData.filter((quiz) => quiz.creatorUsername.includes(user.username))
-      );
-    }
-  }, [user]);
 
   if (loadingAuth) {
     return (
@@ -29,35 +19,25 @@ export default function Account() {
 
   return (
     <div className={styles.accountRoot}>
-      <h1 className={styles.header}>Account</h1>
-
       {user && (
         <>
-          <h2 className={styles.headerSub}>Welcome back, {user.username}!</h2>
-
+          <h1 className={styles.header}>{user?.username}'s Profile </h1>
           {/* Points progress */}
           <div className={styles.experienceContainer}>
             <h2>Experience</h2>
             <div className={styles.progressContainer}>
-              <p> {user.points}/100 Points</p>
+              <p>Level {Math.floor(user.points / 100)} - {user.points % 100}/100 Points</p>
               <div className={styles.progressBar}>
-                <div className={styles.progressFill} style={{ width: `${user.points}%` }}></div>
+                <div className={styles.progressFill} style={{ width: `${user.points % 100}%` }}></div>
               </div>
             </div>
           </div>
           
-
-          <h2>Created Quizzes</h2>
-          <div className={styles.quizGrid}>
-            {filteredData.length === 0 ? (
-              <div className={styles.noQuizzes}>
-                Try making your first quiz!
-              </div>
-            ) : (
-              filteredData.map((quiz) => (
-                <QuizCard key={`${quiz.$id}`} quiz={quiz} />
-              ))
-            )}
+          <div className={styles.quizContainer}>
+            <QuizListViewer
+              title="Created Quizzes"
+              query={[Query.contains("creatorUsername", [user.username])]}
+            />
           </div>
 
           
