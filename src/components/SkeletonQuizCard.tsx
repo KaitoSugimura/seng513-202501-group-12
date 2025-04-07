@@ -10,7 +10,7 @@ export default function SkeletonQuizCard() {
         <div className={`${styles.quizTitleStub} Loading`}></div>
       </h3>
       <p className={styles.quizCreatorText}>
-        <div className={`${styles.quizCreatorTextStub} Loading`}></div>
+        <span className={`${styles.quizCreatorTextStub} Loading`}></span>
       </p>
     </div>
   );

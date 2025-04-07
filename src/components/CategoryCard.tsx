@@ -1,16 +1,8 @@
 import { useNavigate } from "react-router-dom";
-import { Category, databases, dbId } from "../util/appwrite";
+import { Category } from "../util/appwrite";
 import styles from "./CategoryCard.module.css";
-import { useEffect } from "react";
-import { Query } from "appwrite";
 
-export default function CategoryCard({
-  key,
-  category,
-}: {
-  key: string;
-  category: Category;
-}) {
+export default function CategoryCard({ category }: { category: Category }) {
   const navigate = useNavigate();
 
   let combinedHex = "";
@@ -24,7 +16,6 @@ export default function CategoryCard({
   return (
     <div
       className={styles.categoryCardContainer}
-      key={key}
       onClick={() => {
         navigate(`/search?theme=${category}`);
       }}

@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { categories, Category } from "../util/appwrite";
+import CategoryCard from "./CategoryCard";
 import styles from "./CategoryListViewer.module.css";
 import SectionLabel from "./SectionLabel";
-import CategoryCard from "./CategoryCard";
-import { categories, Category } from "../util/appwrite";
 
 export default function CategoryListViewer() {
   const [categoryIndex, setCategoryIndex] = useState(0);

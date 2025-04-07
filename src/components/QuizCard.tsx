@@ -1,12 +1,12 @@
+import { Star, Trash2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import { Quiz, databases, dbId } from "../util/appwrite";
 import styles from "./QuizCard.module.css";
-import { Link } from "react-router-dom";
-import { Star, Trash2 } from "lucide-react";
-import { useState, useEffect } from "react";
-import { useAuth } from "../context/AuthContext";
-import { NavLink, Outlet } from "react-router-dom";
 
 export default function QuizCard({ quiz }: { quiz: Quiz }) {
+  const navigate = useNavigate();
   const { user, toggleFavoriteQuiz } = useAuth();
   const [isQuizFavorited, setIsQuizFavorited] = useState(false);
   const [imageIsLoading, setImageIsLoading] = useState(true);
@@ -16,8 +16,9 @@ export default function QuizCard({ quiz }: { quiz: Quiz }) {
     if (!user) {
       return;
     }
+
     setIsQuizFavorited(user.favoritedQuizIds.includes(quiz.$id));
-  }, [user]);
+  }, [user, quiz.$id]);
 
   const deleteQuiz = async () => {
     try {
@@ -31,18 +32,22 @@ export default function QuizCard({ quiz }: { quiz: Quiz }) {
 
   return (
     <div>
-      <Link
+      <div
         key={quiz.id}
         className={styles.quizContainer}
-        to={`/quiz/${quiz.$id}`}
+        onClick={() => navigate(`/quiz/${quiz.$id}`)}
       >
         <div className={styles.quizImageContainer}>
-          <img
-            src={quiz.previewUrl}
-            alt={`Image for ${quiz.title}`}
-            className={`${styles.quizImage} ${imageIsLoading ? "Loading" : ""}`}
-            onLoad={() => setImageIsLoading(false)}
-          />
+          <Link to={`/quiz/${quiz.$id}`} tabIndex={-1}>
+            <img
+              src={quiz.previewUrl}
+              alt={`Image for ${quiz.title}`}
+              className={`${styles.quizImage} ${
+                imageIsLoading ? "Loading" : ""
+              }`}
+              onLoad={() => setImageIsLoading(false)}
+            />
+          </Link>
           {user && (
             <button
               className={styles.favoriteButton}
@@ -60,7 +65,9 @@ export default function QuizCard({ quiz }: { quiz: Quiz }) {
           )}
         </div>
         <h4 className={styles.quizGenre}>{quiz.theme}</h4>
-        <h3 className={styles.quizTitle}>{quiz.title}</h3>
+        <h3 className={styles.quizTitle}>
+          <Link to={`/quiz/${quiz.$id}`}>{quiz.title}</Link>
+        </h3>
         <div className={styles.quizCreatorText}>
           <span>By: </span>
           <NavLink
@@ -83,7 +90,7 @@ export default function QuizCard({ quiz }: { quiz: Quiz }) {
             <Trash2 id="deleteIcon" fill="red" stroke="black" />
           </button>
         )}
-      </Link>
+      </div>
 
       {showPopup && (
         <div className={styles.popupOverlay}>
