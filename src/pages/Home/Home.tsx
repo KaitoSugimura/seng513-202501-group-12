@@ -6,7 +6,10 @@ import { Query } from "appwrite";
 export default function Home() {
   return (
     <div className={styles.homeRoot}>
-      <QuizListViewer title="Top Quizzes" />
+      <QuizListViewer
+        title="Top Quizzes"
+        query={[Query.orderDesc("favoritedCount")]}
+      />
       <QuizListViewer title="Newest" />
       <QuizListViewer
         title="Recommended for you"

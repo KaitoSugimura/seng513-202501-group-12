@@ -23,6 +23,7 @@ export default function QuizListViewer({
     const fetchQuiz = async () => {
       try {
         const quizzes = await databases.listDocuments(dbId, "quizzes", query);
+        console.log(quizzes.documents);
         setFilteredData(quizzes.documents as Quiz[]);
       } catch (err) {
         console.error("Failed to fetch quizzes:", err);
@@ -52,7 +53,10 @@ export default function QuizListViewer({
 
   const currentViewingItems = limitLessView
     ? filteredData
-    : filteredData?.slice(listIndex * 5, listIndex * 5 + itemsToShow);
+    : filteredData?.slice(
+        listIndex * itemsToShow,
+        listIndex * itemsToShow + itemsToShow
+      );
 
   return (
     <div ref={gridRootRef}>

@@ -1,4 +1,4 @@
-import { ID } from "appwrite";
+import { ID, Query } from "appwrite";
 import {
   createContext,
   Dispatch,
@@ -116,6 +116,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           }
         );
         setUser(updatedUserData);
+
+        (async () => {
+          const gotQuiz: Quiz = await databases.getDocument(
+            dbId,
+            "quizzes",
+            quiz.$id
+          );
+          await databases.updateDocument(dbId, "quizzes", quiz.$id, {
+            favoritedCount: gotQuiz.favoritedCount + (isQuizFavorited ? -1 : 1),
+          });
+        })();
       } catch (err) {
         console.error("Failed to update favorite quiz: ", err);
       }

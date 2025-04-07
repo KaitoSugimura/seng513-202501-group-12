@@ -54,6 +54,7 @@ export interface Quiz extends Models.Document {
   previewUrl: string;
   creatorId: string;
   creatorUsername: string;
+  favoritedCount: number;
 }
 
 export interface Question extends Models.Document {

@@ -27,8 +27,8 @@ export default function CategoryListViewer() {
   }, []);
 
   const currentViewingCategories = categories.slice(
-    categoryIndex * 5,
-    categoryIndex * 5 + categoriesToShow
+    categoryIndex * categoriesToShow,
+    categoryIndex * categoriesToShow + categoriesToShow
   );
 
   return (
