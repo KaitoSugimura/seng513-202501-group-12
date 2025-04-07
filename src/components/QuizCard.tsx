@@ -1,7 +1,7 @@
 import { Quiz } from "../util/appwrite";
 import styles from "./QuizCard.module.css";
 import { Link } from "react-router-dom";
-import { Star } from "lucide-react";
+import { Star, Trash2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 
@@ -49,6 +49,15 @@ export default function QuizCard({ quiz }: { quiz: Quiz }) {
       <h4 className={styles.quizGenre}>{quiz.theme}</h4>
       <h3 className={styles.quizTitle}>{quiz.title}</h3>
       <p className={styles.quizCreatorText}>By {quiz.creatorUsername}</p>
+      {user?.username === quiz.creatorUsername && (
+          <button className={styles.deleteButton}>
+            <Trash2
+              id="deleteIcon"
+              fill="red"
+              stroke="black"
+            />
+          </button>
+        )}
     </Link>
   );
 }

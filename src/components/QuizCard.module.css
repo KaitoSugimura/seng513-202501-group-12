@@ -21,6 +21,10 @@
   background-color: var(--background-main-complementary);
 }
 
+.quizContainer:hover .deleteButton {
+  opacity: 1;
+}
+
 .quizImageContainer {
   position: relative;
   width: 100%;
@@ -107,6 +111,33 @@
 }
 
 .favoriteButton #favoriteIcon {
+  width: 24px;
+  height: 24px;
+}
+
+.deleteButton {
+  position: absolute;
+  bottom: 2vh;
+  right: 8px;
+  background: none;
+  background-color: #2b2e42b4;
+  border: none;
+  cursor: pointer;
+  z-index: 10;
+  padding: 4px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.deleteButton:hover {
+  transform: scale(1.2);
+}
+
+.deleteButton #deleteIcon {
   width: 24px;
   height: 24px;
 }
