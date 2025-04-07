@@ -53,6 +53,7 @@ export default function QuizCard({ quiz }: { quiz: Quiz }) {
               className={styles.favoriteButton}
               onClick={(e) => {
                 e.preventDefault();
+                e.stopPropagation();
                 toggleFavoriteQuiz(quiz);
               }}
             >
