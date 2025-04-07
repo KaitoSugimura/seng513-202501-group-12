@@ -11,7 +11,7 @@ import { databases, dbId, User } from "../../util/appwrite";
 export default function Account() {
   const location = useLocation();
   const viewUsername = location.state;
-  const { user, loadingAuth, logout } = useAuth();
+  const { user, loadingAuth, setUser, logout } = useAuth();
   const [viewUser, setViewUser] = useState<User | null>(null);
   const displayUser = viewUser || user;
   const [isFriend, setIsFriend] = useState(false);
@@ -55,8 +55,9 @@ export default function Account() {
       try {
         const updatedFriendIds = user.friendIds
         updatedFriendIds.push(id);         
-        await databases.updateDocument(dbId, "users", user.$id, {friendIds: updatedFriendIds});
+        const updatedUser : User = await databases.updateDocument(dbId, "users", user.$id, {friendIds: updatedFriendIds});
         setIsFriend(true);
+        setUser(updatedUser)
       } catch (err) {
         console.error("Failed to fetch friends:", err);
       }
@@ -67,8 +68,9 @@ export default function Account() {
     if (user) {
       try {
         const updatedFriendIds = user.friendIds?.filter(friendId => friendId !== id) || [];
-        await databases.updateDocument(dbId, "users", user.$id, { friendIds: updatedFriendIds });
+        const updatedUser : User = await databases.updateDocument(dbId, "users", user.$id, { friendIds: updatedFriendIds });
         setIsFriend(false);
+        setUser(updatedUser)
       } catch (err) {
         console.error("Failed to remove friend:", err);
       }
