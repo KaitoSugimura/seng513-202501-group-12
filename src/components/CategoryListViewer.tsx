@@ -46,6 +46,11 @@ export default function CategoryListViewer() {
         onClickPrev={() => {
           setCategoryIndex((prevIndex) => Math.max(prevIndex - 1, 0));
         }}
+        disabledPrev={categoryIndex === 0}
+        disabledNext={
+          categoryIndex ===
+          Math.floor((categories.length - 1) / categoriesToShow)
+        }
       />
       <div
         className={styles.categorySection}

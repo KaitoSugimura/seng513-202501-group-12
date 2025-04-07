@@ -1,0 +1,35 @@
+.inputRoot {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: center;
+  gap: 8px;
+
+  padding-bottom: 12px;
+}
+
+.input {
+  background-color: rgb(46, 56, 86);
+  border: none;
+
+  color: white;
+
+  border-radius: 8px;
+
+  height: 40px;
+  padding: 8px 16px;
+}
+
+.input::placeholder {
+  color: rgb(174, 174, 174);
+  font-style: italic;
+}
+
+.select {
+  color: white;
+  background-color: rgb(46, 56, 86);
+  border: none;
+  border-radius: 8px;
+  height: 40px;
+  padding: 8px 16px;
+}
