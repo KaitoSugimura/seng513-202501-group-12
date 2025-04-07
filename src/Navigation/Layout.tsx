@@ -1,8 +1,9 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import usersData from "../database/stubUsers";
 import styles from "./Layout.module.css";
+import { databases, dbId, User } from "../util/appwrite";
 
 let currentHoverIndex = 0;
 
@@ -15,6 +16,7 @@ export default function Layout() {
       }
     | undefined
   >(undefined);
+  const [friendsList, setFriendsList] = useState<User[]>([]);
   const { user } = useAuth();
 
   const setCurrentHover = (top: number) => {
@@ -50,7 +52,6 @@ export default function Layout() {
         setBreakPoint(9999);
       }
     };
-
     window.addEventListener("resize", updateBreakPoint);
     updateBreakPoint();
 
@@ -58,6 +59,30 @@ export default function Layout() {
       window.removeEventListener("resize", updateBreakPoint);
     };
   }, []);
+
+  useEffect(() => {
+    const getFriends = async () => {
+      try {
+        const friends = [];
+        if (user) {
+          friends.push(user);
+        }
+        for (let i = 0; i < user?.friendIds.length; i++) {
+          const friendId = user?.friendIds[i];
+          const friend = await databases.getDocument(dbId, "users", friendId);
+          friends.push(friend as User);
+        }
+        friends.sort((a, b) => b.points - a.points);
+        setFriendsList(friends); 
+      } catch (err) {
+        console.error("Failed to fetch friends:", err);
+      }
+    };
+
+    if (user?.friendIds && user.friendIds.length > 0) {
+      getFriends();
+    }
+  }, [user]);
 
   return (
     <div className={styles.layoutRoot}>
@@ -210,28 +235,32 @@ export default function Layout() {
             </div>
           </div>
           <div>
-            <h2>Leaderboard</h2>
-            <div className={styles.ranksContainer}>
-              {usersData.map((user) => (
-                <div key={user.id} className={styles.userContainer}>
-                  <img
-                    src={user.image}
-                    alt={`Profile for ${user.name}`}
-                    className={styles.userContainerImage}
-                  />
-                  <div className={styles.userContainerRight}>
-                    <p>Rank: {user.ranking}</p>
-                    <NavLink
-                      to="/account"
-                      state={`${user?.name}`}
-                      className={styles.linkStyle}
-                    >
-                      <h3>{user?.name}</h3>
-                    </NavLink>
-                  </div>
+            <h2>Friend Leaderboard</h2>
+            {friendsList.length > 0 && (
+              <div>
+                <div className={styles.ranksContainer}>
+                  {friendsList.map((friend, index) => (
+                    <div key={index} className={styles.userContainer}>
+                      <img
+                        src={user?.photoURL ? user.photoURL : "/guest.png"}
+                        alt={`Profile for ${user?.displayName}`}
+                        className={styles.userContainerImage}
+                      />
+                      <div className={styles.userContainerRight}>
+                        <NavLink
+                          to="/account"
+                          state={`${friend.name}`}
+                          className={styles.linkStyle}
+                        >
+                          <h3>{friend.username}</h3>
+                        </NavLink>
+                        <p>Points: {friend.points}</p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </div>
+            )}
           </div>
         </div>
       )}

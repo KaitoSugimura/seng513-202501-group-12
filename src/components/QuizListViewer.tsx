@@ -23,7 +23,6 @@ export default function QuizListViewer({
     const fetchQuiz = async () => {
       try {
         const quizzes = await databases.listDocuments(dbId, "quizzes", query);
-        console.log(quizzes.documents);
         setFilteredData(quizzes.documents as Quiz[]);
       } catch (err) {
         console.error("Failed to fetch quizzes:", err);

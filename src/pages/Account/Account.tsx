@@ -14,7 +14,9 @@ export default function Account() {
   const { user, loadingAuth, logout } = useAuth();
   const [viewUser, setViewUser] = useState<User | null>(null);
   const displayUser = viewUser || user;
+  const [isFriend, setIsFriend] = useState(false);
   const [loadingUser, setLoadingUser] = useState(0);
+  
 
   useEffect(() => {
     const getViewUserProfile = async () => {
@@ -42,6 +44,37 @@ export default function Account() {
     console.log(displayUser)
   }, [viewUsername]);
 
+  useEffect(() => {
+    if (user && displayUser) {
+      setIsFriend(user.friendIds?.includes(displayUser.$id));
+    }
+  }, [user, displayUser]);
+
+  const addFriend = async(id: string) => {
+    if(user) {
+      try {
+        const updatedFriendIds = user.friendIds
+        updatedFriendIds.push(id);         
+        await databases.updateDocument(dbId, "users", user.$id, {friendIds: updatedFriendIds});
+        setIsFriend(true);
+      } catch (err) {
+        console.error("Failed to fetch friends:", err);
+      }
+    }
+  }
+
+  const removeFriend = async(id: string) => {
+    if (user) {
+      try {
+        const updatedFriendIds = user.friendIds?.filter(friendId => friendId !== id) || [];
+        await databases.updateDocument(dbId, "users", user.$id, { friendIds: updatedFriendIds });
+        setIsFriend(false);
+      } catch (err) {
+        console.error("Failed to remove friend:", err);
+      }
+    }
+  };
+
   if (loadingAuth || loadingUser) {
     return (
       <div className={styles.accountRoot}>
@@ -55,7 +88,23 @@ export default function Account() {
     <div className={styles.accountRoot}>
       {displayUser && (
         <>
-          <h1 className={styles.header}>{displayUser?.username}'s Profile </h1>
+          <div className={styles.header}>
+            <h1>{displayUser?.username}'s Profile </h1>
+            {user && displayUser.$id !== user.$id && (
+              <div>
+                {isFriend ? (
+                  <Button onClick={() => removeFriend(displayUser.$id)}>
+                    Unfriend
+                  </Button>
+                ) : (
+                  <Button onClick={() => addFriend(displayUser.$id)}>
+                    Add Friend
+                  </Button>
+                )}
+              </div>
+            )}
+          </div>
+
           {/* Points progress */}
           <div className={styles.experienceContainer}>
             <h2>Experience</h2>
