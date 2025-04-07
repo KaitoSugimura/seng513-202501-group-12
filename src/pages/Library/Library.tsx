@@ -1,31 +1,15 @@
-import { useEffect, useState } from "react";
-import QuizCard from "../../components/QuizCard";
+import { useState } from "react";
+import QuizListViewer from "../../components/QuizListViewer";
+import { Query } from "appwrite";
 import { useAuth } from "../../context/AuthContext";
-import { databases, dbId, Quiz } from "../../util/appwrite";
 import styles from "./Library.module.css";
 import { NavLink } from "react-router-dom";
 
 export default function Library() {
   const { user, loadingAuth } = useAuth();
-  const [quizzes, setQuizzes] = useState<Quiz[]>([]);
   const [activeTab, setActiveTab] = useState<
     "favoritedQuizzes" | "quizHistory"
   >("favoritedQuizzes");
-
-  useEffect(() => {
-    if (!user) {
-      return;
-    }
-
-    const fetchFavoriteQuizzes = async () => {
-      const quizzes = (await databases.listDocuments(dbId, "quizzes"))
-        .documents as Quiz[];
-
-      setQuizzes(quizzes);
-    };
-
-    fetchFavoriteQuizzes();
-  }, [user]);
 
   if (loadingAuth) {
     return (
@@ -39,14 +23,16 @@ export default function Library() {
 
   return (
     <div className={styles.libraryRoot}>
-      <h1 className={styles.title}>Library</h1>
+      <h1 className={styles.title}>
+        {user ? `${user.username}'s Quiz Library` : "Quiz Library"}
+      </h1>
 
       {!user && (
         <>
-          <h3>Sign in to access library features.</h3>
+          <h3>Sign in to access the Quiz Library feature.</h3>
 
           <NavLink to="/account">
-            <button>Sign In</button>
+            <button>Sign In Here!</button>
           </NavLink>
         </>
       )}
@@ -70,11 +56,16 @@ export default function Library() {
               Quiz History
             </button>
           </div>
-          <div className={styles.quizGrid}>
-            {quizzes.map((quiz) => (
-              <QuizCard key={quiz.$id} quiz={quiz} />
-            ))}
-          </div>
+          <QuizListViewer
+            key={activeTab}
+            title={
+              activeTab === "favoritedQuizzes"
+                ? "Favorited Quizzes"
+                : "Quiz History"
+            }
+            query={[Query.contains("$id", user.favoritedQuizIds)]}
+            limitLessView={true}
+          />
         </>
       )}
     </div>
