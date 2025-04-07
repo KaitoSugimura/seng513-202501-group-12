@@ -35,7 +35,6 @@ export default function QuizCard({ quiz }: { quiz: Quiz }) {
       <div
         key={quiz.id}
         className={styles.quizContainer}
-        onClick={() => navigate(`/quiz/${quiz.$id}`)}
       >
         <div className={styles.quizImageContainer}>
           <Link to={`/quiz/${quiz.$id}`} tabIndex={-1}>
