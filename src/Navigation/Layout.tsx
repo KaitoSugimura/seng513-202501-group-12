@@ -202,7 +202,6 @@ export default function Layout() {
               <NavLink
                 to="/account"
                 state={`${user?.username}`}
-                onMouseEnter={() => setCurrentHover(3)}
                 className={styles.linkStyle}
               >
                 <h3>{user ? user.username : "Guest"}</h3>
@@ -225,7 +224,6 @@ export default function Layout() {
                     <NavLink
                       to="/account"
                       state={`${user?.name}`}
-                      onMouseEnter={() => setCurrentHover(3)}
                       className={styles.linkStyle}
                     >
                       <h3>{user?.name}</h3>
