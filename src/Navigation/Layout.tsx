@@ -218,8 +218,8 @@ export default function Layout() {
         <div className={styles.sideNav}>
           <div key={usersData[0].id} className={styles.userContainer}>
             <img
-              src={user?.photoURL ? user.photoURL : "/guest.png"}
-              alt={`Profile for ${user?.displayName}`}
+              src={user?.profilePicture ? user.profilePicture : "/guest.png"}
+              alt={`Profile for ${user?.username}`}
               className={styles.userContainerImage}
             />
             <div className={styles.userContainerRight}>
@@ -242,8 +242,8 @@ export default function Layout() {
                   {friendsList.map((friend, index) => (
                     <div key={index} className={styles.userContainer}>
                       <img
-                        src={user?.photoURL ? user.photoURL : "/guest.png"}
-                        alt={`Profile for ${user?.displayName}`}
+                        src={friend?.profilePicture ? friend.profilePicture : "/guest.png"}
+                        alt={`Profile for ${friend?.username}`}
                         className={styles.userContainerImage}
                       />
                       <div className={styles.userContainerRight}>
