@@ -9,12 +9,10 @@ export default function QuizListViewer({
   title,
   query,
   limitLessView = false,
-  quizList = [],
 }: {
   title: string;
   query?: string[];
   limitLessView?: boolean;
-  quizList?: Quiz[]
 }) {
   const [listIndex, setListIndex] = useState(0);
   const [itemsToShow, setItemsToShow] = useState(0);
@@ -22,7 +20,6 @@ export default function QuizListViewer({
   const gridRootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    console.log(quizList)
     const fetchQuiz = async () => {
       try {
         const quizzes = await databases.listDocuments(dbId, "quizzes", query);
@@ -31,12 +28,8 @@ export default function QuizListViewer({
         console.error("Failed to fetch quizzes:", err);
       }
     };
-    if(quizList != null) {
-      setFilteredData(quizList)
-    }
-    else {
-      fetchQuiz();
-    }
+
+    fetchQuiz();
   }, []);
 
   useEffect(() => {
