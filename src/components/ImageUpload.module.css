@@ -8,7 +8,9 @@
   .uploadBox {
     position: relative;
     width: 100%;
-    aspect-ratio: 16/9;
+    max-width: 400px; 
+    height: 225px; 
+    aspect-ratio: 16/9; 
     border: 2px dashed #aaa;
     border-radius: 10px;
     display: flex;
@@ -20,6 +22,7 @@
     transition: all 0.3s ease-in-out;
     gap: 20px;
     overflow: hidden;
+    box-sizing: border-box; 
   }
   
   

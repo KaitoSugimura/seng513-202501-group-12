@@ -90,25 +90,34 @@ export default function Create() {
   const addQuestion = () => {
     saveQuestions();
     if (currentIndex == -1) {
-      console.log("saving preview image");
       previewImage.current = inputImage;
-      setCurrentIndex(questions.length);
-    } else {
-      questionsHaveError();
       const questionToAdd: Question = {
-        imageFile: inputImage,
+        imageFile: null,
         answers: answers,
         correctAnswer: correctAnswer,
         imageError: false,
         answerErrors: new Array(answers.length).fill(false),
       };
-      console.log(
-        "saving the question" + questionToAdd + " at index " + currentIndex
-      );
       setQuestions((prevQuestions) => {
         const newQuestions = [...prevQuestions];
-        newQuestions[currentIndex] = questionToAdd;
-        setCurrentIndex(newQuestions.length);
+        newQuestions.splice(currentIndex + 1, 0, questionToAdd);
+        setCurrentIndex(currentIndex + 1);
+        return newQuestions;
+      });
+    } else {
+      questionsHaveError();
+      const questionToAdd: Question = {
+        imageFile: null,
+        answers: new Array(4).fill(""),
+        correctAnswer: 0,
+        imageError: false,
+        answerErrors: new Array(answers.length).fill(false),
+      };
+
+      setQuestions((prevQuestions) => {
+        const newQuestions = [...prevQuestions];
+        newQuestions.splice(currentIndex + 1, 0, questionToAdd);
+        setCurrentIndex(currentIndex + 1);
         return newQuestions;
       });
     }
@@ -348,38 +357,40 @@ export default function Create() {
       </div>
       <div className={styles.quizDetails}>
         <div className={styles.topContainer}>
-          <h1>Create New Quiz!</h1>
-          <button onClick={createQuiz}>Create Quiz!</button>
+          <InputField
+            type="text"
+            label="Quiz Name"
+            placeholder={"Quiz name"}
+            value={quizName}
+            onChange={(e) => {
+              setQuizName(e.target.value);
+              setNameError(false);
+            }}
+            error={nameError ? "Please Enter a Name" : ""}
+            className={styles.inputField}
+          />
+          <button className={styles.createButton} onClick={createQuiz}>
+            Create Quiz!
+          </button>
         </div>
-
-        <InputField
-          type="text"
-          label="Quiz Name"
-          placeholder={"Quiz name"}
-          value={quizName}
-          onChange={(e) => {
-            setQuizName(e.target.value);
-            setNameError(false);
-          }}
-          error={nameError ? "Please Enter a Name" : ""}
-          className={styles.inputField}
-        />
-        <SelectField
-          id="quizTheme"
-          label="Quiz Theme"
-          value={quizTheme}
-          onChange={(e) => setQuizTheme(e.target.value)}
-          categories={categories}
-          className={styles.selectField}
-        />
-        <SelectField
-          id="quizType"
-          label="Quiz Type"
-          value={quizType}
-          onChange={(e) => setQuizType(e.target.value)}
-          categories={["blur", "zoom"]}
-          className={styles.selectField}
-        />
+        <div className={styles.selectFields}>
+          <SelectField
+            id="quizTheme"
+            label="Quiz Theme"
+            value={quizTheme}
+            onChange={(e) => setQuizTheme(e.target.value)}
+            categories={categories}
+            className={styles.selectField}
+          />
+          <SelectField
+            id="quizType"
+            label="Quiz Type"
+            value={quizType}
+            onChange={(e) => setQuizType(e.target.value)}
+            categories={["blur", "zoom"]}
+            className={styles.selectField}
+          />
+        </div>
 
         <div className={styles.imageContainer}>
           <div className={styles.questionButtonContainer}>
@@ -426,6 +437,7 @@ export default function Create() {
                     value={answer}
                     onChange={(e) => setAnswer(index, e.target.value)}
                     className={clsx(
+                      styles.answerInput,
                       questions[currentIndex].answerErrors[index] &&
                         styles.errorInput
                     )}
