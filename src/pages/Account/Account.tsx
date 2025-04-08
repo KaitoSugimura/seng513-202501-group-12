@@ -98,7 +98,7 @@ export default function Account() {
 
   return (
     <div className={styles.accountRoot}>
-      {displayUser && (
+      {user && (
         <>
           <div className={styles.header}>
             <h1>{displayUser?.username}'s Profile </h1>
@@ -133,7 +133,7 @@ export default function Account() {
             <QuizListViewer
               key={loadingUser}
               title="Created Quizzes"
-              quizList={createdQuizzes}
+              query={[Query.contains("creatorUsername", [displayUser.username])]}
               limitLessView={true}
             />
           ) : (
@@ -158,9 +158,9 @@ export default function Account() {
           )}
           </div>
 
-          {user && user.$id === displayUser.$id && (
+          {user && user.$id === displayUser?.$id && (
           <div className={styles.userControls}>
-            <Button className={styles.logoutButton} onClick={() => {setLoadingUser(0); logout}}>
+            <Button className={styles.logoutButton} onClick={logout}>
               Sign Out
             </Button>
           </div>
