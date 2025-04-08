@@ -6,7 +6,8 @@ import QuizListViewer from "../../components/QuizListViewer";
 import { Query } from "appwrite";
 import { useLocation } from 'react-router-dom';
 import { useEffect, useState } from "react";
-import { databases, dbId, User } from "../../util/appwrite";
+import { databases, dbId, User, Quiz } from "../../util/appwrite";
+import { NavLink } from "react-router-dom";
 
 export default function Account() {
   const location = useLocation();
@@ -16,10 +17,10 @@ export default function Account() {
   const displayUser = viewUser || user;
   const [isFriend, setIsFriend] = useState(false);
   const [loadingUser, setLoadingUser] = useState(0);
+  const [createdQuizzes, setcreatedQuizzes] = useState<Quiz[] | null>(null);
   
   useEffect(() => {
     const getViewUserProfile = async () => {
-      setLoadingUser(1);
       try {
         const response = await databases.listDocuments(dbId, "users", [Query.equal("username", [viewUsername])]);
         if (response.documents.length = 1) {
@@ -32,9 +33,6 @@ export default function Account() {
       catch (err) {
         console.error("Failed to fetch user information:", err);
       }
-      finally {
-        setLoadingUser(0);
-      }
     };
 
     if (viewUsername) {
@@ -43,8 +41,22 @@ export default function Account() {
   }, [viewUsername]);
 
   useEffect(() => {
+    setLoadingUser(1);
+    const fetchCreatedQuizzes = async () => {
+      try {
+        const quizzes = await databases.listDocuments(dbId, "quizzes", [Query.contains("creatorUsername", [displayUser.username])]);
+        setcreatedQuizzes(quizzes.documents as Quiz[]);
+      } catch (err) {
+        console.error("Failed to fetch quizzes:", err);
+      }
+      finally {
+        setLoadingUser(0);
+      }
+    };
+
     if (user && displayUser) {
       setIsFriend(user.friendIds?.includes(displayUser.$id));
+      fetchCreatedQuizzes();
     }
   }, [user, displayUser]);
 
@@ -117,15 +129,36 @@ export default function Account() {
           </div>
           
           <div className={styles.quizContainer}>
+          {createdQuizzes?.length != 0 && createdQuizzes != null? (
             <QuizListViewer
               key={loadingUser}
               title="Created Quizzes"
-              query={[Query.contains("creatorUsername", [displayUser.username])]}
+              quizList={createdQuizzes}
               limitLessView={true}
             />
+          ) : (
+            <div>
+              {user?.$id === displayUser.$id ? (
+              <div>
+                <h3 className={styles.emptyListMessage}>
+                  You have no created quizzes.
+                </h3>
+                <NavLink to="/create">
+                  <button className={styles.navigateElsewhereButton}>
+                    Create your first quiz!
+                  </button>
+                </NavLink>
+              </div>
+              ) : (
+                <h3 className={styles.emptyListMessage}>
+                  This user has not created any quizzes.
+                </h3>          
+              )}
+            </div>
+          )}
           </div>
 
-          {user && !viewUser && (
+          {user && user.$id === displayUser.$id && (
           <div className={styles.userControls}>
             <Button className={styles.logoutButton} onClick={logout}>
               Sign Out
