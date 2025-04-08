@@ -72,3 +72,18 @@
 .quizContainer {
   margin-top: 20px;
 }
+
+.unregisteredUserMessage,
+.emptyListMessage {
+  margin-top: 1rem;
+  color: rgb(165, 165, 165);
+}
+
+.navigateElsewhereButton {
+  border: none;
+  cursor: pointer;
+  margin-top: 10px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+}
