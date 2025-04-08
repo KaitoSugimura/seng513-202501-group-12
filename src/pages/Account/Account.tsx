@@ -87,7 +87,7 @@ export default function Account() {
     }
   };
 
-  if (loadingAuth || loadingUser) {
+  if (loadingAuth) {
     return (
       <div className={styles.accountRoot}>
         <h1 className={styles.title}>Account</h1>
@@ -160,7 +160,7 @@ export default function Account() {
 
           {user && user.$id === displayUser.$id && (
           <div className={styles.userControls}>
-            <Button className={styles.logoutButton} onClick={logout}>
+            <Button className={styles.logoutButton} onClick={() => {setLoadingUser(0); logout}}>
               Sign Out
             </Button>
           </div>
