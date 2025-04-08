@@ -3,8 +3,8 @@ import { NavLink, Outlet } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import usersData from "../database/stubUsers";
 import styles from "./Layout.module.css";
-import { databases, dbId, User } from "../util/appwrite";
-import ImageURLInput from "../components/ImageURLInput"
+import { databases, dbId, User, getImgUrl } from "../util/appwrite";
+import ProfileImageUpload from "../components/ProfileImageUpload"
 
 let currentHoverIndex = 0;
 
@@ -72,14 +72,15 @@ export default function Layout() {
         const friends = [];
         if (user) {
           friends.push(user);
+
+          for (let i = 0; i < user.friendIds.length; i++) {
+            const friendId = user.friendIds[i];
+            const friend = await databases.getDocument(dbId, "users", friendId);
+            friends.push(friend as User);
+          }
+          friends.sort((a, b) => b.points - a.points);
+          setFriendsList(friends); 
         }
-        for (let i = 0; i < user?.friendIds.length; i++) {
-          const friendId = user?.friendIds[i];
-          const friend = await databases.getDocument(dbId, "users", friendId);
-          friends.push(friend as User);
-        }
-        friends.sort((a, b) => b.points - a.points);
-        setFriendsList(friends); 
       } catch (err) {
         console.error("Failed to fetch friends:", err);
       }
@@ -225,7 +226,7 @@ export default function Layout() {
           <div className={styles.sideNav}>
             <div key={usersData[0].id} className={styles.userContainer}>
               <img
-                src={user?.profilePicture ? user.profilePicture : "/guest.png"}
+                src={user?.profilePictureId ? getImgUrl(user.profilePictureId) : "/guest.png"}
                 alt={`Profile for ${user?.username}`}
                 className={styles.userContainerImage}
                 onClick={handleProfilePictureClick}
@@ -250,7 +251,7 @@ export default function Layout() {
                     {friendsList.map((friend, index) => (
                       <div key={index} className={styles.userContainer}>
                         <img
-                          src={friend?.profilePicture ? friend.profilePicture : "/guest.png"}
+                          src={friend?.profilePictureId ? getImgUrl(friend.profilePictureId) : "/guest.png"}
                           alt={`Profile for ${friend?.username}`}
                           className={styles.userContainerImage}
                         />
@@ -273,8 +274,8 @@ export default function Layout() {
           </div>
         )}
       </div>
-      {showProfileUpdate && user?.$id != undefined && (
-        <ImageURLInput userId={user?.$id} />
+      {user && showProfileUpdate && user.$id != undefined && (
+        <ProfileImageUpload user={user as User} />
       )}
     </div>
   );

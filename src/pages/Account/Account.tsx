@@ -75,7 +75,7 @@ export default function Account() {
     }
   };
 
-  if (loadingAuth || loadingUser) {
+  if (loadingAuth) {
     return (
       <div className={styles.accountRoot}>
         <h1 className={styles.title}>Account</h1>

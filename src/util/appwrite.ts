@@ -45,6 +45,8 @@ export interface User extends Models.Document {
   username: string;
   points: number;
   favoritedQuizIds: string[];
+  friendIds: string[];
+  profilePictureId: string; 
 }
 
 export interface Quiz extends Models.Document {
