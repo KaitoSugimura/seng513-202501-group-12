@@ -129,7 +129,7 @@ export default function Account() {
           </div>
           
           <div className={styles.quizContainer}>
-          {createdQuizzes?.length != 0 ? (
+          {createdQuizzes?.length != 0 && createdQuizzes != null? (
             <QuizListViewer
               key={loadingUser}
               title="Created Quizzes"
@@ -138,7 +138,7 @@ export default function Account() {
             />
           ) : (
             <div>
-              {user?.username === displayUser.username ? (
+              {user?.$id === displayUser.$id ? (
               <div>
                 <h3 className={styles.emptyListMessage}>
                   You have no created quizzes.
@@ -158,9 +158,7 @@ export default function Account() {
           )}
           </div>
 
-          
-
-          {user && !viewUser && (
+          {user && user.$id === displayUser.$id && (
           <div className={styles.userControls}>
             <Button className={styles.logoutButton} onClick={logout}>
               Sign Out
