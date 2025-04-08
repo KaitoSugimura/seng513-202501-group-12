@@ -19,7 +19,9 @@
   aspect-ratio: 16/9;
   overflow: hidden;
   position: relative;
-  display: inline-block;
+  display: inline-block; 
+  object-fit: cover;
+  object-position: center;
 }
 
 .selectedListEntry {
@@ -94,12 +96,13 @@ height: 50%;
 }
 
 .imageContainer {
+  max-width: 80%;
   height: 40%;
   aspect-ratio: 16/9;
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 10px;
+  gap: 5px;
 }
 
 .questionButtonContainer {

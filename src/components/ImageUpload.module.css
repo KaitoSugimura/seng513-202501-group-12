@@ -3,25 +3,24 @@
     flex-direction: column;
     align-items: center;
     width: 100%;
+    aspect-ratio: 16/9;
   }
   
   .uploadBox {
     position: relative;
     width: 100%;
-    max-width: 400px; 
-    height: 225px; 
     aspect-ratio: 16/9; 
     border: 2px dashed #aaa;
     border-radius: 10px;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
     text-align: center;
     cursor: pointer;
     transition: all 0.3s ease-in-out;
     gap: 20px;
     overflow: hidden;
+    object-fit: cover;
+    object-position: center;
     box-sizing: border-box; 
   }
   
@@ -42,12 +41,11 @@
   }
   
   .previewImage {
-    position: absolute; 
-    top: 0;
-    left: 0;
-    width: 100%; 
-    height: 100%;
-    object-fit: cover;
+    display: block;
+  }
+
+  .previewImage img{
+    display: block;
   }
   
   .removeButton {
