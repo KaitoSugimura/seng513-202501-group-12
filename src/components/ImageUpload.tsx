@@ -64,7 +64,7 @@ export default function ImageUpload({ file, setFile, text }: ImageUploadProps) {
           </button>
         </div>
       ) : preview ? (
-        <div className={styles.uploadBox}>
+        <div className={styles.imageBox}>
           <img src={preview} alt="Preview" className={styles.previewImage} />
           <span onClick={handleRemoveImage} className={styles.removeButton}>
             <Trash2 />

@@ -29,10 +29,14 @@ export default function Library() {
 
       {!user && (
         <>
-          <h3>Sign in to access the Quiz Library feature.</h3>
+          <h3 className={styles.unregisteredUserMessage}>
+            The Quiz Library feature is only available for registered users.
+          </h3>
 
           <NavLink to="/account">
-            <button>Sign In Here!</button>
+            <button className={styles.navigateElsewhereButton}>
+              Sign In Now To Access Your Quiz Library!
+            </button>
           </NavLink>
         </>
       )}
@@ -56,16 +60,29 @@ export default function Library() {
               Quiz History
             </button>
           </div>
-          <QuizListViewer
-            key={activeTab}
-            title={
-              activeTab === "favoritedQuizzes"
-                ? "Favorited Quizzes"
-                : "Quiz History"
-            }
-            query={[Query.contains("$id", user.favoritedQuizIds)]}
-            limitLessView={true}
-          />
+          {user.favoritedQuizIds?.length > 0 ? (
+            <QuizListViewer
+              key={activeTab}
+              title={
+                activeTab === "favoritedQuizzes"
+                  ? "Favorited Quizzes"
+                  : "Quiz History"
+              }
+              query={[Query.contains("$id", user.favoritedQuizIds)]}
+              limitLessView={true}
+            />
+          ) : (
+            <>
+              <h3 className={styles.emptyListMessage}>
+                You have no favorited quizzes.
+              </h3>
+              <NavLink to="/home">
+                <button className={styles.navigateElsewhereButton}>
+                  Start Favoriting Quizzes Now!
+                </button>
+              </NavLink>
+            </>
+          )}
         </>
       )}
     </div>

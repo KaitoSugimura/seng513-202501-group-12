@@ -28,6 +28,7 @@ export default function QuizListViewer({
         console.error("Failed to fetch quizzes:", err);
       }
     };
+
     fetchQuiz();
   }, []);
 

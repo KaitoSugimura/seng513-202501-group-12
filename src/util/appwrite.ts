@@ -65,6 +65,13 @@ export interface Question extends Models.Document {
   answerIndex: number;
 }
 
+export interface QuizHistory extends Models.Document {
+  quizId: string;
+  userId: string;
+  date: Date;
+  score: number;
+}
+
 export function getImgUrl(id: string) {
   return `https://cloud.appwrite.io/v1/storage/buckets/images/files/${id}/view?project=${projectId}`;
 }

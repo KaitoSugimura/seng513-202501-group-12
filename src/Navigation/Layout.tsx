@@ -275,7 +275,7 @@ export default function Layout() {
         )}
       </div>
       {user && showProfileUpdate && user.$id != undefined && (
-        <ProfileImageUpload user={user as User} />
+        <ProfileImageUpload/>
       )}
     </div>
   );
