@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { databases, dbId, Quiz, Question, User } from "../../util/appwrite";
 import styles from "./QuizPage.module.css";
-import { Query } from "appwrite";
+import { ID, Query } from "appwrite";
 import Timer from "../Timer/Timer";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
@@ -18,7 +18,7 @@ export default function QuizPage() {
   const { user, setUser } = useAuth();
 
   useEffect(() => {
-    const setUserScore = async () => {
+    const updateUserDataWithCompletedQuiz = async () => {
       if (user) {
         try {
           const updatedScore = user.points + currentQuizScore;
@@ -32,11 +32,22 @@ export default function QuizPage() {
           );
           setUser(updatedUser as User);
         } catch (err) {
-          console.error("Failed to update user:", err);
+          console.error("Failed to update user score:", err);
+        }
+
+        try {
+          await databases.createDocument(dbId, "quizHistory", ID.unique(), {
+            quizId: thisQuiz?.$id,
+            userId: user.$id,
+            date: new Date(),
+            score: currentQuizScore,
+          });
+        } catch (err) {
+          console.error("Failed to create Quiz History object:", err);
         }
       }
     };
-    setUserScore();
+    updateUserDataWithCompletedQuiz();
   }, [showEndScreen]);
 
   useEffect(() => {
