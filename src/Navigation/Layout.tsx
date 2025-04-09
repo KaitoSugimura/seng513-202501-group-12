@@ -81,14 +81,16 @@ export default function Layout() {
           friends.sort((a, b) => b.points - a.points);
           setFriendsList(friends); 
         }
+        else {
+          setFriendsList([]);
+        }
       } catch (err) {
         console.error("Failed to fetch friends:", err);
       }
     };
 
-    if (user?.friendIds && user.friendIds.length > 0) {
-      getFriends();
-    }
+    getFriends();
+    
   }, [user]);
 
   return (

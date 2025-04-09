@@ -98,10 +98,10 @@ export default function Account() {
 
   return (
     <div className={styles.accountRoot}>
-      {user && (
+      {user && displayUser && (
         <>
           <div className={styles.header}>
-            <h1>{displayUser?.username}'s Profile </h1>
+            <h1>{displayUser.username}'s Profile </h1>
             {user && displayUser.$id !== user.$id && (
               <div>
                 {isFriend ? (
@@ -138,7 +138,7 @@ export default function Account() {
             />
           ) : (
             <div>
-              {user?.$id === displayUser.$id ? (
+              {user.$id === displayUser.$id ? (
               <div>
                 <h3 className={styles.emptyListMessage}>
                   You have no created quizzes.
@@ -158,7 +158,7 @@ export default function Account() {
           )}
           </div>
 
-          {user && user.$id === displayUser?.$id && (
+          {user && user.$id === displayUser.$id && (
           <div className={styles.userControls}>
             <Button className={styles.logoutButton} onClick={logout}>
               Sign Out

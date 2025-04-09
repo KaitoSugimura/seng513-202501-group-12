@@ -5,7 +5,7 @@ import styles from "../components/ProfileImageUpload.module.css";
 import ImageUpload from '../components/ImageUpload'
 import { ID } from 'appwrite'
 
-export default function QuizListViewer() {
+export default function ProfileImageUpload() {
   const { user } = useAuth();
   const [isVisible, setIsVisible] = useState(true);
   const [inputImage, setInputImage] = useState<File | null>(null);
@@ -42,7 +42,8 @@ export default function QuizListViewer() {
             file={inputImage}
             setFile={setInputImage}
             text={"Upload or drag and drop profile image"}
-          />
+          >
+          </ImageUpload>
         <div className={styles.popupActions}>
           <button className={styles.confirmButton} onClick={handleUpdate}>
             Apply
