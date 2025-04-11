@@ -1,20 +1,17 @@
 import { useEffect, useRef, useState } from "react";
-import SectionLabel from "./SectionLabel";
 import { databases, dbId, Quiz } from "../util/appwrite";
-import SkeletonQuizCard from "./SkeletonQuizCard";
 import QuizCard from "./QuizCard";
 import styles from "./QuizListViewer.module.css";
+import SectionLabel from "./SectionLabel";
+import SkeletonQuizCard from "./SkeletonQuizCard";
 
 export default function QuizListViewer({
   title,
   query,
-  limitLessView = false,
 }: {
   title: string;
   query?: string[];
-  limitLessView?: boolean;
 }) {
-  const [listIndex, setListIndex] = useState(0);
   const [itemsToShow, setItemsToShow] = useState(0);
   const [filteredData, setFilteredData] = useState<Quiz[] | null>(null);
   const gridRootRef = useRef<HTMLDivElement>(null);
@@ -30,7 +27,7 @@ export default function QuizListViewer({
     };
 
     fetchQuiz();
-  }, []);
+  }, [query]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -51,43 +48,11 @@ export default function QuizListViewer({
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const currentViewingItems = limitLessView
-    ? filteredData
-    : filteredData?.slice(
-        listIndex * itemsToShow,
-        listIndex * itemsToShow + itemsToShow
-      );
+  const currentViewingItems = filteredData;
 
   return (
-    <div ref={gridRootRef}>
-      <SectionLabel
-        title={title}
-        onClickNext={
-          limitLessView
-            ? undefined
-            : () => {
-                setListIndex((prevIndex) => {
-                  if (filteredData === null) return prevIndex;
-                  return Math.min(
-                    prevIndex + 1,
-                    Math.floor((filteredData.length - 1) / itemsToShow)
-                  );
-                });
-              }
-        }
-        onClickPrev={
-          limitLessView
-            ? undefined
-            : () => {
-                setListIndex((prevIndex) => Math.max(prevIndex - 1, 0));
-              }
-        }
-        disabledPrev={listIndex === 0}
-        disabledNext={
-          filteredData === null ||
-          listIndex === Math.floor((filteredData.length - 1) / itemsToShow)
-        }
-      />
+    <div ref={gridRootRef} className={styles.quizListViewer}>
+      <SectionLabel title={title} disabledPrev disabledNext />
       <div
         className={styles.quizGrid}
         style={{

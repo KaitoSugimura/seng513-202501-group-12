@@ -1,23 +1,23 @@
-import styles from "./Home.module.css";
-import CategoryListViewer from "../../components/CategoryListViewer";
-import QuizListViewer from "../../components/QuizListViewer";
 import { Query } from "appwrite";
+import CategoryListViewer from "../../components/CategoryListViewer";
+import QuizCarousel from "../../components/QuizCarousel";
+import styles from "./Home.module.css";
 
 export default function Home() {
   return (
     <div className={styles.homeRoot}>
-      <QuizListViewer
+      <QuizCarousel
         title="Top Quizzes"
         query={[Query.orderDesc("favoritedCount")]}
       />
-      <QuizListViewer title="Newest" />
-      <QuizListViewer
+      <QuizCarousel title="Newest" />
+      <QuizCarousel
         title="Recommended for you"
         query={[Query.contains("title", ["Ri"])]}
       />
       <CategoryListViewer />
-      <QuizListViewer title="Trending" />
-      <QuizListViewer title="Most Played" />
+      <QuizCarousel title="Trending" />
+      <QuizCarousel title="Most Played" />
     </div>
   );
 }

@@ -1,12 +1,11 @@
 import { Star, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { Quiz, databases, dbId } from "../util/appwrite";
 import styles from "./QuizCard.module.css";
 
 export default function QuizCard({ quiz }: { quiz: Quiz }) {
-  const navigate = useNavigate();
   const { user, toggleFavoriteQuiz } = useAuth();
   const [isQuizFavorited, setIsQuizFavorited] = useState(false);
   const [imageIsLoading, setImageIsLoading] = useState(true);
@@ -32,10 +31,7 @@ export default function QuizCard({ quiz }: { quiz: Quiz }) {
 
   return (
     <div>
-      <div
-        key={quiz.id}
-        className={styles.quizContainer}
-      >
+      <div key={quiz.id} className={styles.quizContainer}>
         <div className={styles.quizImageContainer}>
           <Link to={`/quiz/${quiz.$id}`} tabIndex={-1}>
             <img

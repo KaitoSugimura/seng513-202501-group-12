@@ -134,7 +134,6 @@ export default function Account() {
               key={loadingUser}
               title="Created Quizzes"
               query={[Query.contains("creatorUsername", [displayUser.username])]}
-              limitLessView={true}
             />
           ) : (
             <div>

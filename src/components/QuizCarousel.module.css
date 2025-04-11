@@ -1,0 +1,38 @@
+.carouselWrapper {
+  position: relative;
+  container-type: inline-size;
+}
+
+.embla {
+  overflow: hidden;
+  --gap: 8px;
+}
+
+.emblaContainer {
+  display: flex;
+  margin-inline: calc(var(--gap) / -2);
+}
+
+.emblaSlide {
+  --columns: 4;
+  flex: 0 0 calc(100% / var(--columns));
+  padding-inline: calc(var(--gap) / 2);
+}
+
+@container (max-width: 1100px) {
+  .emblaSlide {
+    --columns: 3;
+  }
+}
+
+@container (max-width: 750px) {
+  .emblaSlide {
+    --columns: 2;
+  }
+}
+
+@container (max-width: 480px) {
+  .emblaSlide {
+    --columns: 1;
+  }
+}

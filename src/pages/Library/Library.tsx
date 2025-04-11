@@ -1,9 +1,9 @@
-import { useState } from "react";
-import QuizListViewer from "../../components/QuizListViewer";
 import { Query } from "appwrite";
+import { useState } from "react";
+import { NavLink } from "react-router-dom";
+import QuizListViewer from "../../components/QuizListViewer";
 import { useAuth } from "../../context/AuthContext";
 import styles from "./Library.module.css";
-import { NavLink } from "react-router-dom";
 
 export default function Library() {
   const { user, loadingAuth } = useAuth();
@@ -69,7 +69,6 @@ export default function Library() {
                   : "Quiz History"
               }
               query={[Query.contains("$id", user.favoritedQuizIds)]}
-              limitLessView={true}
             />
           ) : (
             <>
