@@ -23,7 +23,7 @@ import {
 import styles from "./Create.module.css";
 import InputField from "../../components/InputField";
 import SelectField from "../../components/SelectField";
-
+import { useMediaQuery } from "@mui/material";
 export type Question = {
   imageFile: File | null;
   answers: string[];
@@ -35,6 +35,7 @@ export type Question = {
 export default function Create() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const isSmallScreen = useMediaQuery("(max-width:768px)");
 
   const [quizName, setQuizName] = useState("");
   const [nameError, setNameError] = useState(false);
@@ -389,24 +390,26 @@ export default function Create() {
                 Create Quiz!
               </button>
             </div>
-            <div className={styles.selectFields}>
-              <SelectField
-                id="quizTheme"
-                label="Quiz Theme"
-                value={quizTheme}
-                onChange={(e) => setQuizTheme(e.target.value)}
-                categories={categories}
-                className={styles.selectField}
-              />
-              <SelectField
-                id="quizType"
-                label="Quiz Type"
-                value={quizType}
-                onChange={(e) => setQuizType(e.target.value)}
-                categories={["blur", "zoom"]}
-                className={styles.selectField}
-              />
-            </div>
+            {(!isSmallScreen || currentIndex === -1) && (
+              <div className={styles.selectFields}>
+                <SelectField
+                  id="quizTheme"
+                  label="Quiz Theme"
+                  value={quizTheme}
+                  onChange={(e) => setQuizTheme(e.target.value)}
+                  categories={categories}
+                  className={styles.selectField}
+                />
+                <SelectField
+                  id="quizType"
+                  label="Quiz Type"
+                  value={quizType}
+                  onChange={(e) => setQuizType(e.target.value)}
+                  categories={["blur", "zoom"]}
+                  className={styles.selectField}
+                />
+              </div>
+            )}
 
             <div className={styles.imageContainer}>
               <div className={styles.questionButtonContainer}>

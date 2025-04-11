@@ -11,30 +11,6 @@
   overflow-y: auto;
 }
 
-@media (max-width: 768px){
-    .container{
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-    }
-    .questionList{
-      width: 100%;
-      height: 20%;
-      width: 100%;
-      height: 20%;
-      overflow-x: auto; 
-      overflow-y: hidden; 
-      display: flex;
-      flex-direction: row;
-      gap: 1rem; 
-      white-space: nowrap; 
-    }
-    .listEntryImage{
-      width: 35%;
-      flex-shrink: 0;
-    }
-}
-
 .listEntryImage {
   margin: 10px;
   padding: 2px;
@@ -237,4 +213,54 @@ height: 50%;
   flex-direction: column;
   gap: 20px;
   padding: 40px 40px 20px 40px;
+}
+
+@media (max-width: 768px){
+  .container{
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    height: 89vh;
+  }
+  .questionList{
+    width: 100%;
+    height: 15%;
+    overflow-x: auto; 
+    overflow-y: hidden; 
+    display: flex;
+    flex-direction: row;
+    gap: 1rem; 
+    white-space: nowrap; 
+  }
+  .listEntryImage{
+    width: 35%;
+    flex-shrink: 0;
+  }
+  .quizDetails{
+    width: 100%;
+    height: 85%;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  .topContainer{
+    padding-left: 5%;
+    padding-right: 5%;
+    width: 100%;
+  }
+
+  .imageContainer{
+    width: 100%;
+    height: 30%;
+  }
+
+  .answersContainer{
+    margin: 0;
+    height: 15%;
+  }
+
+  .selectFields{
+    width: 100%;
+  }
 }
