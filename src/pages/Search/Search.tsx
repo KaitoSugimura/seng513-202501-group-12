@@ -1,11 +1,11 @@
-import { useState } from "react";
-import styles from "./Search.module.css";
-import QuizListViewer from "../../components/QuizListViewer";
 import { Query } from "appwrite";
+import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { categories } from "../../util/appwrite";
 import InputField from "../../components/InputField";
+import QuizListViewer from "../../components/QuizListViewer";
 import SelectField from "../../components/SelectField";
+import { categories } from "../../util/appwrite";
+import styles from "./Search.module.css";
 
 const checkCategory = (category: string | null) => {
   if (!category) return "";
@@ -84,7 +84,6 @@ export default function Search() {
         key={searchKey}
         title="Search Results"
         query={searchQuery}
-        limitLessView={true}
       />
     </div>
   );
