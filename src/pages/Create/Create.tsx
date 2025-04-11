@@ -1,4 +1,5 @@
 import { ID } from "appwrite";
+import { NavLink } from "react-router-dom";
 import clsx from "clsx";
 import {
   ArrowLeft,
@@ -300,186 +301,209 @@ export default function Create() {
 
   return (
     <div className={styles.container}>
-      <div className={styles.questionList}>
-        <ol
-          className={clsx(
-            styles.listEntryImage,
-            currentIndex === -1 && styles.selectedListEntry
-          )}
-          onClick={navigateToPreview}
-        >
-          <div className={styles.overlay}></div>
-          <img
-            src={
-              previewImage.current
-                ? URL.createObjectURL(previewImage.current)
-                : "/NoImage.png"
-            }
-            alt=""
-          />
-        </ol>
-        {questions.map((question, index) => (
-          <ol
-            className={clsx(
-              styles.listEntryImage,
-              currentIndex === index && styles.selectedListEntry,
-              (questions[index].imageError ||
-                questions[index].answerErrors.some(Boolean)) &&
-                styles.errorInput
-            )}
-            key={index}
-            onClick={(event) => {
-              event.stopPropagation();
-              setCurrentIndex(index);
-            }}
-          >
-            <div className={styles.overlay}>
-              <h2>{index + 1}</h2>
-              <button
+      {!user && (
+        <div className={styles.unregisteredContainer}>
+          <h3 className={styles.unregisteredUserMessage}>
+            Only registered users can create quizzes.
+          </h3>
+
+          <NavLink to="/account">
+            <button className={styles.navigateElsewhereButton}>
+              Sign In Now To Create a Quiz!
+            </button>
+          </NavLink>
+        </div>
+      )}
+      {user && (
+        <>
+          <div className={styles.questionList}>
+            <ol
+              className={clsx(
+                styles.listEntryImage,
+                currentIndex === -1 && styles.selectedListEntry
+              )}
+              onClick={navigateToPreview}
+            >
+              <div className={styles.overlay}></div>
+              <img
+                src={
+                  previewImage.current
+                    ? URL.createObjectURL(previewImage.current)
+                    : "/NoImage.png"
+                }
+                alt=""
+              />
+            </ol>
+            {questions.map((question, index) => (
+              <ol
+                className={clsx(
+                  styles.listEntryImage,
+                  currentIndex === index && styles.selectedListEntry,
+                  (questions[index].imageError ||
+                    questions[index].answerErrors.some(Boolean)) &&
+                    styles.errorInput
+                )}
+                key={index}
                 onClick={(event) => {
                   event.stopPropagation();
-                  deleteIndex(index);
+                  setCurrentIndex(index);
                 }}
               >
-                <Trash2 />
-              </button>
-            </div>
-            <img
-              src={
-                question.imageFile
-                  ? URL.createObjectURL(question.imageFile)
-                  : "/NoImage.png"
-              }
-              alt=""
-            />
-          </ol>
-        ))}
-      </div>
-      <div className={styles.quizDetails}>
-        <div className={styles.topContainer}>
-          <InputField
-            type="text"
-            label="Quiz Name"
-            placeholder={"Quiz name"}
-            value={quizName}
-            onChange={(e) => {
-              setQuizName(e.target.value);
-              setNameError(false);
-            }}
-            error={nameError ? "Please Enter a Name" : ""}
-            className={styles.inputField}
-          />
-          <button className={styles.createButton} onClick={createQuiz}>
-            Create Quiz!
-          </button>
-        </div>
-        <div className={styles.selectFields}>
-          <SelectField
-            id="quizTheme"
-            label="Quiz Theme"
-            value={quizTheme}
-            onChange={(e) => setQuizTheme(e.target.value)}
-            categories={categories}
-            className={styles.selectField}
-          />
-          <SelectField
-            id="quizType"
-            label="Quiz Type"
-            value={quizType}
-            onChange={(e) => setQuizType(e.target.value)}
-            categories={["blur", "zoom"]}
-            className={styles.selectField}
-          />
-        </div>
-
-        <div className={styles.imageContainer}>
-          <div className={styles.questionButtonContainer}>
-            {currentIndex > -1 && (
-              <button className={styles.questionButtons} onClick={onDelete}>
-                <Trash2 />
-              </button>
-            )}
-            {currentIndex > -1 && (
-              <button className={styles.questionButtons} onClick={onBack}>
-                <ArrowLeft />
-              </button>
-            )}
-          </div>
-          <ImageUpload
-            file={inputImage}
-            setFile={setInputImage}
-            text={
-              currentIndex === -1
-                ? "Upload or drag and drop thumbnail"
-                : "Upload or drag and drop question image"
-            }
-          ></ImageUpload>
-
-          <div className={styles.questionButtonContainer}>
-            <button className={styles.questionButtons} onClick={addQuestion}>
-              <Plus />
-            </button>
-            {questions.length > 0 && currentIndex < questions.length - 1 && (
-              <button className={styles.questionButtons} onClick={onNext}>
-                <ArrowRight />
-              </button>
-            )}
-          </div>
-        </div>
-        {currentIndex >= 0 && (
-          <div className={styles.answersContainer}>
-            {answers.map((answer, index) => (
-              <div>
-                <div key={index} className={styles.inputWrapper}>
-                  <input
-                    type="text"
-                    placeholder="answer"
-                    value={answer}
-                    onChange={(e) => setAnswer(index, e.target.value)}
-                    className={clsx(
-                      styles.answerInput,
-                      questions[currentIndex].answerErrors[index] &&
-                        styles.errorInput
-                    )}
-                  />
-                  <div
-                    className={clsx(
-                      styles.check,
-                      index === correctAnswer
-                        ? styles.correctCheck
-                        : styles.incorrectCheck
-                    )}
-                    onClick={() => setCorrectAnswer(index)}
-                  >
-                    <Check />
-                  </div>
-                </div>
-                <label
-                  className={clsx(
-                    styles.quizDetailsInput,
-                    questions[currentIndex].answerErrors[index] &&
-                      styles.errorLabel
-                  )}
-                >
-                  <span
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "0.3rem",
-                      visibility: questions[currentIndex].answerErrors[index]
-                        ? "visible"
-                        : "hidden",
+                <div className={styles.overlay}>
+                  <h2>{index + 1}</h2>
+                  <button
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      deleteIndex(index);
                     }}
                   >
-                    <TriangleAlert />
-                    Enter an Answer
-                  </span>
-                </label>
-              </div>
+                    <Trash2 />
+                  </button>
+                </div>
+                <img
+                  src={
+                    question.imageFile
+                      ? URL.createObjectURL(question.imageFile)
+                      : "/NoImage.png"
+                  }
+                  alt=""
+                />
+              </ol>
             ))}
           </div>
-        )}
-      </div>
+          <div className={styles.quizDetails}>
+            <div className={styles.topContainer}>
+              <InputField
+                type="text"
+                label="Quiz Name"
+                placeholder={"Quiz name"}
+                value={quizName}
+                onChange={(e) => {
+                  setQuizName(e.target.value);
+                  setNameError(false);
+                }}
+                error={nameError ? "Please Enter a Name" : ""}
+                className={styles.inputField}
+              />
+              <button className={styles.createButton} onClick={createQuiz}>
+                Create Quiz!
+              </button>
+            </div>
+            <div className={styles.selectFields}>
+              <SelectField
+                id="quizTheme"
+                label="Quiz Theme"
+                value={quizTheme}
+                onChange={(e) => setQuizTheme(e.target.value)}
+                categories={categories}
+                className={styles.selectField}
+              />
+              <SelectField
+                id="quizType"
+                label="Quiz Type"
+                value={quizType}
+                onChange={(e) => setQuizType(e.target.value)}
+                categories={["blur", "zoom"]}
+                className={styles.selectField}
+              />
+            </div>
+
+            <div className={styles.imageContainer}>
+              <div className={styles.questionButtonContainer}>
+                {currentIndex > -1 && (
+                  <button className={styles.questionButtons} onClick={onDelete}>
+                    <Trash2 />
+                  </button>
+                )}
+                {currentIndex > -1 && (
+                  <button className={styles.questionButtons} onClick={onBack}>
+                    <ArrowLeft />
+                  </button>
+                )}
+              </div>
+              <ImageUpload
+                file={inputImage}
+                setFile={setInputImage}
+                text={
+                  currentIndex === -1
+                    ? "Upload or drag and drop thumbnail"
+                    : "Upload or drag and drop question image"
+                }
+              ></ImageUpload>
+
+              <div className={styles.questionButtonContainer}>
+                <button
+                  className={styles.questionButtons}
+                  onClick={addQuestion}
+                >
+                  <Plus />
+                </button>
+                {questions.length > 0 &&
+                  currentIndex < questions.length - 1 && (
+                    <button className={styles.questionButtons} onClick={onNext}>
+                      <ArrowRight />
+                    </button>
+                  )}
+              </div>
+            </div>
+            {currentIndex >= 0 && (
+              <div className={styles.answersContainer}>
+                {answers.map((answer, index) => (
+                  <div>
+                    <div key={index} className={styles.inputWrapper}>
+                      <input
+                        type="text"
+                        placeholder="answer"
+                        value={answer}
+                        onChange={(e) => setAnswer(index, e.target.value)}
+                        className={clsx(
+                          styles.answerInput,
+                          questions[currentIndex].answerErrors[index] &&
+                            styles.errorInput
+                        )}
+                      />
+                      <div
+                        className={clsx(
+                          styles.check,
+                          index === correctAnswer
+                            ? styles.correctCheck
+                            : styles.incorrectCheck
+                        )}
+                        onClick={() => setCorrectAnswer(index)}
+                      >
+                        <Check />
+                      </div>
+                    </div>
+                    <label
+                      className={clsx(
+                        styles.quizDetailsInput,
+                        questions[currentIndex].answerErrors[index] &&
+                          styles.errorLabel
+                      )}
+                    >
+                      <span
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "0.3rem",
+                          visibility: questions[currentIndex].answerErrors[
+                            index
+                          ]
+                            ? "visible"
+                            : "hidden",
+                        }}
+                      >
+                        <TriangleAlert />
+                        Enter an Answer
+                      </span>
+                    </label>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 }
