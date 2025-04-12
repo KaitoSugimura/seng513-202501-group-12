@@ -1,5 +1,5 @@
 import { Query } from "appwrite";
-import CategoryListViewer from "../../components/CategoryListViewer";
+import CategoryCarousel from "../../components/CategoryCarousel";
 import QuizCarousel from "../../components/QuizCarousel";
 import styles from "./Home.module.css";
 
@@ -15,7 +15,7 @@ export default function Home() {
         title="Recommended for you"
         query={[Query.contains("title", ["Ri"])]}
       />
-      <CategoryListViewer />
+      <CategoryCarousel />
       <QuizCarousel title="Trending" />
       <QuizCarousel title="Most Played" />
     </div>

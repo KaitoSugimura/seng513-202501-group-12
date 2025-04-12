@@ -1,3 +1,18 @@
+.carouselWrapper {
+  position: relative;
+  container-type: inline-size;
+}
+
+.embla {
+  overflow: hidden;
+  --gap: 8px;
+}
+
+.emblaContainer {
+  display: flex;
+  margin-inline: calc(var(--gap) / -2);
+}
+
 .emblaSlide {
   --columns: 4;
   flex: 0 0 calc(100% / var(--columns));

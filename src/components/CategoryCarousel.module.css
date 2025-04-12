@@ -1,23 +1,27 @@
+.containerWrapper {
+  padding: 8px;
+}
+
 .emblaSlide {
-  --columns: 4;
+  --columns: 5;
   flex: 0 0 calc(100% / var(--columns));
   padding-inline: calc(var(--gap) / 2);
 }
 
-@container (max-width: 1100px) {
+@container (max-width: 768px) {
+  .emblaSlide {
+    --columns: 4;
+  }
+}
+
+@container (max-width: 620px) {
   .emblaSlide {
     --columns: 3;
   }
 }
 
-@container (max-width: 750px) {
-  .emblaSlide {
-    --columns: 2;
-  }
-}
-
 @container (max-width: 480px) {
   .emblaSlide {
-    --columns: 1;
+    --columns: 2;
   }
 }
