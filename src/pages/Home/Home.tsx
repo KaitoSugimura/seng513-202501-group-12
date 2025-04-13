@@ -10,7 +10,7 @@ export default function Home() {
         title="Top Quizzes"
         query={[Query.orderDesc("favoritedCount")]}
       />
-      <QuizCarousel title="Newest" />
+      <QuizCarousel title="Newest" query={[Query.orderDesc("$createdAt")]} />
       <QuizCarousel
         title="Recommended for you"
         query={[Query.contains("title", ["Ri"])]}
