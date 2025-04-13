@@ -2,10 +2,16 @@ import { Star, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { Quiz, databases, dbId } from "../util/appwrite";
+import { Quiz, QuizHistory, databases, dbId } from "../util/appwrite";
 import styles from "./QuizCard.module.css";
 
-export default function QuizCard({ quiz }: { quiz: Quiz }) {
+export default function QuizCard({
+  quiz,
+  quizHistory,
+}: {
+  quiz: Quiz;
+  quizHistory?: QuizHistory;
+}) {
   const { user, toggleFavoriteQuiz } = useAuth();
   const [isQuizFavorited, setIsQuizFavorited] = useState(false);
   const [imageIsLoading, setImageIsLoading] = useState(true);
@@ -76,6 +82,18 @@ export default function QuizCard({ quiz }: { quiz: Quiz }) {
             <span>{quiz.creatorUsername}</span>
           </NavLink>
         </div>
+        {quizHistory && (
+          <>
+            <h5>
+              Played on:{" "}
+              {new Date(quizHistory.date).toLocaleString(undefined, {
+                dateStyle: "medium",
+                timeStyle: "short",
+              })}
+            </h5>
+            <h5>Your Score: {quizHistory?.score}</h5>
+          </>
+        )}
 
         {user?.username === quiz.creatorUsername && (
           <button
