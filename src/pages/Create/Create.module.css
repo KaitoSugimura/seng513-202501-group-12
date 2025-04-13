@@ -69,6 +69,7 @@
   align-items: center;
   align-content: center;
   gap: 2px;
+  overflow-y: hidden;
 }
 
 .quizDetailsInput {
@@ -96,7 +97,7 @@ height: 50%;
 
 .imageContainer {
   max-width: 80%;
-  height: 40%;
+  height: 60%;
   aspect-ratio: 16/9;
   display: flex;
   justify-content: center;
