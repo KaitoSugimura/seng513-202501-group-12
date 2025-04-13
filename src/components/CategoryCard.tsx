@@ -25,7 +25,7 @@ import {
   Volleyball,
   Zap,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Category } from "../util/appwrite";
 import styles from "./CategoryCard.module.css";
 
@@ -57,8 +57,6 @@ const categoryIcons: Record<Category, LucideIcon> = {
 };
 
 export default function CategoryCard({ category }: { category: Category }) {
-  const navigate = useNavigate();
-
   let combinedHex = "";
   category.split("").forEach((char, index) => {
     if (index > 5) return;
@@ -70,14 +68,12 @@ export default function CategoryCard({ category }: { category: Category }) {
   const Icon = categoryIcons[category];
 
   return (
-    <div
+    <Link
+      to={`/search?theme=${category}`}
       className={styles.categoryCardContainer}
-      onClick={() => {
-        navigate(`/search?theme=${category}`);
-      }}
     >
       <Icon size={48} color={`#${combinedHex}`} />
       <h3 className={styles.categoryCardTitle}>{category}</h3>
-    </div>
+    </Link>
   );
 }

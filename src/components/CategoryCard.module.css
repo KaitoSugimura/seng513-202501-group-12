@@ -22,8 +22,13 @@
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(12px) saturate(180%);
   transition: background 0.3s ease;
+
+  text-decoration: none;
+  color: unset;
 }
 
-.categoryCardContainer:hover {
+.categoryCardContainer:hover,
+.categoryCardContainer:focus {
+  outline: none;
   background: rgba(255, 255, 255, 0.1);
 }
