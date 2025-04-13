@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
-import { databases, dbId, Quiz, Question, User } from "../../util/appwrite";
-import styles from "./QuizPage.module.css";
 import { ID, Query } from "appwrite";
-import Timer from "../Timer/Timer";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import LoadingSpinner from "../../components/LoadingSpinner";
 import { useAuth } from "../../context/AuthContext";
+import { databases, dbId, Question, Quiz, User } from "../../util/appwrite";
+import Timer from "../Timer/Timer";
+import styles from "./QuizPage.module.css";
 
 export default function QuizPage() {
   const quizId = window.location.pathname.split("/")[2];
@@ -112,8 +113,17 @@ export default function QuizPage() {
   };
 
   if (!thisQuiz || !quizQuestions) {
-    return <div className={styles.quizRoot}>Loading quiz...</div>;
-  } else if (showEndScreen) {
+    return (
+      <div className={styles.quizRoot}>
+        <div className={styles.loading}>
+          <LoadingSpinner />
+          <h1>Loading quiz...</h1>
+        </div>
+      </div>
+    );
+  }
+
+  if (showEndScreen) {
     return (
       <div className={styles.quizRoot}>
         <div className={styles.endFormat}>
