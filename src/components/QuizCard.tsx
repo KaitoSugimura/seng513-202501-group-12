@@ -85,7 +85,7 @@ export default function QuizCard({ quiz }: { quiz: Quiz }) {
               setShowPopup(true);
             }}
           >
-            <Trash2 id="deleteIcon" fill="red" stroke="black" />
+            <Trash2 id="deleteIcon" stroke="darkRed" size={22} />
           </button>
         )}
       </div>
