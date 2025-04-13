@@ -113,10 +113,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: transform 0.2s;
 }
 
 .favoriteButton:hover {
-  transform: scale(1.2);
+  transform: scale(1.1);
 }
 
 .favoriteButton #favoriteIcon {

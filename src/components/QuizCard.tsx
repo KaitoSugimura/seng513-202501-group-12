@@ -54,8 +54,10 @@ export default function QuizCard({ quiz }: { quiz: Quiz }) {
             >
               <Star
                 id="favoriteIcon"
-                fill={isQuizFavorited ? "gold" : "white"}
-                stroke="black"
+                fill={isQuizFavorited ? "gold" : "transparent"}
+                stroke={isQuizFavorited ? "gold" : "#999"}
+                strokeWidth={1.5}
+                size={22}
               />
             </button>
           )}
