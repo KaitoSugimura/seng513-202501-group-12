@@ -33,29 +33,30 @@ export default function Library() {
         const quizHistoryQuizIds = userQuizHistory.documents.map(
           (quizHistory) => quizHistory.quizId
         );
-
-        const correspondingQuizzes = await databases.listDocuments(
-          dbId,
-          "quizzes",
-          [Query.contains("$id", quizHistoryQuizIds)]
-        );
-
-        const quizHistoryList = userQuizHistory.documents as QuizHistory[];
-        const correspondingQuizzesList =
-          correspondingQuizzes.documents as Quiz[];
-
-        const pairs: { quiz: Quiz; quizHistory: QuizHistory }[] = [];
-
-        quizHistoryList.forEach((quizHistory) => {
-          const correspondingQuiz = correspondingQuizzesList.find(
-            (quiz) => quiz.$id === quizHistory.quizId
+        if (quizHistoryQuizIds.length > 0) {
+          const correspondingQuizzes = await databases.listDocuments(
+            dbId,
+            "quizzes",
+            [Query.contains("$id", quizHistoryQuizIds)]
           );
-          if (correspondingQuiz) {
-            pairs.push({ quiz: correspondingQuiz, quizHistory: quizHistory });
-          }
-        });
 
-        setUserQuizAndQuizHistoryPairs(pairs);
+          const quizHistoryList = userQuizHistory.documents as QuizHistory[];
+          const correspondingQuizzesList =
+            correspondingQuizzes.documents as Quiz[];
+
+          const pairs: { quiz: Quiz; quizHistory: QuizHistory }[] = [];
+
+          quizHistoryList.forEach((quizHistory) => {
+            const correspondingQuiz = correspondingQuizzesList.find(
+              (quiz) => quiz.$id === quizHistory.quizId
+            );
+            if (correspondingQuiz) {
+              pairs.push({ quiz: correspondingQuiz, quizHistory: quizHistory });
+            }
+          });
+
+          setUserQuizAndQuizHistoryPairs(pairs);
+        }
       } catch (err) {
         console.error("Failed to fetch user's quiz history:", err);
       }
