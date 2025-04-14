@@ -69,7 +69,7 @@ export default function CategoryCard({ category }: { category: Category }) {
 
   return (
     <Link
-      to={`/search?theme=${category}`}
+      to={`/search?theme=${encodeURIComponent(category)}`}
       className={styles.categoryCardContainer}
     >
       <Icon size={48} color={`#${combinedHex}`} />
