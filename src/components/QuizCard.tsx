@@ -2,7 +2,8 @@ import { Star, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { Quiz, QuizHistory, databases, dbId } from "../util/appwrite";
+import { Quiz, QuizHistory, databases, dbId, storage } from "../util/appwrite";
+import { Query } from "appwrite";
 import styles from "./QuizCard.module.css";
 
 export default function QuizCard({
@@ -27,6 +28,49 @@ export default function QuizCard({
 
   const deleteQuiz = async () => {
     try {
+      const correspondingQuizHistories = await databases.listDocuments(
+        dbId,
+        "quizHistory",
+        [Query.equal("quizId", quiz.$id)]
+      );
+      correspondingQuizHistories.documents.forEach(async (quizHistory) => {
+        await databases.deleteDocument(dbId, "quizHistory", quizHistory.$id);
+      });
+
+      const usersThatFavoritedTheQuiz = await databases.listDocuments(
+        dbId,
+        "users",
+        [Query.contains("favoritedQuizIds", quiz.$id)]
+      );
+
+      usersThatFavoritedTheQuiz.documents.forEach(async (user) => {
+        const updatedFavoritedQuizIdsList = user.favoritedQuizIds.filter(
+          (id: string) => id !== quiz.$id
+        );
+        await databases.updateDocument(dbId, "users", user.$id, {
+          favoritedQuizIds: updatedFavoritedQuizIdsList,
+        });
+      });
+
+      const correspondingQuestions = await databases.listDocuments(
+        dbId,
+        "questions",
+        [Query.equal("quizId", quiz.$id)]
+      );
+
+      correspondingQuestions.documents.forEach(async (question) => {
+        const imageFileId = question.imageUrl
+          .split("/files/")[1]
+          .split("/view")[0];
+        await storage.deleteFile("images", imageFileId);
+        await databases.deleteDocument(dbId, "questions", question.$id);
+      });
+
+      const previewImageFileId = quiz.previewUrl
+        .split("/files/")[1]
+        .split("/view")[0];
+      await storage.deleteFile("images", previewImageFileId);
+
       await databases.deleteDocument(dbId, "quizzes", quiz.$id);
       window.location.reload();
     } catch (err) {
