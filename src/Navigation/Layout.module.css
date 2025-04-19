@@ -99,7 +99,7 @@
   margin-inline: auto;
 }
 
-.mobileLogoImage{
+.mobileLogoImage {
   max-width: 130px;
   margin-top: 10px;
   margin-inline: auto;
@@ -225,6 +225,10 @@
     background-color: var(--background-main);
 
     border-top: 1px solid var(--background-main-complementary);
+  }
+
+  .mainCont {
+    padding-bottom: 100px;
   }
 
   .mainNavLinks {
