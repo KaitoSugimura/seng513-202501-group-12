@@ -4,19 +4,21 @@ import { Link } from "react-router-dom";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import { useAuth } from "../../context/AuthContext";
 import { databases, dbId, Question, Quiz, User } from "../../util/appwrite";
-import Timer from "../Timer/Timer";
 import styles from "./QuizPage.module.css";
+import Timer from "../Timer/Timer";
 
 export default function QuizPage() {
   const quizId = window.location.pathname.split("/")[2];
   const [thisQuiz, setThisQuiz] = useState<Quiz | null>(null);
   const [quizQuestions, setQuizQuestions] = useState<Question[]>([]);
-  const [quizResults, setQuizResults] = useState<number[]>([]);
+  const [quizResults] = useState<number[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [currentQuizScore, setCurrentQuizScore] = useState(0);
   const [startTime, setStartTime] = useState(0);
   const [showEndScreen, setShowEndScreen] = useState(false);
+  const [quizSelections] = useState<number[]>([]);
   const { user, setUser } = useAuth();
+  const [roundEnded, setRoundEnded] = useState(false);
 
   useEffect(() => {
     const updateUserDataWithCompletedQuiz = async () => {
@@ -82,6 +84,10 @@ export default function QuizPage() {
   }, [thisQuiz]);
 
   const handleOptionSelect = (index: number) => {
+    if (roundEnded) {
+      return;
+    }
+    quizSelections.push(index);
     if (index === quizQuestions[currentQuestionIndex].answerIndex) {
       const score = Math.round(10 - (Date.now() - startTime) / 1000);
       quizResults.push(score);
@@ -89,10 +95,26 @@ export default function QuizPage() {
     } else {
       quizResults.push(0);
     }
+    setRoundEnded(true);
+  };
 
+  const checkOption = (index: number) => {
+    if (roundEnded === true) {
+      if (index === quizQuestions[currentQuestionIndex].answerIndex) {
+        return "correct";
+      } else if (index === quizSelections[currentQuestionIndex]) {
+        return "incorrect";
+      }
+      return "basic";
+    }
+    return "default";
+  };
+
+  const onContinue = () => {
     if (currentQuestionIndex + 1 < quizQuestions.length) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
       setStartTime(Date.now());
+      setRoundEnded(false);
     } else {
       setShowEndScreen(true);
     }
@@ -102,6 +124,13 @@ export default function QuizPage() {
     if (index > currentQuestionIndex) {
       return "unanswered";
     } else if (index === currentQuestionIndex) {
+      if (roundEnded) {
+        if (quizResults[index] > 0) {
+          return "correctCurrent";
+        } else {
+          return "wrongCurrent";
+        }
+      }
       return "current";
     } else {
       if (quizResults[index] > 0) {
@@ -142,7 +171,7 @@ export default function QuizPage() {
             <h3>Score</h3>
           </div>
           <div className={styles.resultSection}>
-            {quizQuestions.map((q, index) => (
+            {quizQuestions.map((_, index) => (
               <div className={styles.endQuestionTab} key={index}>
                 <h3>Question {index + 1}</h3>
                 <h3 className={styles.endScore}>{quizResults[index]}</h3>
@@ -176,19 +205,23 @@ export default function QuizPage() {
             </div>
             <h3>Current Score: {currentQuizScore}</h3>
             <div className={styles.questionsLayout}>
-              {quizQuestions.map((q, index) => (
+              {quizQuestions.map((_, index) => (
                 <div key={index}>
                   <h4
                     className={
-                      checkAnswer(index) === "current"
+                      checkAnswer(index) === "current" ||
+                      checkAnswer(index) === "correctCurrent" ||
+                      checkAnswer(index) === "wrongCurrent"
                         ? styles.questionTab
                         : styles.inactiveQuestionTab
                     }
                   >
                     Question {index + 1}
-                    {checkAnswer(index) === "correct" ? (
+                    {checkAnswer(index) === "correct" ||
+                    checkAnswer(index) === "correctCurrent" ? (
                       <span>✅</span>
-                    ) : checkAnswer(index) == "wrong" ? (
+                    ) : checkAnswer(index) == "wrong" ||
+                      checkAnswer(index) === "wrongCurrent" ? (
                       <span>❌</span>
                     ) : null}
                   </h4>
@@ -199,21 +232,38 @@ export default function QuizPage() {
         </div>
 
         <div className={styles.questionFormat}>
-          <div className={styles.timer}>
-            <Timer
-              startTime={Date.now()}
-              roundTime={10}
-              gameStarted={true}
-              onEndOfTime={() => handleOptionSelect(-1)}
-              currentRound={currentQuestionIndex + 1}
-              totalRounds={quizQuestions.length}
-            />
-          </div>
+          {!roundEnded && (
+            <div className={styles.timer}>
+              <Timer
+                startTime={Date.now()}
+                roundTime={10}
+                gameStarted={true}
+                onEndOfTime={() => handleOptionSelect(-1)}
+                currentRound={currentQuestionIndex + 1}
+                totalRounds={quizQuestions.length}
+              />
+            </div>
+          )}
+
+          {roundEnded && (
+            <div className={styles.timer}>
+              <Timer
+                startTime={Date.now()}
+                roundTime={0}
+                gameStarted={true}
+                onEndOfTime={() => handleOptionSelect(-1)}
+                currentRound={currentQuestionIndex + 1}
+                totalRounds={quizQuestions.length}
+              />
+            </div>
+          )}
 
           <div
             key={currentQuestionIndex}
             className={
-              thisQuiz.type === "blur"
+              roundEnded
+                ? styles.regularImage
+                : thisQuiz.type === "blur"
                 ? styles.questionBlurImage
                 : styles.questionZoomImage
             }
@@ -222,7 +272,9 @@ export default function QuizPage() {
               src={quizQuestions[currentQuestionIndex]?.imageUrl}
               alt={`Image for ${thisQuiz.title}`}
               className={
-                thisQuiz.type === "blur"
+                roundEnded
+                  ? styles.quizRegularImage
+                  : thisQuiz.type === "blur"
                   ? styles.quizBlurImage
                   : styles.quizZoomImage
               }
@@ -233,7 +285,15 @@ export default function QuizPage() {
             {quizQuestions[currentQuestionIndex]?.options.map((opt, index) => (
               <div key={index}>
                 <button
-                  className={styles.option}
+                  className={
+                    checkOption(index) === "correct"
+                      ? styles.correctOption
+                      : checkOption(index) === "incorrect"
+                      ? styles.incorrectOption
+                      : checkOption(index) === "basic"
+                      ? styles.basicOption
+                      : styles.option
+                  }
                   onClick={() => {
                     handleOptionSelect(index);
                   }}
@@ -242,6 +302,18 @@ export default function QuizPage() {
                 </button>
               </div>
             ))}{" "}
+          </div>
+          <div>
+            {roundEnded && (
+              <button
+                className={styles.continueButton}
+                onClick={() => {
+                  onContinue();
+                }}
+              >
+                Continue
+              </button>
+            )}
           </div>
         </div>
       </div>
