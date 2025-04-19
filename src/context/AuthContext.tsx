@@ -39,8 +39,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           "users",
           user.$id
         );
+        
+        if(user.labels.includes("admin")) {
+          userData.admin = true;
+        }
 
         setUser(userData);
+        console.log(userData)
       } catch (error) {
         console.log(error);
       }

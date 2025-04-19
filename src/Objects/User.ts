@@ -6,6 +6,7 @@ class User {
     public ranking: number,
     public image: string,
     public points: number,
+    public admin: boolean,
   ) {
     this.id = id;
     this.username = username;
@@ -13,6 +14,7 @@ class User {
     this.image = image || "/guest.png";
     this.ranking = ranking;
     this.points = points;
+    this.admin = admin || false;
   }
 }
 

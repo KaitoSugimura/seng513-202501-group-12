@@ -1,12 +1,13 @@
 import AuthCard from "../../components/Auth/AuthCard";
 import Button from "../../components/Button";
+import { Trash2 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import styles from "./Account.module.css";
 import QuizListViewer from "../../components/QuizListViewer";
 import { Query } from "appwrite";
 import { useLocation } from 'react-router-dom';
 import { useEffect, useState } from "react";
-import { databases, dbId, User, Quiz } from "../../util/appwrite";
+import { databases, dbId, User, Quiz, getImgUrl } from "../../util/appwrite";
 import { NavLink } from "react-router-dom";
 
 export default function Account() {
@@ -18,6 +19,11 @@ export default function Account() {
   const [isFriend, setIsFriend] = useState(false);
   const [loadingUser, setLoadingUser] = useState(0);
   const [createdQuizzes, setcreatedQuizzes] = useState<Quiz[] | null>(null);
+  const [activeTab, setActiveTab] = useState<
+    "createdQuizzes" | "users"
+  >("createdQuizzes");
+  const [userList, setUserList] = useState<User[] | null>(null);
+  const [showPopup, setShowPopup] = useState(false);
   
   useEffect(() => {
     const getViewUserProfile = async () => {
@@ -54,9 +60,29 @@ export default function Account() {
       }
     };
 
+    const getUsers = async () => {
+      try {
+        const users = await databases.listDocuments(
+          dbId, 
+          "users", 
+          [
+            Query.limit(25),
+            Query.offset(0)
+          ]
+        );
+        setUserList(users.documents as User[])
+        
+      } catch (err) {
+        console.error("Failed to fetch friends:", err);
+      }
+    };
+
     if (user && displayUser) {
       setIsFriend(user.friendIds?.includes(displayUser.$id));
       fetchCreatedQuizzes();
+      if (user.admin) {
+        getUsers();
+      }
     }
   }, [user, displayUser]);
 
@@ -128,34 +154,87 @@ export default function Account() {
             </div>
           </div>
           
-          <div className={styles.quizContainer}>
-          {createdQuizzes?.length != 0 && createdQuizzes != null? (
-            <QuizListViewer
-              key={loadingUser}
-              title="Created Quizzes"
-              query={[Query.contains("creatorUsername", [displayUser.username])]}
-            />
-          ) : (
-            <div>
-              {user.$id === displayUser.$id ? (
+          <div className={styles.accountTabLayout}>
+            <button
+              className={`${styles.tabButton} ${
+                activeTab === "createdQuizzes" ? styles.selected : ""
+              }`}
+              onClick={() => setActiveTab("createdQuizzes")}
+            >
+              Created Quizzes
+            </button>
+            {user.admin && (
+              <button
+                className={`${styles.tabButton} ${
+                  activeTab === "users" ? styles.selected : ""
+                }`}
+                onClick={() => setActiveTab("users")}
+              >
+                Manage Users
+              </button>
+            )}
+          </div>
+          
+          {activeTab === "createdQuizzes" && (
+            <div className={styles.quizContainer}>
+            {createdQuizzes?.length != 0 && createdQuizzes != null? (
+              <QuizListViewer
+                key={loadingUser}
+                title="Created Quizzes"
+                query={[Query.contains("creatorUsername", [displayUser.username])]}
+              />
+            ) : (
               <div>
-                <h3 className={styles.emptyListMessage}>
-                  You have no created quizzes.
-                </h3>
-                <NavLink to="/create">
-                  <button className={styles.navigateElsewhereButton}>
-                    Create your first quiz!
-                  </button>
-                </NavLink>
+                {user.$id === displayUser.$id ? (
+                <div>
+                  <h3 className={styles.emptyListMessage}>
+                    You have no created quizzes.
+                  </h3>
+                  <NavLink to="/create">
+                    <button className={styles.navigateElsewhereButton}>
+                      Create your first quiz!
+                    </button>
+                  </NavLink>
+                </div>
+                ) : (
+                  <h3 className={styles.emptyListMessage}>
+                    This user has not created any quizzes.
+                  </h3>          
+                )}
               </div>
-              ) : (
-                <h3 className={styles.emptyListMessage}>
-                  This user has not created any quizzes.
-                </h3>          
-              )}
+            )}
             </div>
           )}
+
+          {activeTab === "users" && user.admin && userList &&(
+          <div className={styles.usersContainer}>
+            {userList.map((user, index) => (
+              <div key={index} className={styles.userCard}>
+                <img
+                  src={user?.profilePictureId ? getImgUrl(user.profilePictureId) : "/guest.png"}
+                  alt={`Profile for ${user?.username}`}
+                  className={styles.profileImage}
+                />
+                <NavLink
+                  to="/account"
+                  state={`${user.username}`}
+                  className={styles.linkStyle}
+                >
+                  <h3>{user.username}</h3>
+                </NavLink>
+                <button
+                  className={styles.deleteButton}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setShowPopup(true);
+                  }}
+                >
+                  <Trash2 id="deleteIcon" stroke="darkRed" size={22} />
+                </button>
+              </div>
+            ))}
           </div>
+          )}
 
           {user && user.$id === displayUser.$id && (
           <div className={styles.userControls}>
@@ -171,6 +250,36 @@ export default function Account() {
           <p className={styles.subtitle}>Sign in to access all features.</p>
           <AuthCard />
         </>
+      )}
+      {showPopup && (
+        <div className={styles.popupOverlay}>
+          <div className={styles.popupContent}>
+            <h2 className={styles.popupTitle}>Delete Confirmation</h2>
+            <p className={styles.popupMessage}>
+              Are you sure you want to delete this user?
+            </p>
+            <div className={styles.popupActions}>
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  setShowPopup(false);
+                }}
+                className={styles.cancelButton}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  //deleteUser();
+                }}
+                className={styles.confirmButton}
+              >
+                Yes
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
