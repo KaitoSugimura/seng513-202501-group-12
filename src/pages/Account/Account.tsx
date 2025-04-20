@@ -7,7 +7,7 @@ import QuizListViewer from "../../components/QuizListViewer";
 import { Query } from "appwrite";
 import { useLocation } from 'react-router-dom';
 import { useEffect, useState } from "react";
-import { databases, dbId, User, Quiz, getImgUrl } from "../../util/appwrite";
+import { databases, storage, account, dbId, User, Quiz, getImgUrl } from "../../util/appwrite";
 import { NavLink } from "react-router-dom";
 
 export default function Account() {
@@ -23,7 +23,7 @@ export default function Account() {
     "createdQuizzes" | "users"
   >("createdQuizzes");
   const [userList, setUserList] = useState<User[] | null>(null);
-  const [showPopup, setShowPopup] = useState(false);
+  const [deleteUserId, setDeleteUserId] = useState<string | null>(null);
   
   useEffect(() => {
     const getViewUserProfile = async () => {
@@ -66,7 +66,7 @@ export default function Account() {
           dbId, 
           "users", 
           [
-            Query.limit(25),
+            Query.limit(50),
             Query.offset(0)
           ]
         );
@@ -110,6 +110,109 @@ export default function Account() {
       } catch (err) {
         console.error("Failed to remove friend:", err);
       }
+    }
+  };
+
+  const deleteUser = async(id: string) => {
+    const deletingUser = await databases.getDocument(dbId, "users", id)
+
+    if(user?.admin) {
+      try {
+        const userQuizzes = await databases.listDocuments(dbId, "quizzes", [Query.equal("creatorId", deletingUser.$id)])
+        userQuizzes.documents.forEach(async (quiz) => {deleteQuiz(quiz as Quiz)})
+
+        const userHistory = await databases.listDocuments(dbId, "quizHistory", [Query.equal("userId", deletingUser.$id)])
+        userHistory.documents.forEach(async (quizHist) => {await databases.deleteDocument(dbId, "quizHistory", quizHist.$id)})
+
+        if (deletingUser.favoritedQuizIds.length > 0) {
+          await Promise.all(
+            deletingUser.favoritedQuizIds.map(async (quizId: string) => {
+              try {
+                const quiz = await databases.getDocument(dbId, "quizzes", quizId);
+                const currentFavCount = quiz.favoritedCount || 0;
+                const newFavCount = Math.max(0, currentFavCount - 1); 
+  
+                await databases.updateDocument(dbId, "quizzes", quizId, {
+                  favoritedCount: newFavCount,
+                });
+              } catch (err) {
+                console.error(`Failed to update favourite count for quiz ${quizId}:`, err);
+              }
+            })
+          );
+        }
+
+        const allUsers = await databases.listDocuments(dbId, "users");
+        (allUsers.documents as User[]).forEach(async (otherUser) => {
+          const friendIds = otherUser.friendIds || [];
+  
+          if (friendIds.includes(deletingUser.$id)) {
+            const updatedFriendIds = friendIds.filter((friendId: string) => friendId !== deletingUser.$id);
+  
+            await databases.updateDocument(dbId, "users", otherUser.$id, {
+              friendIds: updatedFriendIds,
+            });
+          }
+        })
+
+        await databases.deleteDocument(dbId, "users", deletingUser.$id)
+        await account.deleteIdentity(deletingUser.$id)
+      } catch (err) {
+        console.error("Failed to delete user:", err);
+      }
+      setDeleteUserId(null)
+    }
+  }
+
+  const deleteQuiz = async (quiz : Quiz) => {
+    try {
+      const correspondingQuizHistories = await databases.listDocuments(
+        dbId,
+        "quizHistory",
+        [Query.equal("quizId", quiz.$id)]
+      );
+      correspondingQuizHistories.documents.forEach(async (quizHistory) => {
+        await databases.deleteDocument(dbId, "quizHistory", quizHistory.$id);
+      });
+
+      const usersThatFavoritedTheQuiz = await databases.listDocuments(
+        dbId,
+        "users",
+        [Query.contains("favoritedQuizIds", quiz.$id)]
+      );
+
+      usersThatFavoritedTheQuiz.documents.forEach(async (user) => {
+        const updatedFavoritedQuizIdsList = user.favoritedQuizIds.filter(
+          (id: string) => id !== quiz.$id
+        );
+        await databases.updateDocument(dbId, "users", user.$id, {
+          favoritedQuizIds: updatedFavoritedQuizIdsList,
+        });
+      });
+
+      const correspondingQuestions = await databases.listDocuments(
+        dbId,
+        "questions",
+        [Query.equal("quizId", quiz.$id)]
+      );
+
+      correspondingQuestions.documents.forEach(async (question) => {
+        const imageFileId = question.imageUrl
+          .split("/files/")[1]
+          .split("/view")[0];
+        await storage.deleteFile("images", imageFileId);
+        await databases.deleteDocument(dbId, "questions", question.$id);
+      });
+
+      const previewImageFileId = quiz.previewUrl
+        .split("/files/")[1]
+        .split("/view")[0];
+      await storage.deleteFile("images", previewImageFileId);
+
+      await databases.deleteDocument(dbId, "quizzes", quiz.$id);
+      window.location.reload();
+    } catch (err) {
+      console.error("Failed to fetch quizzes:", err);
     }
   };
 
@@ -210,26 +313,28 @@ export default function Account() {
           <div className={styles.usersContainer}>
             {userList.map((user, index) => (
               <div key={index} className={styles.userCard}>
-                <img
-                  src={user?.profilePictureId ? getImgUrl(user.profilePictureId) : "/guest.png"}
-                  alt={`Profile for ${user?.username}`}
-                  className={styles.profileImage}
-                />
-                <NavLink
-                  to="/account"
-                  state={`${user.username}`}
-                  className={styles.linkStyle}
-                >
-                  <h3>{user.username}</h3>
-                </NavLink>
+                <div className={styles.userInfo}>
+                  <img
+                    src={user?.profilePictureId ? getImgUrl(user.profilePictureId) : "/guest.png"}
+                    alt={`Profile for ${user?.username}`}
+                    className={styles.profileImage}
+                  />
+                  <NavLink
+                    to="/account"
+                    state={`${user.username}`}
+                    className={styles.linkStyle}
+                  >
+                    <h3>{user.username}</h3>
+                  </NavLink>
+                </div>
                 <button
                   className={styles.deleteButton}
                   onClick={(e) => {
                     e.preventDefault();
-                    setShowPopup(true);
+                    setDeleteUserId(user.$id);
                   }}
                 >
-                  <Trash2 id="deleteIcon" stroke="darkRed" size={22} />
+                  <Trash2 id="deleteIcon" stroke="Red" size={22} />
                 </button>
               </div>
             ))}
@@ -251,7 +356,8 @@ export default function Account() {
           <AuthCard />
         </>
       )}
-      {showPopup && (
+
+      {deleteUserId && (
         <div className={styles.popupOverlay}>
           <div className={styles.popupContent}>
             <h2 className={styles.popupTitle}>Delete Confirmation</h2>
@@ -262,7 +368,7 @@ export default function Account() {
               <button
                 onClick={(e) => {
                   e.preventDefault();
-                  setShowPopup(false);
+                  setDeleteUserId(null);
                 }}
                 className={styles.cancelButton}
               >
@@ -271,7 +377,7 @@ export default function Account() {
               <button
                 onClick={(e) => {
                   e.preventDefault();
-                  //deleteUser();
+                  deleteUser(deleteUserId);
                 }}
                 className={styles.confirmButton}
               >
