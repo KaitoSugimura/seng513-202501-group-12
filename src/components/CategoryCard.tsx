@@ -60,7 +60,7 @@ export default function CategoryCard({ category }: { category: Category }) {
   let combinedHex = "";
   category.split("").forEach((char, index) => {
     if (index > 5) return;
-    combinedHex += ((char.charCodeAt(0) + index + 2) % 16).toString(16);
+    combinedHex += (((char.charCodeAt(0) + index + 6) % 9) + 7).toString(16);
   });
 
   combinedHex = combinedHex.slice(-6).padStart(6, "3");
