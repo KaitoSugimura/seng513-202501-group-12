@@ -4,7 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import usersData from "../database/stubUsers";
 import styles from "./Layout.module.css";
 import { databases, dbId, User, getImgUrl } from "../util/appwrite";
-import ProfileImageUpload from "../components/ProfileImageUpload"
+import ProfileImageUpload from "../components/ProfileImageUpload";
 
 let currentHoverIndex = 0;
 
@@ -79,9 +79,8 @@ export default function Layout() {
             friends.push(friend as User);
           }
           friends.sort((a, b) => b.points - a.points);
-          setFriendsList(friends); 
-        }
-        else {
+          setFriendsList(friends);
+        } else {
           setFriendsList([]);
         }
       } catch (err) {
@@ -90,7 +89,6 @@ export default function Layout() {
     };
 
     getFriends();
-    
   }, [user]);
 
   return (
@@ -153,11 +151,6 @@ export default function Layout() {
               </svg>
               <span>Search</span>
             </NavLink>
-            {/* <Link to="/contest" className={({ isActive }) =>
-                isActive ? `${styles.navLink} ${styles.active}` : styles.navLink
-              }>
-            Contest
-          </Link> */}{" "}
             <NavLink
               to="/create"
               className={({ isActive }) =>
@@ -228,13 +221,16 @@ export default function Layout() {
           <div className={styles.sideNav}>
             <div key={usersData[0].id} className={styles.userContainer}>
               <img
-                src={user?.profilePictureId ? getImgUrl(user.profilePictureId) : "/guest.png"}
+                src={
+                  user?.profilePictureId
+                    ? getImgUrl(user.profilePictureId)
+                    : "/guest.png"
+                }
                 alt={`Profile for ${user?.username}`}
                 className={styles.userContainerImage}
                 onClick={handleProfilePictureClick}
               />
               <div className={styles.userContainerRight}>
-                {/* <p>Rank: {usersData[0].ranking}</p> */}
                 <NavLink
                   to="/account"
                   state={`${user?.username}`}
@@ -253,7 +249,11 @@ export default function Layout() {
                     {friendsList.map((friend, index) => (
                       <div key={index} className={styles.userContainer}>
                         <img
-                          src={friend?.profilePictureId ? getImgUrl(friend.profilePictureId) : "/guest.png"}
+                          src={
+                            friend?.profilePictureId
+                              ? getImgUrl(friend.profilePictureId)
+                              : "/guest.png"
+                          }
                           alt={`Profile for ${friend?.username}`}
                           className={styles.userContainerImage}
                         />
@@ -277,7 +277,7 @@ export default function Layout() {
         )}
       </div>
       {user && showProfileUpdate && user.$id != undefined && (
-        <ProfileImageUpload/>
+        <ProfileImageUpload />
       )}
     </div>
   );
