@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
 import { AuthProvider } from "./context/AuthContext";
+import { PopupProvider } from "./context/PopupContext";
 import Layout from "./Navigation/Layout";
 import Account from "./pages/Account/Account";
 import Contest from "./pages/Contest/Contest";
@@ -20,23 +21,25 @@ function App() {
 
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Layout />}>
-            <Route index element={<Home />} />
-            <Route path="home" element={<Home />} />
-            <Route path="library" element={<Library />} />
-            <Route path="search" element={<Search />} />
-            <Route path="create" element={<Create />} />
-            <Route path="account" element={<Account />} />
-            <Route path="contest" element={<Contest />} />
-            <Route path="/Quiz" element={<QuizPage />}>
-              <Route path=":quizId" element={<QuizPage />} />
+      <PopupProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Layout />}>
+              <Route index element={<Home />} />
+              <Route path="home" element={<Home />} />
+              <Route path="library" element={<Library />} />
+              <Route path="search" element={<Search />} />
+              <Route path="create" element={<Create />} />
+              <Route path="account" element={<Account />} />
+              <Route path="contest" element={<Contest />} />
+              <Route path="/Quiz" element={<QuizPage />}>
+                <Route path=":quizId" element={<QuizPage />} />
+              </Route>
+              <Route path="*" element={<NoPage />} />
             </Route>
-            <Route path="*" element={<NoPage />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
+          </Routes>
+        </BrowserRouter>
+      </PopupProvider>
     </AuthProvider>
   );
 }

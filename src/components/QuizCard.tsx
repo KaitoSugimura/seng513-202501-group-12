@@ -2,6 +2,7 @@ import { Star, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { usePopup } from "../context/PopupContext"; 
 import { Quiz, QuizHistory, databases, dbId, storage } from "../util/appwrite";
 import { Query } from "appwrite";
 import styles from "./QuizCard.module.css";
@@ -16,7 +17,7 @@ export default function QuizCard({
   const { user, isAdminUser, toggleFavoriteQuiz } = useAuth();
   const [isQuizFavorited, setIsQuizFavorited] = useState(false);
   const [imageIsLoading, setImageIsLoading] = useState(true);
-  const [showPopup, setShowPopup] = useState(false);
+  const { setContent, clearContent } = usePopup();
 
   useEffect(() => {
     if (!user) {
@@ -26,8 +27,51 @@ export default function QuizCard({
     setIsQuizFavorited(user.favoritedQuizIds.includes(quiz.$id));
   }, [user, quiz.$id]);
 
+  const handleDeleteClick = () => {
+    setContent(
+      <div className={styles.popupOverlay}>
+        <div className={styles.popupContent}>
+          <h2 className={styles.popupTitle}>Delete Confirmation</h2>
+          <p className={styles.popupMessage}>
+            Are you sure you want to delete this quiz?
+          </p>
+          <div className={styles.popupActions}>
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                clearContent();
+              }}
+              className={styles.cancelButton}
+            >
+              Cancel
+            </button>
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                deleteQuiz();
+              }}
+              className={styles.confirmButton}
+            >
+              Yes
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   const deleteQuiz = async () => {
     try {
+      setContent(
+        <div className={styles.popupOverlay}>
+          <div className={styles.popupContent}>
+            <h2 className={styles.popupTitle}>Delete Confirmation</h2>
+            <p className={styles.popupMessage}>
+              Deleting quiz in progress...
+            </p>
+          </div>
+        </div>
+      )
       const correspondingQuizHistories = await databases.listDocuments(
         dbId,
         "quizHistory",
@@ -75,8 +119,9 @@ export default function QuizCard({
       window.location.reload();
     } catch (err) {
       console.error("Failed to fetch quizzes:", err);
+    } finally {
+      clearContent();
     }
-    setShowPopup(false);
   };
 
   return (
@@ -144,44 +189,13 @@ export default function QuizCard({
             className={styles.deleteButton}
             onClick={(e) => {
               e.preventDefault();
-              setShowPopup(true);
+              handleDeleteClick();
             }}
           >
             <Trash2 id="deleteIcon" stroke="darkRed" size={22} />
           </button>
         )}
       </div>
-
-      {showPopup && (
-        <div className={styles.popupOverlay}>
-          <div className={styles.popupContent}>
-            <h2 className={styles.popupTitle}>Delete Confirmation</h2>
-            <p className={styles.popupMessage}>
-              Are you sure you want to delete this quiz?
-            </p>
-            <div className={styles.popupActions}>
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  setShowPopup(false);
-                }}
-                className={styles.cancelButton}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  deleteQuiz();
-                }}
-                className={styles.confirmButton}
-              >
-                Yes
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
