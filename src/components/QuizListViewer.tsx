@@ -64,19 +64,25 @@ export default function QuizListViewer({
           gap: "8px",
         }}
       >
-        {quizAndQuizHistoryPairs && quizAndQuizHistoryPairs.length > 0
-          ? quizAndQuizHistoryPairs.map(({ quiz, quizHistory }) => (
-              <QuizCard
-                key={quizHistory.$id}
-                quiz={quiz}
-                quizHistory={quizHistory}
-              />
-            ))
-          : filteredData && filteredData.length > 0
-          ? filteredData.map((quiz) => <QuizCard key={quiz.$id} quiz={quiz} />)
-          : Array.from({ length: itemsToShow }, (_, index) => (
-              <SkeletonQuizCard key={index} />
-            ))}
+        {quizAndQuizHistoryPairs && quizAndQuizHistoryPairs.length > 0 ? (
+          quizAndQuizHistoryPairs.map(({ quiz, quizHistory }) => (
+            <QuizCard
+              key={quizHistory.$id}
+              quiz={quiz}
+              quizHistory={quizHistory}
+            />
+          ))
+        ) : filteredData ? (
+          filteredData.length > 0 ? (
+            filteredData.map((quiz) => <QuizCard key={quiz.$id} quiz={quiz} />)
+          ) : (
+            <div>No matches found!</div>
+          )
+        ) : (
+          Array.from({ length: itemsToShow }, (_, index) => (
+            <SkeletonQuizCard key={index} />
+          ))
+        )}
       </div>
     </div>
   );

@@ -35,13 +35,12 @@ export type Question = {
 export default function Create() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const isSmallScreen = useMediaQuery("(max-width:768px)");
 
   const [quizName, setQuizName] = useState("");
   const [nameError, setNameError] = useState(false);
   const [quizTheme, setQuizTheme] = useState("Any");
   const [quizType, setQuizType] = useState("blur");
-  const previewImage = useRef<File | null>(null);
+  const [thumbnailImage, setThumbnailImage] = useState<File | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
 
   const [inputImage, setInputImage] = useState<File | null>(null);
@@ -68,7 +67,7 @@ export default function Create() {
   const saveQuestions = () => {
     if (currentIndex === -1) {
       console.log("saving preview image");
-      previewImage.current = inputImage;
+      setThumbnailImage(inputImage);
       return;
     }
     questionsHaveError();
@@ -92,7 +91,7 @@ export default function Create() {
   const addQuestion = () => {
     saveQuestions();
     if (currentIndex == -1) {
-      previewImage.current = inputImage;
+      setThumbnailImage(inputImage);
       const questionToAdd: Question = {
         imageFile: null,
         answers: answers,
@@ -137,7 +136,7 @@ export default function Create() {
     const newIndex = currentIndex - 1;
     saveQuestions();
     if (newIndex == -1) {
-      setInputImage(previewImage.current);
+      setInputImage(thumbnailImage);
     } else {
       console.log("trying to acccess index " + newIndex);
     }
@@ -161,7 +160,7 @@ export default function Create() {
       const newIndex = currentIndex - 1;
       setCurrentIndex(() => newIndex);
       if (newIndex == -1) {
-        setInputImage(previewImage.current);
+        setInputImage(thumbnailImage);
       } else {
       }
       return newQuestions;
@@ -170,7 +169,7 @@ export default function Create() {
 
   const navigateToPreview = () => {
     saveQuestions();
-    setInputImage(previewImage.current);
+    setInputImage(thumbnailImage);
     setCurrentIndex(-1);
   };
 
@@ -190,7 +189,7 @@ export default function Create() {
       setCurrentIndex(newIndex);
 
       if (newIndex == -1) {
-        setInputImage(previewImage.current);
+        setInputImage(thumbnailImage);
       } else {
       }
 
@@ -251,7 +250,7 @@ export default function Create() {
     if (error) {
       return;
     }
-    if (!previewImage.current) {
+    if (!thumbnailImage) {
       throw new Error("Preview image is not set");
     }
 
@@ -263,7 +262,7 @@ export default function Create() {
     const previewImageFile = await storage.createFile(
       "images",
       ID.unique(),
-      previewImage.current
+      thumbnailImage
     );
 
     console.log(user);
@@ -325,15 +324,18 @@ export default function Create() {
               )}
               onClick={navigateToPreview}
             >
-              <div className={styles.overlay}></div>
               <div className={styles.listEntryImageSizing}>
-                {previewImage.current ? (
-                  <img src={URL.createObjectURL(previewImage.current)} alt="" />
+                <div className={styles.thumbnailOverlay}>
+                  <h3>Thumbnail</h3>
+                </div>
+                {thumbnailImage ? (
+                  <img src={URL.createObjectURL(thumbnailImage)} alt="" />
                 ) : (
                   <img className={styles.noImage} src="/NoImage.svg" alt="" />
                 )}{" "}
               </div>
             </ol>
+
             {questions.map((question, index) => (
               <ol
                 className={clsx(

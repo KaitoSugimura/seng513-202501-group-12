@@ -36,6 +36,7 @@ export default function Carousel({
     };
 
     emblaApi.on("reInit", onSelect).on("select", onSelect);
+    onSelect(emblaApi);
   }, [emblaApi]);
 
   return (
