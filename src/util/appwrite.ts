@@ -47,6 +47,7 @@ export interface User extends Models.Document {
   favoritedQuizIds: string[];
   friendIds: string[];
   profilePictureId: string; 
+  admin: boolean;
 }
 
 export interface Quiz extends Models.Document {

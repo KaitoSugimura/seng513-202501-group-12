@@ -45,7 +45,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
 
         setUser(userData);
-        console.log(userData)
       } catch (error) {
         console.log(error);
       } finally {
@@ -84,6 +83,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       "users",
       session.userId
     );
+
+    const user = await account.get();
+    if(user.labels.includes("admin")) {
+      userData.admin = true;
+    }
 
     setUser(userData);
   };
