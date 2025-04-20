@@ -8,7 +8,7 @@ import { Query } from "appwrite";
 import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { databases, storage, account, dbId, User, Quiz, getImgUrl } from "../../util/appwrite";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 export default function Account() {
   const location = useLocation();
@@ -27,6 +27,7 @@ export default function Account() {
   const [userSearchInput, setUserSearchInput] = useState("");
   const [deleteUserId, setDeleteUserId] = useState<string | null>(null);
   const [deleteInProg, setDeleteInProg] = useState(false);
+  const navigate = useNavigate();
   
   useEffect(() => {
     const getViewUserProfile = async () => {
@@ -182,13 +183,17 @@ export default function Account() {
         }
 
         await databases.deleteDocument(dbId, "users", deletingUser.$id)
-        await account.deleteIdentity(deletingUser.$id)
+        const response = await account.deleteIdentity(deletingUser.$id)
+        console.log(response)
       } catch (err) {
         console.error("Failed to delete user:", err);
       } finally {
         setDeleteUserId(null)
         setDeleteInProg(false)
         getUsers()
+        if(user.$id != displayUser?.$id) {
+          navigate("/account", { state: user?.username });
+        }
       }
     }
   }
@@ -260,19 +265,32 @@ export default function Account() {
         <>
           <div className={styles.header}>
             <h1>{displayUser.username}'s Profile </h1>
-            {user && displayUser.$id !== user.$id && (
-              <div>
-                {isFriend ? (
-                  <Button onClick={() => removeFriend(displayUser.$id)}>
-                    Unfriend
-                  </Button>
-                ) : (
-                  <Button onClick={() => addFriend(displayUser.$id)}>
-                    Add Friend
-                  </Button>
-                )}
-              </div>
-            )}
+
+            <div className={styles.headerButtons}>
+              {user.admin && user.$id != displayUser.$id && (
+                <Button
+                  className={styles.deleteUserButton}
+                  onClick={() => setDeleteUserId(displayUser.$id)}
+                >
+                  <Trash2 size={16}/>
+                  Delete User
+                </Button>
+              )}
+
+              {user && displayUser.$id !== user.$id && (
+                <div>
+                  {isFriend ? (
+                    <Button onClick={() => removeFriend(displayUser.$id)}>
+                      Unfriend
+                    </Button>
+                  ) : (
+                    <Button onClick={() => addFriend(displayUser.$id)}>
+                      Add Friend
+                    </Button>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Points progress */}
@@ -301,7 +319,7 @@ export default function Account() {
             >
               Created Quizzes
             </button>
-            {user.admin && (
+            {user.admin && user.$id == displayUser.$id && (
               <button
                 className={`${styles.tabButton} ${
                   activeTab === "users" ? styles.selected : ""
@@ -363,27 +381,27 @@ export default function Account() {
               />
             </div>
             <div className={styles.usersContainer}>
-              {userList.map((user, index) => (
+              {userList.map((userData, index) => (
                 <div key={index} className={styles.userCard}>
                   <div className={styles.userInfo}>
                     <img
-                      src={user?.profilePictureId ? getImgUrl(user.profilePictureId) : "/guest.png"}
-                      alt={`Profile for ${user?.username}`}
+                      src={userData?.profilePictureId ? getImgUrl(userData.profilePictureId) : "/guest.png"}
+                      alt={`Profile for ${userData?.username}`}
                       className={styles.profileImage}
                     />
                     <NavLink
                       to="/account"
-                      state={`${user.username}`}
+                      state={`${userData.username}`}
                       className={styles.linkStyle}
                     >
-                      <h3>{user.username}</h3>
+                      <h3>{userData.username}</h3>
                     </NavLink>
                   </div>
                   <button
                     className={styles.deleteButton}
                     onClick={(e) => {
                       e.preventDefault();
-                      setDeleteUserId(user.$id);
+                      setDeleteUserId(userData.$id);
                     }}
                   >
                     <Trash2 id="deleteIcon" stroke="Red" size={22} />
