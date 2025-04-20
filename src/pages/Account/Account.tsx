@@ -5,7 +5,7 @@ import { useAuth } from "../../context/AuthContext";
 import styles from "./Account.module.css";
 import QuizListViewer from "../../components/QuizListViewer";
 import { Query } from "appwrite";
-import { useLocation } from 'react-router-dom';
+import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { databases, dbId, User, Quiz, getImgUrl } from "../../util/appwrite";
 import { NavLink } from "react-router-dom";
@@ -13,34 +13,36 @@ import { NavLink } from "react-router-dom";
 export default function Account() {
   const location = useLocation();
   const viewUsername = location.state;
+  const [userReady, setUserReady] = useState(!viewUsername);
   const { user, loadingAuth, setUser, logout } = useAuth();
   const [viewUser, setViewUser] = useState<User | null>(null);
   const displayUser = viewUser || user;
   const [isFriend, setIsFriend] = useState(false);
   const [loadingUser, setLoadingUser] = useState(0);
   const [createdQuizzes, setcreatedQuizzes] = useState<Quiz[] | null>(null);
-  const [activeTab, setActiveTab] = useState<
-    "createdQuizzes" | "users"
-  >("createdQuizzes");
+  const [activeTab, setActiveTab] = useState<"createdQuizzes" | "users">(
+    "createdQuizzes"
+  );
   const [userList, setUserList] = useState<User[] | null>(null);
   const [showPopup, setShowPopup] = useState(false);
-  
+
   useEffect(() => {
     const getViewUserProfile = async () => {
       try {
-        const response = await databases.listDocuments(dbId, "users", [Query.equal("username", [viewUsername])]);
-        if (response.documents.length = 1) {
+        const response = await databases.listDocuments(dbId, "users", [
+          Query.equal("username", [viewUsername]),
+        ]);
+        if (response.documents.length === 1) {
           setViewUser(response.documents[0] as User);
-        }
-        else {
+        } else {
           setViewUser(null);
         }
-      }
-      catch (err) {
+      } catch (err) {
         console.error("Failed to fetch user information:", err);
+      } finally {
+        setUserReady(true);
       }
     };
-
     if (viewUsername) {
       getViewUserProfile();
     }
@@ -50,28 +52,24 @@ export default function Account() {
     setLoadingUser(1);
     const fetchCreatedQuizzes = async () => {
       try {
-        const quizzes = await databases.listDocuments(dbId, "quizzes", [Query.contains("creatorUsername", [displayUser.username])]);
+        const quizzes = await databases.listDocuments(dbId, "quizzes", [
+          Query.contains("creatorUsername", [displayUser.username]),
+        ]);
         setcreatedQuizzes(quizzes.documents as Quiz[]);
       } catch (err) {
         console.error("Failed to fetch quizzes:", err);
-      }
-      finally {
+      } finally {
         setLoadingUser(0);
       }
     };
 
     const getUsers = async () => {
       try {
-        const users = await databases.listDocuments(
-          dbId, 
-          "users", 
-          [
-            Query.limit(25),
-            Query.offset(0)
-          ]
-        );
-        setUserList(users.documents as User[])
-        
+        const users = await databases.listDocuments(dbId, "users", [
+          Query.limit(25),
+          Query.offset(0),
+        ]);
+        setUserList(users.documents as User[]);
       } catch (err) {
         console.error("Failed to fetch friends:", err);
       }
@@ -86,34 +84,45 @@ export default function Account() {
     }
   }, [user, displayUser]);
 
-  const addFriend = async(id: string) => {
-    if(user) {
+  const addFriend = async (id: string) => {
+    if (user) {
       try {
-        const updatedFriendIds = user.friendIds
-        updatedFriendIds.push(id);         
-        const updatedUser : User = await databases.updateDocument(dbId, "users", user.$id, {friendIds: updatedFriendIds});
+        const updatedFriendIds = user.friendIds;
+        updatedFriendIds.push(id);
+        const updatedUser: User = await databases.updateDocument(
+          dbId,
+          "users",
+          user.$id,
+          { friendIds: updatedFriendIds }
+        );
         setIsFriend(true);
-        setUser(updatedUser)
+        setUser(updatedUser);
       } catch (err) {
         console.error("Failed to fetch friends:", err);
       }
     }
-  }
+  };
 
-  const removeFriend = async(id: string) => {
+  const removeFriend = async (id: string) => {
     if (user) {
       try {
-        const updatedFriendIds = user.friendIds?.filter(friendId => friendId !== id) || [];
-        const updatedUser : User = await databases.updateDocument(dbId, "users", user.$id, { friendIds: updatedFriendIds });
+        const updatedFriendIds =
+          user.friendIds?.filter((friendId) => friendId !== id) || [];
+        const updatedUser: User = await databases.updateDocument(
+          dbId,
+          "users",
+          user.$id,
+          { friendIds: updatedFriendIds }
+        );
         setIsFriend(false);
-        setUser(updatedUser)
+        setUser(updatedUser);
       } catch (err) {
         console.error("Failed to remove friend:", err);
       }
     }
   };
 
-  if (loadingAuth) {
+  if (loadingAuth || !userReady) {
     return (
       <div className={styles.accountRoot}>
         <h1 className={styles.title}>Account</h1>
@@ -147,13 +156,19 @@ export default function Account() {
           <div className={styles.experienceContainer}>
             <h2>Experience</h2>
             <div className={styles.progressContainer}>
-              <p>Level {Math.floor(displayUser.points / 100)} - {displayUser.points % 100}/100 Points</p>
+              <p>
+                Level {Math.floor(displayUser.points / 100)} -{" "}
+                {displayUser.points % 100}/100 Points
+              </p>
               <div className={styles.progressBar}>
-                <div className={styles.progressFill} style={{ width: `${displayUser.points % 100}%` }}></div>
+                <div
+                  className={styles.progressFill}
+                  style={{ width: `${displayUser.points % 100}%` }}
+                ></div>
               </div>
             </div>
           </div>
-          
+
           <div className={styles.accountTabLayout}>
             <button
               className={`${styles.tabButton} ${
@@ -174,74 +189,80 @@ export default function Account() {
               </button>
             )}
           </div>
-          
+
           {activeTab === "createdQuizzes" && (
             <div className={styles.quizContainer}>
-            {createdQuizzes?.length != 0 && createdQuizzes != null? (
-              <QuizListViewer
-                key={loadingUser}
-                title="Created Quizzes"
-                query={[Query.contains("creatorUsername", [displayUser.username])]}
-              />
-            ) : (
-              <div>
-                {user.$id === displayUser.$id ? (
+              {createdQuizzes?.length != 0 && createdQuizzes != null ? (
+                <QuizListViewer
+                  key={loadingUser}
+                  title="Created Quizzes"
+                  query={[
+                    Query.contains("creatorUsername", [displayUser.username]),
+                  ]}
+                />
+              ) : (
                 <div>
-                  <h3 className={styles.emptyListMessage}>
-                    You have no created quizzes.
-                  </h3>
-                  <NavLink to="/create">
-                    <button className={styles.navigateElsewhereButton}>
-                      Create your first quiz!
-                    </button>
-                  </NavLink>
+                  {user.$id === displayUser.$id ? (
+                    <div>
+                      <h3 className={styles.emptyListMessage}>
+                        You have no created quizzes.
+                      </h3>
+                      <NavLink to="/create">
+                        <button className={styles.navigateElsewhereButton}>
+                          Create your first quiz!
+                        </button>
+                      </NavLink>
+                    </div>
+                  ) : (
+                    <h3 className={styles.emptyListMessage}>
+                      This user has not created any quizzes.
+                    </h3>
+                  )}
                 </div>
-                ) : (
-                  <h3 className={styles.emptyListMessage}>
-                    This user has not created any quizzes.
-                  </h3>          
-                )}
-              </div>
-            )}
+              )}
             </div>
           )}
 
-          {activeTab === "users" && user.admin && userList &&(
-          <div className={styles.usersContainer}>
-            {userList.map((user, index) => (
-              <div key={index} className={styles.userCard}>
-                <img
-                  src={user?.profilePictureId ? getImgUrl(user.profilePictureId) : "/guest.png"}
-                  alt={`Profile for ${user?.username}`}
-                  className={styles.profileImage}
-                />
-                <NavLink
-                  to="/account"
-                  state={`${user.username}`}
-                  className={styles.linkStyle}
-                >
-                  <h3>{user.username}</h3>
-                </NavLink>
-                <button
-                  className={styles.deleteButton}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setShowPopup(true);
-                  }}
-                >
-                  <Trash2 id="deleteIcon" stroke="darkRed" size={22} />
-                </button>
-              </div>
-            ))}
-          </div>
+          {activeTab === "users" && user.admin && userList && (
+            <div className={styles.usersContainer}>
+              {userList.map((user, index) => (
+                <div key={index} className={styles.userCard}>
+                  <img
+                    src={
+                      user?.profilePictureId
+                        ? getImgUrl(user.profilePictureId)
+                        : "/guest.png"
+                    }
+                    alt={`Profile for ${user?.username}`}
+                    className={styles.profileImage}
+                  />
+                  <NavLink
+                    to="/account"
+                    state={`${user.username}`}
+                    className={styles.linkStyle}
+                  >
+                    <h3>{user.username}</h3>
+                  </NavLink>
+                  <button
+                    className={styles.deleteButton}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setShowPopup(true);
+                    }}
+                  >
+                    <Trash2 id="deleteIcon" stroke="darkRed" size={22} />
+                  </button>
+                </div>
+              ))}
+            </div>
           )}
 
           {user && user.$id === displayUser.$id && (
-          <div className={styles.userControls}>
-            <Button className={styles.logoutButton} onClick={logout}>
-              Sign Out
-            </Button>
-          </div>
+            <div className={styles.userControls}>
+              <Button className={styles.logoutButton} onClick={logout}>
+                Sign Out
+              </Button>
+            </div>
           )}
         </>
       )}
