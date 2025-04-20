@@ -75,6 +75,14 @@ export default function Account() {
     }
   }, [user, displayUser]);
 
+  useEffect(() => {
+    const delayDebounce = setTimeout(() => {
+      getUsers(userSearchInput);
+    }, 300); 
+  
+    return () => clearTimeout(delayDebounce);
+  }, [userSearchInput]);
+
   const getUsers = async (searchValue: string = "") => {
     try {
       const queries = [
@@ -373,11 +381,6 @@ export default function Account() {
                 placeholder="Search users..."
                 value={userSearchInput}
                 onChange={(e) => setUserSearchInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    getUsers(userSearchInput);
-                  }
-                }}
               />
             </div>
             <div className={styles.usersContainer}>
