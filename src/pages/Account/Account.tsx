@@ -24,7 +24,9 @@ export default function Account() {
     "createdQuizzes"
   );
   const [userList, setUserList] = useState<User[] | null>(null);
+  const [userSearchInput, setUserSearchInput] = useState("");
   const [deleteUserId, setDeleteUserId] = useState<string | null>(null);
+  const [deleteInProg, setDeleteInProg] = useState(false);
   
   useEffect(() => {
     const getViewUserProfile = async () => {
@@ -63,23 +65,6 @@ export default function Account() {
       }
     };
 
-    const getUsers = async () => {
-      try {
-        const users = await databases.listDocuments(
-          dbId, 
-          "users", 
-          [
-            Query.limit(50),
-            Query.offset(0)
-          ]
-        );
-        setUserList(users.documents as User[])
-        
-      } catch (err) {
-        console.error("Failed to fetch friends:", err);
-      }
-    };
-
     if (user && displayUser) {
       setIsFriend(user.friendIds?.includes(displayUser.$id));
       fetchCreatedQuizzes();
@@ -88,6 +73,28 @@ export default function Account() {
       }
     }
   }, [user, displayUser]);
+
+  const getUsers = async (searchValue: string = "") => {
+    try {
+      const queries = [
+        Query.limit(25),
+        Query.offset(0),
+      ];
+  
+      if (searchValue !== "") {
+        queries.push(Query.search("username", searchValue));
+      }
+
+      const users = await databases.listDocuments(
+        dbId, 
+        "users", 
+        queries
+      );
+      setUserList(users.documents as User[])
+    } catch (err) {
+      console.error("Failed to fetch friends:", err);
+    }
+  };
 
   const addFriend = async (id: string) => {
     if (user) {
@@ -128,7 +135,8 @@ export default function Account() {
   };
 
   const deleteUser = async(id: string) => {
-    const deletingUser = await databases.getDocument(dbId, "users", id)
+    setDeleteInProg(true); 
+    const deletingUser : User = await databases.getDocument(dbId, "users", id)
 
     if(user?.admin) {
       try {
@@ -169,12 +177,19 @@ export default function Account() {
           }
         })
 
+        if(deletingUser.profilePictureId) {
+          await storage.deleteFile("images", deletingUser.profilePictureId)
+        }
+
         await databases.deleteDocument(dbId, "users", deletingUser.$id)
         await account.deleteIdentity(deletingUser.$id)
       } catch (err) {
         console.error("Failed to delete user:", err);
+      } finally {
+        setDeleteUserId(null)
+        setDeleteInProg(false)
+        getUsers()
       }
-      setDeleteUserId(null)
     }
   }
 
@@ -331,35 +346,51 @@ export default function Account() {
             </div>
           )}
 
-          {activeTab === "users" && user.admin && userList &&(
-          <div className={styles.usersContainer}>
-            {userList.map((user, index) => (
-              <div key={index} className={styles.userCard}>
-                <div className={styles.userInfo}>
-                  <img
-                    src={user?.profilePictureId ? getImgUrl(user.profilePictureId) : "/guest.png"}
-                    alt={`Profile for ${user?.username}`}
-                    className={styles.profileImage}
-                  />
-                  <NavLink
-                    to="/account"
-                    state={`${user.username}`}
-                    className={styles.linkStyle}
+          {activeTab === "users" && user.admin && user.$id === displayUser.$id && userList &&(
+          <div>
+            <div className={styles.searchBarContainer}>
+              <input
+                type="text"
+                className={styles.searchInput}
+                placeholder="Search users..."
+                value={userSearchInput}
+                onChange={(e) => setUserSearchInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    getUsers(userSearchInput);
+                  }
+                }}
+              />
+            </div>
+            <div className={styles.usersContainer}>
+              {userList.map((user, index) => (
+                <div key={index} className={styles.userCard}>
+                  <div className={styles.userInfo}>
+                    <img
+                      src={user?.profilePictureId ? getImgUrl(user.profilePictureId) : "/guest.png"}
+                      alt={`Profile for ${user?.username}`}
+                      className={styles.profileImage}
+                    />
+                    <NavLink
+                      to="/account"
+                      state={`${user.username}`}
+                      className={styles.linkStyle}
+                    >
+                      <h3>{user.username}</h3>
+                    </NavLink>
+                  </div>
+                  <button
+                    className={styles.deleteButton}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setDeleteUserId(user.$id);
+                    }}
                   >
-                    <h3>{user.username}</h3>
-                  </NavLink>
+                    <Trash2 id="deleteIcon" stroke="Red" size={22} />
+                  </button>
                 </div>
-                <button
-                  className={styles.deleteButton}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setDeleteUserId(user.$id);
-                  }}
-                >
-                  <Trash2 id="deleteIcon" stroke="Red" size={22} />
-                </button>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
           )}
 
@@ -383,29 +414,34 @@ export default function Account() {
         <div className={styles.popupOverlay}>
           <div className={styles.popupContent}>
             <h2 className={styles.popupTitle}>Delete Confirmation</h2>
-            <p className={styles.popupMessage}>
-              Are you sure you want to delete this user?
-            </p>
-            <div className={styles.popupActions}>
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  setDeleteUserId(null);
-                }}
-                className={styles.cancelButton}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  deleteUser(deleteUserId);
-                }}
-                className={styles.confirmButton}
-              >
-                Yes
-              </button>
-            </div>
+            {deleteInProg ? (
+            <p className={styles.popupMessage}>Deleting user in progress...</p>
+            ) : (
+            <>
+              <p className={styles.popupMessage}>
+                Are you sure you want to delete this user?
+              </p>
+              <div className={styles.popupActions}>
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setDeleteUserId(null);
+                  }}
+                  className={styles.cancelButton}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    deleteUser(deleteUserId);
+                  }}
+                  className={styles.confirmButton}
+                >
+                  Yes
+                </button>
+              </div>
+            </>)}
           </div>
         </div>
       )}
