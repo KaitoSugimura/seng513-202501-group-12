@@ -81,7 +81,6 @@
   opacity: 1;
 }
 
-
 .userControls {
   margin-top: 30px;
   display: flex;
@@ -127,7 +126,7 @@
   width: 100%;
   margin: 20px 0px 20px 0px;
   display: flex;
-  justify-content: left;
+  justify-content: space-between;
 }
 
 .searchInput {
@@ -142,6 +141,32 @@
 
 .searchInput::placeholder {
   color: #aaa;
+}
+
+.paginationButtons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.paginationButtons button {
+  background: none;
+  background-color: #444758b4;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+}
+
+.paginationButtons button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.paginationButtons button svg {
+  width: 18px;
+  height: 18px;
+  object-fit: cover;
 }
 
 .usersContainer {

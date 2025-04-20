@@ -25,6 +25,7 @@ export default function Account() {
   );
   const [userList, setUserList] = useState<User[] | null>(null);
   const [userSearchInput, setUserSearchInput] = useState("");
+  const [offset, setOffset] = useState(0);
   const [deleteUserId, setDeleteUserId] = useState<string | null>(null);
   const [deleteInProg, setDeleteInProg] = useState(false);
   const navigate = useNavigate();
@@ -81,13 +82,13 @@ export default function Account() {
     }, 300); 
   
     return () => clearTimeout(delayDebounce);
-  }, [userSearchInput]);
+  }, [userSearchInput, offset]);
 
   const getUsers = async (searchValue: string = "") => {
     try {
       const queries = [
-        Query.limit(25),
-        Query.offset(0),
+        Query.limit(10),
+        Query.offset(offset),
       ];
   
       if (searchValue !== "") {
@@ -380,8 +381,36 @@ export default function Account() {
                 className={styles.searchInput}
                 placeholder="Search users..."
                 value={userSearchInput}
-                onChange={(e) => setUserSearchInput(e.target.value)}
+                onChange={(e) => {setOffset(0); setUserSearchInput(e.target.value)}}
               />
+              <div className={styles.paginationButtons}>
+                <button
+                  onClick={() => setOffset((prev) => Math.max(0, prev - 10))}
+                  className={styles.pageArrow}
+                  disabled={offset <= 0}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 -960 960 960"
+                    fill="#FFFFFF"
+                  >
+                    <path d="M640-80 240-480l400-400 71 71-329 329 329 329-71 71Z" />
+                  </svg>
+                </button>
+                <button
+                  onClick={() => setOffset((prev) => prev + 10)}
+                  className={styles.pageArrow}
+                  disabled={!userList || userList.length < 10}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 -960 960 960"
+                    fill="#FFFFFF"
+                  >
+                    <path d="m321-80-71-71 329-329-329-329 71-71 400 400L321-80Z" />
+                  </svg>
+                </button>
+              </div>
             </div>
             <div className={styles.usersContainer}>
               {userList.map((userData, index) => (
