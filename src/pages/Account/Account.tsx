@@ -13,7 +13,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 export default function Account() {
   const location = useLocation();
   const viewUsername = location.state;
-  const [userReady, setUserReady] = useState(!viewUsername);
+  const [userReady, setUserReady] = useState(false);
   const { user, loadingAuth, setUser, logout } = useAuth();
   const [viewUser, setViewUser] = useState<User | null>(null);
   const displayUser = viewUser || user;
@@ -49,6 +49,9 @@ export default function Account() {
     };
     if (viewUsername) {
       getViewUserProfile();
+    }
+    else {
+      setUserReady(true);
     }
   }, [viewUsername]);
 
@@ -259,7 +262,7 @@ export default function Account() {
     }
   };
 
-  if (loadingAuth) {
+  if (loadingAuth || !userReady) {
     return (
       <div className={styles.accountRoot}>
         <h1 className={styles.title}>Account</h1>
@@ -267,7 +270,7 @@ export default function Account() {
       </div>
     );
   }
-
+  
   return (
     <div className={styles.accountRoot}>
       {user && displayUser && (

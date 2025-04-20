@@ -48,8 +48,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         console.log(userData)
       } catch (error) {
         console.log(error);
+      } finally {
+        setLoadingAuth(false);
       }
-      setLoadingAuth(false);
     };
 
     fetchUser();
