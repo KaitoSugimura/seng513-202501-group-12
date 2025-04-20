@@ -2,6 +2,7 @@ import AuthCard from "../../components/Auth/AuthCard";
 import Button from "../../components/Button";
 import { Trash2 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
+import { usePopup } from "../../context/PopupContext"; 
 import styles from "./Account.module.css";
 import QuizListViewer from "../../components/QuizListViewer";
 import { Query } from "appwrite";
@@ -23,6 +24,7 @@ export default function Account() {
   const viewUsername = location.state;
   const [userReady, setUserReady] = useState(false);
   const { user, isAdminUser, loadingAuth, setUser, logout } = useAuth();
+  const { setContent, clearContent } = usePopup();
   const [viewUser, setViewUser] = useState<User | null>(null);
   const displayUser = viewUser || user;
   const [isFriend, setIsFriend] = useState(false);
@@ -34,8 +36,6 @@ export default function Account() {
   const [userList, setUserList] = useState<User[] | null>(null);
   const [userSearchInput, setUserSearchInput] = useState("");
   const [offset, setOffset] = useState(0);
-  const [deleteUserId, setDeleteUserId] = useState<string | null>(null);
-  const [deleteInProg, setDeleteInProg] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -147,8 +147,50 @@ export default function Account() {
     }
   };
 
+  const handleDeleteClick = (deleteUserId : string) => {
+    setContent(
+      <div className={styles.popupOverlay}>
+      <div className={styles.popupContent}>
+        <h2 className={styles.popupTitle}>Delete Confirmation</h2>
+        <p className={styles.popupMessage}>
+          Are you sure you want to delete this user?
+        </p>
+        <div className={styles.popupActions}>
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              clearContent();
+            }}
+            className={styles.cancelButton}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              deleteUser(deleteUserId);
+            }}
+            className={styles.confirmButton}
+          >
+            Yes
+          </button>
+        </div>
+      </div>
+    </div>
+    );
+  };
+
   const deleteUser = async (id: string) => {
-    setDeleteInProg(true);
+    setContent(
+      <div className={styles.popupOverlay}>
+      <div className={styles.popupContent}>
+        <h2 className={styles.popupTitle}>Delete Confirmation</h2>
+        <p className={styles.popupMessage}>
+          Deleting user in progress...
+        </p>
+      </div>
+    </div>
+    )
     const deletingUser: User = await databases.getDocument(dbId, "users", id);
 
     if (isAdminUser) {
@@ -217,10 +259,9 @@ export default function Account() {
       } catch (err) {
         console.error("Failed to delete user:", err);
       } finally {
-        setDeleteUserId(null);
-        setDeleteInProg(false);
+        clearContent();
         getUsers();
-        if (user.$id != displayUser?.$id) {
+        if (user?.$id != displayUser?.$id) {
           navigate("/account", { state: user?.username });
         }
       }
@@ -276,7 +317,7 @@ export default function Account() {
       window.location.reload();
     } catch (err) {
       console.error("Failed to fetch quizzes:", err);
-    }
+    } 
   };
 
   if (loadingAuth || !userReady) {
@@ -299,7 +340,7 @@ export default function Account() {
               {isAdminUser && user.$id != displayUser.$id && (
                 <Button
                   className={styles.deleteUserButton}
-                  onClick={() => setDeleteUserId(displayUser.$id)}
+                  onClick={() => handleDeleteClick(displayUser.$id)}
                 >
                   <Trash2 size={16} />
                   Delete User
@@ -465,7 +506,7 @@ export default function Account() {
                         className={styles.deleteButton}
                         onClick={(e) => {
                           e.preventDefault();
-                          setDeleteUserId(userData.$id);
+                          handleDeleteClick(userData.$id);
                         }}
                       >
                         <Trash2 id="deleteIcon" stroke="Red" size={22} />
@@ -490,45 +531,6 @@ export default function Account() {
           <p className={styles.subtitle}>Sign in to access all features.</p>
           <AuthCard />
         </>
-      )}
-
-      {deleteUserId && (
-        <div className={styles.popupOverlay}>
-          <div className={styles.popupContent}>
-            <h2 className={styles.popupTitle}>Delete Confirmation</h2>
-            {deleteInProg ? (
-              <p className={styles.popupMessage}>
-                Deleting user in progress...
-              </p>
-            ) : (
-              <>
-                <p className={styles.popupMessage}>
-                  Are you sure you want to delete this user?
-                </p>
-                <div className={styles.popupActions}>
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setDeleteUserId(null);
-                    }}
-                    className={styles.cancelButton}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      deleteUser(deleteUserId);
-                    }}
-                    className={styles.confirmButton}
-                  >
-                    Yes
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
       )}
     </div>
   );
