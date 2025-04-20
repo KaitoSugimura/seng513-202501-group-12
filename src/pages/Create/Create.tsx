@@ -326,14 +326,13 @@ export default function Create() {
               onClick={navigateToPreview}
             >
               <div className={styles.overlay}></div>
-              <img
-                src={
-                  previewImage.current
-                    ? URL.createObjectURL(previewImage.current)
-                    : "/NoImage.png"
-                }
-                alt=""
-              />
+              <div className={styles.listEntryImageSizing}>
+                {previewImage.current ? (
+                  <img src={URL.createObjectURL(previewImage.current)} alt="" />
+                ) : (
+                  <img className={styles.noImage} src="/NoImage.svg" alt="" />
+                )}{" "}
+              </div>
             </ol>
             {questions.map((question, index) => (
               <ol
@@ -350,25 +349,24 @@ export default function Create() {
                   setCurrentIndex(index);
                 }}
               >
-                <div className={styles.overlay}>
-                  <h2>{index + 1}</h2>
-                  <button
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      deleteIndex(index);
-                    }}
-                  >
-                    <Trash2 />
-                  </button>
+                <div className={styles.listEntryImageSizing}>
+                  <div className={styles.overlay}>
+                    <h2>{index + 1}</h2>
+                    <button
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        deleteIndex(index);
+                      }}
+                    >
+                      <Trash2 />
+                    </button>
+                  </div>
+                  {question.imageFile ? (
+                    <img src={URL.createObjectURL(question.imageFile)} alt="" />
+                  ) : (
+                    <img className={styles.noImage} src="/NoImage.svg" alt="" />
+                  )}{" "}
                 </div>
-                <img
-                  src={
-                    question.imageFile
-                      ? URL.createObjectURL(question.imageFile)
-                      : "/NoImage.png"
-                  }
-                  alt=""
-                />
               </ol>
             ))}
           </div>
@@ -386,53 +384,54 @@ export default function Create() {
                 error={nameError ? "Please Enter a Name" : ""}
                 className={styles.inputField}
               />
-              <button className={styles.createButton} onClick={createQuiz}>
-                Create Quiz!
-              </button>
             </div>
-            {(!isSmallScreen || currentIndex === -1) && (
-              <div className={styles.selectFields}>
-                <SelectField
-                  id="quizTheme"
-                  label="Quiz Theme"
-                  value={quizTheme}
-                  onChange={(e) => setQuizTheme(e.target.value)}
-                  categories={categories}
-                  className={styles.selectField}
-                />
-                <SelectField
-                  id="quizType"
-                  label="Quiz Type"
-                  value={quizType}
-                  onChange={(e) => setQuizType(e.target.value)}
-                  categories={["blur", "zoom"]}
-                  className={styles.selectField}
-                />
-              </div>
-            )}
-
+            <div className={styles.selectFields}>
+              <SelectField
+                id="quizTheme"
+                label="Quiz Theme"
+                value={quizTheme}
+                onChange={(e) => setQuizTheme(e.target.value)}
+                categories={categories}
+                className={styles.selectField}
+              />
+              <SelectField
+                id="quizType"
+                label="Quiz Type"
+                value={quizType}
+                onChange={(e) => setQuizType(e.target.value)}
+                categories={["blur", "zoom"]}
+                className={styles.selectField}
+              />
+            </div>
             <div className={styles.imageContainer}>
               <div className={styles.questionButtonContainer}>
-                {currentIndex > -1 && (
-                  <button className={styles.questionButtons} onClick={onDelete}>
-                    <Trash2 />
-                  </button>
-                )}
-                {currentIndex > -1 && (
-                  <button className={styles.questionButtons} onClick={onBack}>
-                    <ArrowLeft />
-                  </button>
-                )}
+                <button
+                  className={styles.questionButtons}
+                  onClick={onDelete}
+                  disabled={currentIndex === -1}
+                >
+                  <Trash2 />
+                </button>
+
+                <button
+                  className={styles.questionButtons}
+                  onClick={onBack}
+                  disabled={currentIndex === -1}
+                >
+                  <ArrowLeft />
+                </button>
               </div>
-              <ImageUpload
-                file={inputImage}
-                setFile={setInputImage}
-                text={
-                  currentIndex === -1
-                    ? "Upload or drag and drop thumbnail"
-                    : "Upload or drag and drop question image"
-                }
-              ></ImageUpload>
+              <div className={styles.imageUploadContainer}>
+                <ImageUpload
+                  file={inputImage}
+                  setFile={setInputImage}
+                  text={
+                    currentIndex === -1
+                      ? "Click to browse or drag and drop thumbnail"
+                      : "Click to browse or drag and drop question image"
+                  }
+                ></ImageUpload>
+              </div>
 
               <div className={styles.questionButtonContainer}>
                 <button
@@ -448,7 +447,7 @@ export default function Create() {
                     </button>
                   )}
               </div>
-            </div>
+            </div>{" "}
             {currentIndex >= 0 && (
               <div className={styles.answersContainer}>
                 {answers.map((answer, index) => (
@@ -504,6 +503,11 @@ export default function Create() {
                 ))}
               </div>
             )}
+            <div className={styles.createButtonContainer}>
+              <button className={styles.createButton} onClick={createQuiz}>
+                Create Quiz!
+              </button>
+            </div>
           </div>
         </>
       )}
