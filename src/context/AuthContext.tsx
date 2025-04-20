@@ -1,4 +1,4 @@
-import { ID, Query } from "appwrite";
+import { ID } from "appwrite";
 import {
   createContext,
   Dispatch,
@@ -13,6 +13,7 @@ import { account, databases, dbId, User, Quiz } from "../util/appwrite";
 interface AuthContextType {
   user: User | null;
   setUser: Dispatch<SetStateAction<User | null>>;
+  isAdminUser: boolean;
   loadingAuth: boolean;
   register: (
     email: string,
@@ -28,6 +29,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [isAdminUser, setIsAdminUser] = useState(false);
   const [loadingAuth, setLoadingAuth] = useState(true);
 
   useEffect(() => {
@@ -39,9 +41,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           "users",
           user.$id
         );
-        
-        if(user.labels.includes("admin")) {
-          userData.admin = true;
+
+        if (user.labels.includes("admin")) {
+          setIsAdminUser(true);
+        } else {
+          setIsAdminUser(false);
         }
 
         setUser(userData);
@@ -85,8 +89,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     );
 
     const user = await account.get();
-    if(user.labels.includes("admin")) {
-      userData.admin = true;
+    if (user.labels.includes("admin")) {
+      setIsAdminUser(true);
+    } else {
+      setIsAdminUser(false);
     }
 
     setUser(userData);
@@ -95,6 +101,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = async () => {
     await account.deleteSession("current");
     setUser(null);
+    setIsAdminUser(false);
   };
 
   let updateQueue = Promise.resolve();
@@ -145,6 +152,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       value={{
         user,
         setUser,
+        isAdminUser,
         loadingAuth,
         register,
         login,

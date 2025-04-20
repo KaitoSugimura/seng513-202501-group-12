@@ -13,7 +13,7 @@ export default function QuizCard({
   quiz: Quiz;
   quizHistory?: QuizHistory;
 }) {
-  const { user, toggleFavoriteQuiz } = useAuth();
+  const { user, isAdminUser, toggleFavoriteQuiz } = useAuth();
   const [isQuizFavorited, setIsQuizFavorited] = useState(false);
   const [imageIsLoading, setImageIsLoading] = useState(true);
   const [showPopup, setShowPopup] = useState(false);
@@ -139,7 +139,7 @@ export default function QuizCard({
           </>
         )}
 
-        {user?.username === quiz.creatorUsername && (
+        {(user?.username === quiz.creatorUsername || isAdminUser) && (
           <button
             className={styles.deleteButton}
             onClick={(e) => {

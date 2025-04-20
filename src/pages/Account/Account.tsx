@@ -7,14 +7,22 @@ import QuizListViewer from "../../components/QuizListViewer";
 import { Query } from "appwrite";
 import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { databases, storage, account, dbId, User, Quiz, getImgUrl } from "../../util/appwrite";
+import {
+  databases,
+  storage,
+  account,
+  dbId,
+  User,
+  Quiz,
+  getImgUrl,
+} from "../../util/appwrite";
 import { NavLink, useNavigate } from "react-router-dom";
 
 export default function Account() {
   const location = useLocation();
   const viewUsername = location.state;
   const [userReady, setUserReady] = useState(false);
-  const { user, loadingAuth, setUser, logout } = useAuth();
+  const { user, isAdminUser, loadingAuth, setUser, logout } = useAuth();
   const [viewUser, setViewUser] = useState<User | null>(null);
   const displayUser = viewUser || user;
   const [isFriend, setIsFriend] = useState(false);
@@ -29,7 +37,7 @@ export default function Account() {
   const [deleteUserId, setDeleteUserId] = useState<string | null>(null);
   const [deleteInProg, setDeleteInProg] = useState(false);
   const navigate = useNavigate();
-  
+
   useEffect(() => {
     const getViewUserProfile = async () => {
       try {
@@ -49,8 +57,7 @@ export default function Account() {
     };
     if (viewUsername) {
       getViewUserProfile();
-    }
-    else {
+    } else {
       setUserReady(true);
     }
   }, [viewUsername]);
@@ -73,37 +80,30 @@ export default function Account() {
     if (user && displayUser) {
       setIsFriend(user.friendIds?.includes(displayUser.$id));
       fetchCreatedQuizzes();
-      if (user.admin) {
+      if (isAdminUser) {
         getUsers();
       }
     }
-  }, [user, displayUser]);
+  }, [user, isAdminUser, displayUser]);
 
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
       getUsers(userSearchInput);
-    }, 300); 
-  
+    }, 300);
+
     return () => clearTimeout(delayDebounce);
   }, [userSearchInput, offset]);
 
   const getUsers = async (searchValue: string = "") => {
     try {
-      const queries = [
-        Query.limit(10),
-        Query.offset(offset),
-      ];
-  
+      const queries = [Query.limit(10), Query.offset(offset)];
+
       if (searchValue !== "") {
         queries.push(Query.search("username", searchValue));
       }
 
-      const users = await databases.listDocuments(
-        dbId, 
-        "users", 
-        queries
-      );
-      setUserList(users.documents as User[])
+      const users = await databases.listDocuments(dbId, "users", queries);
+      setUserList(users.documents as User[]);
     } catch (err) {
       console.error("Failed to fetch friends:", err);
     }
@@ -147,31 +147,46 @@ export default function Account() {
     }
   };
 
-  const deleteUser = async(id: string) => {
-    setDeleteInProg(true); 
-    const deletingUser : User = await databases.getDocument(dbId, "users", id)
+  const deleteUser = async (id: string) => {
+    setDeleteInProg(true);
+    const deletingUser: User = await databases.getDocument(dbId, "users", id);
 
-    if(user?.admin) {
+    if (isAdminUser) {
       try {
-        const userQuizzes = await databases.listDocuments(dbId, "quizzes", [Query.equal("creatorId", deletingUser.$id)])
-        userQuizzes.documents.forEach(async (quiz) => {deleteQuiz(quiz as Quiz)})
+        const userQuizzes = await databases.listDocuments(dbId, "quizzes", [
+          Query.equal("creatorId", deletingUser.$id),
+        ]);
+        userQuizzes.documents.forEach(async (quiz) => {
+          deleteQuiz(quiz as Quiz);
+        });
 
-        const userHistory = await databases.listDocuments(dbId, "quizHistory", [Query.equal("userId", deletingUser.$id)])
-        userHistory.documents.forEach(async (quizHist) => {await databases.deleteDocument(dbId, "quizHistory", quizHist.$id)})
+        const userHistory = await databases.listDocuments(dbId, "quizHistory", [
+          Query.equal("userId", deletingUser.$id),
+        ]);
+        userHistory.documents.forEach(async (quizHist) => {
+          await databases.deleteDocument(dbId, "quizHistory", quizHist.$id);
+        });
 
         if (deletingUser.favoritedQuizIds.length > 0) {
           await Promise.all(
             deletingUser.favoritedQuizIds.map(async (quizId: string) => {
               try {
-                const quiz = await databases.getDocument(dbId, "quizzes", quizId);
+                const quiz = await databases.getDocument(
+                  dbId,
+                  "quizzes",
+                  quizId
+                );
                 const currentFavCount = quiz.favoritedCount || 0;
-                const newFavCount = Math.max(0, currentFavCount - 1); 
-  
+                const newFavCount = Math.max(0, currentFavCount - 1);
+
                 await databases.updateDocument(dbId, "quizzes", quizId, {
                   favoritedCount: newFavCount,
                 });
               } catch (err) {
-                console.error(`Failed to update favourite count for quiz ${quizId}:`, err);
+                console.error(
+                  `Failed to update favourite count for quiz ${quizId}:`,
+                  err
+                );
               }
             })
           );
@@ -180,37 +195,39 @@ export default function Account() {
         const allUsers = await databases.listDocuments(dbId, "users");
         (allUsers.documents as User[]).forEach(async (otherUser) => {
           const friendIds = otherUser.friendIds || [];
-  
+
           if (friendIds.includes(deletingUser.$id)) {
-            const updatedFriendIds = friendIds.filter((friendId: string) => friendId !== deletingUser.$id);
-  
+            const updatedFriendIds = friendIds.filter(
+              (friendId: string) => friendId !== deletingUser.$id
+            );
+
             await databases.updateDocument(dbId, "users", otherUser.$id, {
               friendIds: updatedFriendIds,
             });
           }
-        })
+        });
 
-        if(deletingUser.profilePictureId) {
-          await storage.deleteFile("images", deletingUser.profilePictureId)
+        if (deletingUser.profilePictureId) {
+          await storage.deleteFile("images", deletingUser.profilePictureId);
         }
 
-        await databases.deleteDocument(dbId, "users", deletingUser.$id)
-        const response = await account.deleteIdentity(deletingUser.$id)
-        console.log(response)
+        await databases.deleteDocument(dbId, "users", deletingUser.$id);
+        const response = await account.deleteIdentity(deletingUser.$id);
+        console.log(response);
       } catch (err) {
         console.error("Failed to delete user:", err);
       } finally {
-        setDeleteUserId(null)
-        setDeleteInProg(false)
-        getUsers()
-        if(user.$id != displayUser?.$id) {
+        setDeleteUserId(null);
+        setDeleteInProg(false);
+        getUsers();
+        if (user.$id != displayUser?.$id) {
           navigate("/account", { state: user?.username });
         }
       }
     }
-  }
+  };
 
-  const deleteQuiz = async (quiz : Quiz) => {
+  const deleteQuiz = async (quiz: Quiz) => {
     try {
       const correspondingQuizHistories = await databases.listDocuments(
         dbId,
@@ -270,7 +287,7 @@ export default function Account() {
       </div>
     );
   }
-  
+
   return (
     <div className={styles.accountRoot}>
       {user && displayUser && (
@@ -279,12 +296,12 @@ export default function Account() {
             <h1>{displayUser.username}'s Profile </h1>
 
             <div className={styles.headerButtons}>
-              {user.admin && user.$id != displayUser.$id && (
+              {isAdminUser && user.$id != displayUser.$id && (
                 <Button
                   className={styles.deleteUserButton}
                   onClick={() => setDeleteUserId(displayUser.$id)}
                 >
-                  <Trash2 size={16}/>
+                  <Trash2 size={16} />
                   Delete User
                 </Button>
               )}
@@ -331,7 +348,7 @@ export default function Account() {
             >
               Created Quizzes
             </button>
-            {user.admin && user.$id == displayUser.$id && (
+            {isAdminUser && user.$id == displayUser.$id && (
               <button
                 className={`${styles.tabButton} ${
                   activeTab === "users" ? styles.selected : ""
@@ -376,76 +393,88 @@ export default function Account() {
             </div>
           )}
 
-          {activeTab === "users" && user.admin && user.$id === displayUser.$id && userList &&(
-          <div>
-            <div className={styles.searchBarContainer}>
-              <input
-                type="text"
-                className={styles.searchInput}
-                placeholder="Search users..."
-                value={userSearchInput}
-                onChange={(e) => {setOffset(0); setUserSearchInput(e.target.value)}}
-              />
-              <div className={styles.paginationButtons}>
-                <button
-                  onClick={() => setOffset((prev) => Math.max(0, prev - 10))}
-                  className={styles.pageArrow}
-                  disabled={offset <= 0}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 -960 960 960"
-                    fill="#FFFFFF"
-                  >
-                    <path d="M640-80 240-480l400-400 71 71-329 329 329 329-71 71Z" />
-                  </svg>
-                </button>
-                <button
-                  onClick={() => setOffset((prev) => prev + 10)}
-                  className={styles.pageArrow}
-                  disabled={!userList || userList.length < 10}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 -960 960 960"
-                    fill="#FFFFFF"
-                  >
-                    <path d="m321-80-71-71 329-329-329-329 71-71 400 400L321-80Z" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-            <div className={styles.usersContainer}>
-              {userList.map((userData, index) => (
-                <div key={index} className={styles.userCard}>
-                  <div className={styles.userInfo}>
-                    <img
-                      src={userData?.profilePictureId ? getImgUrl(userData.profilePictureId) : "/guest.png"}
-                      alt={`Profile for ${userData?.username}`}
-                      className={styles.profileImage}
-                    />
-                    <NavLink
-                      to="/account"
-                      state={`${userData.username}`}
-                      className={styles.linkStyle}
-                    >
-                      <h3>{userData.username}</h3>
-                    </NavLink>
-                  </div>
-                  <button
-                    className={styles.deleteButton}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setDeleteUserId(userData.$id);
+          {activeTab === "users" &&
+            isAdminUser &&
+            user.$id === displayUser.$id &&
+            userList && (
+              <div>
+                <div className={styles.searchBarContainer}>
+                  <input
+                    type="text"
+                    className={styles.searchInput}
+                    placeholder="Search users..."
+                    value={userSearchInput}
+                    onChange={(e) => {
+                      setOffset(0);
+                      setUserSearchInput(e.target.value);
                     }}
-                  >
-                    <Trash2 id="deleteIcon" stroke="Red" size={22} />
-                  </button>
+                  />
+                  <div className={styles.paginationButtons}>
+                    <button
+                      onClick={() =>
+                        setOffset((prev) => Math.max(0, prev - 10))
+                      }
+                      className={styles.pageArrow}
+                      disabled={offset <= 0}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 -960 960 960"
+                        fill="#FFFFFF"
+                      >
+                        <path d="M640-80 240-480l400-400 71 71-329 329 329 329-71 71Z" />
+                      </svg>
+                    </button>
+                    <button
+                      onClick={() => setOffset((prev) => prev + 10)}
+                      className={styles.pageArrow}
+                      disabled={!userList || userList.length < 10}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 -960 960 960"
+                        fill="#FFFFFF"
+                      >
+                        <path d="m321-80-71-71 329-329-329-329 71-71 400 400L321-80Z" />
+                      </svg>
+                    </button>
+                  </div>
                 </div>
-              ))}
-            </div>
-          </div>
-          )}
+                <div className={styles.usersContainer}>
+                  {userList.map((userData, index) => (
+                    <div key={index} className={styles.userCard}>
+                      <div className={styles.userInfo}>
+                        <img
+                          src={
+                            userData?.profilePictureId
+                              ? getImgUrl(userData.profilePictureId)
+                              : "/guest.png"
+                          }
+                          alt={`Profile for ${userData?.username}`}
+                          className={styles.profileImage}
+                        />
+                        <NavLink
+                          to="/account"
+                          state={`${userData.username}`}
+                          className={styles.linkStyle}
+                        >
+                          <h3>{userData.username}</h3>
+                        </NavLink>
+                      </div>
+                      <button
+                        className={styles.deleteButton}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setDeleteUserId(userData.$id);
+                        }}
+                      >
+                        <Trash2 id="deleteIcon" stroke="Red" size={22} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
           {user && user.$id === displayUser.$id && (
             <div className={styles.userControls}>
@@ -468,33 +497,36 @@ export default function Account() {
           <div className={styles.popupContent}>
             <h2 className={styles.popupTitle}>Delete Confirmation</h2>
             {deleteInProg ? (
-            <p className={styles.popupMessage}>Deleting user in progress...</p>
-            ) : (
-            <>
               <p className={styles.popupMessage}>
-                Are you sure you want to delete this user?
+                Deleting user in progress...
               </p>
-              <div className={styles.popupActions}>
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setDeleteUserId(null);
-                  }}
-                  className={styles.cancelButton}
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    deleteUser(deleteUserId);
-                  }}
-                  className={styles.confirmButton}
-                >
-                  Yes
-                </button>
-              </div>
-            </>)}
+            ) : (
+              <>
+                <p className={styles.popupMessage}>
+                  Are you sure you want to delete this user?
+                </p>
+                <div className={styles.popupActions}>
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setDeleteUserId(null);
+                    }}
+                    className={styles.cancelButton}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      deleteUser(deleteUserId);
+                    }}
+                    className={styles.confirmButton}
+                  >
+                    Yes
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}
