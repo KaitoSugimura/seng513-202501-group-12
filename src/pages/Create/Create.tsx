@@ -296,7 +296,7 @@ export default function Create() {
       })
     );
 
-    navigate("/library");
+    navigate("/account");
   };
 
   return (
