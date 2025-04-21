@@ -371,6 +371,15 @@ export default function Create() {
                 </div>
               </ol>
             ))}
+            <ol className={styles.listEntryImage}>
+              <button
+                className={styles.addQuestionButton}
+                onClick={addQuestion}
+              >
+                <Plus />
+                Add Question
+              </button>
+            </ol>
           </div>
           <div className={styles.quizDetails}>
             <div className={styles.topContainer}>
@@ -409,14 +418,6 @@ export default function Create() {
               <div className={styles.questionButtonContainer}>
                 <button
                   className={styles.questionButtons}
-                  style={{
-                    visibility: "hidden",
-                  }}
-                  disabled={true}
-                ></button>
-
-                <button
-                  className={styles.questionButtons}
                   onClick={onBack}
                   disabled={currentIndex === -1}
                 >
@@ -436,13 +437,6 @@ export default function Create() {
               </div>
 
               <div className={styles.questionButtonContainer}>
-                <button
-                  className={styles.questionButtons}
-                  onClick={addQuestion}
-                >
-                  <Plus />
-                </button>
-
                 <button
                   className={styles.questionButtons}
                   onClick={onNext}
