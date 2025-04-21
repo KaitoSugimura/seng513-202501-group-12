@@ -12,3 +12,7 @@ To deploy the application using docker.
    `docker ps`
 4. Open the website by opening the following in a browser:
    `http://localhost:5173/` **It should be port 5173*
+
+## Render Deployment
+
+https://seng513-202501-group-12.onrender.com/ 
