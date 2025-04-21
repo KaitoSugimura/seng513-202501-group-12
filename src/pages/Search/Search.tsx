@@ -48,7 +48,6 @@ export default function Search() {
           onChange={(event) => {
             setSearchCategoryValue(checkCategory(event.target.value));
           }}
-          placeholder="Any"
           label="Category"
           categories={categories}
         />

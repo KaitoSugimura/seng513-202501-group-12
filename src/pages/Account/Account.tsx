@@ -2,7 +2,7 @@ import AuthCard from "../../components/Auth/AuthCard";
 import Button from "../../components/Button";
 import { Trash2 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
-import { usePopup } from "../../context/PopupContext"; 
+import { usePopup } from "../../context/PopupContext";
 import styles from "./Account.module.css";
 import QuizListViewer from "../../components/QuizListViewer";
 import { Query } from "appwrite";
@@ -67,7 +67,7 @@ export default function Account() {
     const fetchCreatedQuizzes = async () => {
       try {
         const quizzes = await databases.listDocuments(dbId, "quizzes", [
-          Query.contains("creatorUsername", [displayUser.username]),
+          Query.contains("creatorUsername", [displayUser?.username || ""]),
         ]);
         setcreatedQuizzes(quizzes.documents as Quiz[]);
       } catch (err) {
@@ -147,50 +147,48 @@ export default function Account() {
     }
   };
 
-  const handleDeleteClick = (deleteUserId : string) => {
+  const handleDeleteClick = (deleteUserId: string) => {
     setContent(
       <div className={styles.popupOverlay}>
-      <div className={styles.popupContent}>
-        <h2 className={styles.popupTitle}>Delete Confirmation</h2>
-        <p className={styles.popupMessage}>
-          Are you sure you want to delete this user?
-        </p>
-        <div className={styles.popupActions}>
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              clearContent();
-            }}
-            className={styles.cancelButton}
-          >
-            Cancel
-          </button>
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              deleteUser(deleteUserId);
-            }}
-            className={styles.confirmButton}
-          >
-            Yes
-          </button>
+        <div className={styles.popupContent}>
+          <h2 className={styles.popupTitle}>Delete Confirmation</h2>
+          <p className={styles.popupMessage}>
+            Are you sure you want to delete this user?
+          </p>
+          <div className={styles.popupActions}>
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                clearContent();
+              }}
+              className={styles.cancelButton}
+            >
+              Cancel
+            </button>
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                deleteUser(deleteUserId);
+              }}
+              className={styles.confirmButton}
+            >
+              Yes
+            </button>
+          </div>
         </div>
       </div>
-    </div>
     );
   };
 
   const deleteUser = async (id: string) => {
     setContent(
       <div className={styles.popupOverlay}>
-      <div className={styles.popupContent}>
-        <h2 className={styles.popupTitle}>Delete Confirmation</h2>
-        <p className={styles.popupMessage}>
-          Deleting user in progress...
-        </p>
+        <div className={styles.popupContent}>
+          <h2 className={styles.popupTitle}>Delete Confirmation</h2>
+          <p className={styles.popupMessage}>Deleting user in progress...</p>
+        </div>
       </div>
-    </div>
-    )
+    );
     const deletingUser: User = await databases.getDocument(dbId, "users", id);
 
     if (isAdminUser) {
@@ -317,7 +315,7 @@ export default function Account() {
       window.location.reload();
     } catch (err) {
       console.error("Failed to fetch quizzes:", err);
-    } 
+    }
   };
 
   if (loadingAuth || !userReady) {
