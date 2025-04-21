@@ -406,25 +406,23 @@ export default function Create() {
               />
             </div>
             <div className={styles.imageContainer}>
-              {currentIndex !== -1 && (
-                <div className={styles.questionButtonContainer}>
-                  <button
-                    className={styles.questionButtons}
-                    onClick={onDelete}
-                    disabled={currentIndex === -1}
-                  >
-                    <Trash2 />
-                  </button>
+              <div className={styles.questionButtonContainer}>
+                <button
+                  className={styles.questionButtons}
+                  onClick={onDelete}
+                  disabled={currentIndex === -1}
+                >
+                  <Trash2 />
+                </button>
 
-                  <button
-                    className={styles.questionButtons}
-                    onClick={onBack}
-                    disabled={currentIndex === -1}
-                  >
-                    <ArrowLeft />
-                  </button>
-                </div>
-              )}
+                <button
+                  className={styles.questionButtons}
+                  onClick={onBack}
+                  disabled={currentIndex === -1}
+                >
+                  <ArrowLeft />
+                </button>
+              </div>
               <div className={styles.imageUploadContainer}>
                 <ImageUpload
                   file={inputImage}
@@ -444,12 +442,17 @@ export default function Create() {
                 >
                   <Plus />
                 </button>
-                {questions.length > 0 &&
-                  currentIndex < questions.length - 1 && (
-                    <button className={styles.questionButtons} onClick={onNext}>
-                      <ArrowRight />
-                    </button>
-                  )}
+
+                <button
+                  className={styles.questionButtons}
+                  onClick={onNext}
+                  disabled={
+                    questions.length === 0 ||
+                    currentIndex >= questions.length - 1
+                  }
+                >
+                  <ArrowRight />
+                </button>
               </div>
             </div>{" "}
             {currentIndex >= 0 && (

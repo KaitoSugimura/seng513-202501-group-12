@@ -192,6 +192,7 @@
 }
 
 .questionButtons:disabled {
+  cursor: not-allowed;
   background-color: rgba(128, 128, 128, 0.2);
 }
 
