@@ -525,10 +525,10 @@ export default function Account() {
         </>
       )}
       {!user && (
-        <>
+        <div className={styles.authContainer}>
           <p className={styles.subtitle}>Sign in to access all features.</p>
           <AuthCard />
-        </>
+        </div>
       )}
     </div>
   );
