@@ -318,19 +318,28 @@
   .questionList {
     width: 100%;
     height: 120px;
-    overflow-x: auto;
+    overflow-x: scroll;
     overflow-y: hidden;
     display: flex;
     flex-direction: row;
+    justify-content: start;
+    align-items: center;
     gap: 1rem;
     white-space: nowrap;
+    padding: 0 1%;
 
     margin-top: 1.2rem;
   }
   .listEntryImage {
     width: 33%;
+    height: 95%;
     flex-shrink: 0;
   }
+
+  .listEntryImageSizing {
+    padding-top: 0;
+  }
+
   .quizDetails {
     width: 100%;
     display: flex;
@@ -361,5 +370,9 @@
   .createButtonContainer {
     margin-top: 1rem;
     margin-bottom: 1.8rem;
+  }
+
+  .addQuestionButton {
+    height: 100%;
   }
 }
