@@ -409,11 +409,11 @@ export default function Create() {
               <div className={styles.questionButtonContainer}>
                 <button
                   className={styles.questionButtons}
-                  onClick={onDelete}
-                  disabled={currentIndex === -1}
-                >
-                  <Trash2 />
-                </button>
+                  style={{
+                    visibility: "hidden",
+                  }}
+                  disabled={true}
+                ></button>
 
                 <button
                   className={styles.questionButtons}
