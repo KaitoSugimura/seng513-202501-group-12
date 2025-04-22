@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import usersData from "../database/stubUsers";
 import styles from "./Layout.module.css";
 import { databases, dbId, User, getImgUrl } from "../util/appwrite";
 import ProfileImageUpload from "../components/ProfileImageUpload";
@@ -219,7 +218,7 @@ export default function Layout() {
         </div>
         {breakPoint > 1450 && (
           <div className={styles.sideNav}>
-            <div key={usersData[0].id} className={styles.userContainer}>
+            <div className={styles.userContainer}>
               <img
                 src={
                   user?.profilePictureId
